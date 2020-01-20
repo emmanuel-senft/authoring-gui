@@ -1,4 +1,5 @@
 import QtQuick 2.2
+ import QtQuick.Controls 2.14
 
 import Ros 1.0
 
@@ -20,6 +21,7 @@ Item {
     property bool bgHasChanged: true
     property int rosBackgroundPublishingPeriod: 250 //ms
 
+    property bool addGesture: false
 
     Canvas {
         id: canvas
@@ -58,8 +60,9 @@ Item {
             ctx.lineCap="round";
 
             var currentStrokes = [];
-            for (var i = 0; i < touchs.touchPoints.length; i++) {
-
+            for (var i = 0; i < touchs.touchPoints.length,1; i++) {
+                if (i > 0)
+                    break
                 if(touchs.touchPoints[i].currentStroke.length !== 0) {
                     currentStrokes.push({color: touchs.touchPoints[i].color.toString(),
                                 points: touchs.touchPoints[i].currentStroke,
@@ -98,6 +101,7 @@ Item {
 
                 }
                 ctx.lineTo(p1.x, p1.y);
+                recognizer.addPoint(p1.x, p1.y)
 
                 ctx.stroke();
 
@@ -128,6 +132,10 @@ Item {
         timerGesture.stop()
     }
 
+    function newStroke(){
+        recognizer.newStroke()
+    }
+
     function finishStroke(stroke) {
         bgHasChanged = true; //will trigger publishing of background on ROS
         canvas.storeCurrentDrawing();
@@ -136,6 +144,14 @@ Item {
     }
 
     function endGesture(){
+        if (addGesture) {
+            recognizer.addGesture(gestureName.text)
+            addGesture=false
+        }
+        else{
+            var fig = recognizer.recognize();
+
+        }
         clearDrawing()
     }
 

@@ -2,9 +2,10 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>main.cpp</file>
-        <file>Object.qml</file>
+        <file>Recognizer.qml</file>
         <file>TouchJoint.qml</file>
         <file>DrawingArea.qml</file>
         <file>QClassifier.js</file>
+        <file>DragRectangle.qml</file>
     </qresource>
 </RCC>

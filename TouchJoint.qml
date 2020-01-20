@@ -22,7 +22,6 @@ TouchPoint {
     }
 
     onXChanged: {
-        console.log("v")
         // (only add stroke point in one dimension (Y) to avoid double drawing)
     }
 
@@ -35,12 +34,20 @@ TouchPoint {
     onPressedChanged: {
 
         if (pressed) {
+            getImagePosition(x,y)
+            return
             console.log("pressed")
+            var obj = drawingarea.childAt(x, y);
+            console.log(obj.objectName)
 
             if (drawingarea.drawEnabled) {
                 currentStroke = [];
                 color = drawingarea.fgColor;
                 drawing = true;
+                console.log("new stroke")
+                drawingarea.newStroke()
+                currentStroke.push(Qt.point(x,y));
+                drawingarea.update();
             }
 
         }
@@ -55,6 +62,13 @@ TouchPoint {
             }
         }
     }
-
+    function getImagePosition(x,y){
+        var off_x = (map.width-map.paintedWidth)/2
+        var off_y = (map.height-map.paintedHeight)/2
+        var imx = (x - off_x)/map.paintedWidth * map.sourceSize.width;
+        var imy = (y - off_y)/map.paintedHeight * map.sourceSize.height;
+        var str = "x:"+parseInt(imx)+":y:"+parseInt(imy)
+        commandPublisher.text=str
+    }
 }
 
