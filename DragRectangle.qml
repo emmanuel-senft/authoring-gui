@@ -13,7 +13,14 @@ Rectangle {
         anchors.fill: parent
         drag.target: rect
         drag.axis: Drag.XAndYAxis
-        drag.minimumX: 0
-        drag.maximumX: 2000
+    }
+    Rectangle{
+        id: target
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: 10
+        height: width
+        radius: width/2
+        color: "red"
     }
 }

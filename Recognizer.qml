@@ -21,7 +21,7 @@ Item {
             console.log("Too little input made. Please try again.");
         }
         _strokeID = 0
-        createFigure(result.Name, _points)
+        figures.createFigure(result.Name, _points)
     }
 
     function newStroke(x,y){
@@ -33,5 +33,14 @@ Item {
 
     function addPoint(x,y){
         _points[_points.length] = new QClassifier.Point(x, y, _strokeID); // append
+    }
+    Component.onCompleted: {
+        var data=fileio.read()
+        console.log(data)
+        _r.Init(data);
+    }
+    Component.onDestruction: {
+        var string = recognizer._r.GetUserGestures()
+        fileio.write("/home/senft/src/authoring-interface/res/gestures2.json",string)
     }
 }

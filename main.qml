@@ -107,6 +107,14 @@ Window {
             ]
         }
 
+        MouseArea{
+            anchors.fill: parent
+            acceptedButtons: Qt.RightButton
+            onClicked: {
+                //getImagePosition(mouseX,mouseY)
+                figures.arrow.paint()
+            }
+        }
 
         Button{
             id: addGestureButton
@@ -146,61 +154,34 @@ Window {
     TFListener {
         id: frameManager
     }
-    Item{
-        id: figures
-        property var listFigure: []
+
+    Figures {
+        id:figures
     }
 
-    Component.onCompleted: {
-        var data=fileio.read()
-        console.log(data)
-        recognizer._r.Init(data);
-    }
-    Component.onDestruction: {
-        var string = recognizer._r.GetUserGestures()
-        fileio.write("/home/senft/src/authoring-interface/res/gestures2.json",string)
-    }
-
-    function createFigure(name, points){
-        var x=window.width
-        var y= window.height
-        var max_x=0
-        var max_y= 0
-        for (var i=0;i<points.length;i++){
-            x=Math.min(x,points[i].X)
-            max_x=Math.max(max_x,points[i].X)
-            y=Math.min(y,points[i].Y)
-            max_y=Math.max(max_y,points[i].Y)
-            console.log(points[i].X)
-        }
-        var width = (max_x-x)
-        var height = (max_y-y)
-        if (name === "circle"){
-            var component = Qt.createComponent("DragRectangle.qml");
-            width = Math.max(width,height)
-            var figure = component.createObject(figures, {x:x,y:y,width:width,height:width,z:10,radius:width/2});
-            //figures.listFigure.push(figure);
-            console.log(x+" "+max_x)
-            if (figure == null) {
-                // Error Handling
-                console.log("Error creating object");
-            }
-        }
-        //if (name === "rec"){
-        else{
-            var component = Qt.createComponent("DragRectangle.qml");
-            var figure = component.createObject(figures, {x:x,y:y,width:width,height:height,z:10});
-            //figures.listFigure.push(figure);
-            console.log(x+" "+max_x)
-            if (figure == null) {
-                // Error Handling
-                console.log("Error creating object");
-            }
-        }
-    }
     RosStringPublisher{
         id: commandPublisher
         topic: "/gui/command"
         text:""
+    }
+    StateGroup {
+        id: globalStates
+        states: [
+            State {name: "gestureEdit"},
+            State {name: "user"}
+    ]
+        onStateChanged: {
+            switch (globalStates.state){
+                case "gestureEdit":
+                    addGestureButton.visible = true
+                    break
+                case "user":
+                    addGestureButton.visible = false
+                    break
+            }
+        }
+    }
+    Component.onCompleted: {
+        globalStates.state = "gestureEdit"
     }
 }
