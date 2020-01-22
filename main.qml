@@ -3,8 +3,6 @@ import QtQuick.Window 2.2
 import QtGraphicalEffects 1.0
 import QtQuick.Controls 1.4
 
-import Box2D 2.0
-
 import Ros 1.0
 
 Window {
@@ -15,8 +13,8 @@ Window {
     //visibility: Window.FullScreen
     //width: Screen.width
     //height: Screen.height
-    width:1920
-    height: 1080
+    width:3020
+    height: 1880
 
     property int prevWidth:800
     property int prevHeight:600
@@ -111,10 +109,17 @@ Window {
             anchors.fill: parent
             acceptedButtons: Qt.RightButton
             onClicked: {
-                //getImagePosition(mouseX,mouseY)
-                figures.arrow.paint()
+                var point = figures.getImagePosition(mouseX,mouseY)
+                var str = "click:"+parseInt(point.x)+":"+parseInt(point.y)
+                commandPublisher.text=str
+                console.log(str)
             }
         }
+    }
+
+    Item{
+        id:gestureGui
+        anchors.fill: parent
 
         Button{
             id: addGestureButton
@@ -138,19 +143,26 @@ Window {
                 color: "white"
             }
         }
-        Recognizer{
-            id: recognizer
+    }
+    Item{
+        id:userGui
+        anchors.fill: parent
+
+        Button{
+            id: commandButton
+            width: parent.width/10
+            height: parent.height/10
+            z:10
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: height
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Send Command"
+            onClicked:{
+                figures.sendCommand();
+            }
         }
     }
-    Body {
-        id: anchor
-        world: physicsWorld
-    }
-    World {
-        id: physicsWorld
-        gravity: Qt.point(0.0, 0.0);
 
-    }
     TFListener {
         id: frameManager
     }
@@ -164,6 +176,11 @@ Window {
         topic: "/gui/command"
         text:""
     }
+
+    Recognizer{
+        id: recognizer
+    }
+
     StateGroup {
         id: globalStates
         states: [
@@ -173,15 +190,17 @@ Window {
         onStateChanged: {
             switch (globalStates.state){
                 case "gestureEdit":
-                    addGestureButton.visible = true
+                    gestureGui.visible = true
+                    userGui.visible = false
                     break
                 case "user":
-                    addGestureButton.visible = false
+                    gestureGui.visible = false
+                    userGui.visible = true
                     break
             }
         }
     }
     Component.onCompleted: {
-        globalStates.state = "gestureEdit"
+        globalStates.state = "user"
     }
 }

@@ -16,12 +16,12 @@ Item {
         if (_points.length >= 10) {
             var result = _r.Recognize(_points);
             console.log("Result: " + result.Name + " (" + Math.round(result.Score,2) + ") in " + result.Time + " ms.");
+            figures.createFigure(result.Name, _points)
         }
         else {
             console.log("Too little input made. Please try again.");
         }
         _strokeID = 0
-        figures.createFigure(result.Name, _points)
     }
 
     function newStroke(x,y){
@@ -37,8 +37,9 @@ Item {
     Component.onCompleted: {
         var data=fileio.read()
         console.log(data)
-        _r.Init(data);
+        figures.types = _r.Init(data);
     }
+
     Component.onDestruction: {
         var string = recognizer._r.GetUserGestures()
         fileio.write("/home/senft/src/authoring-interface/res/gestures2.json",string)

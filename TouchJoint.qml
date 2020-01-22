@@ -1,7 +1,4 @@
 import QtQuick 2.0
-
-import Box2D 2.0
-
 import Ros 1.0
 
 TouchPoint {
@@ -14,12 +11,6 @@ TouchPoint {
     // when used to draw on the background:
     property var currentStroke: []
     property color color: "black"
-
-    property MouseJoint joint: MouseJoint {
-        bodyA: anchor
-        dampingRatio: 1
-        maxForce: 1
-    }
 
     onXChanged: {
         // (only add stroke point in one dimension (Y) to avoid double drawing)
@@ -45,6 +36,7 @@ TouchPoint {
                 console.log("new stroke")
                 drawingarea.newStroke()
                 currentStroke.push(Qt.point(x,y));
+                recognizer.addPoint(x, y)
                 drawingarea.update();
             }
 

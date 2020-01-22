@@ -1,19 +1,29 @@
-import QtQuick 2.0
+import QtQuick 2.12
+
 
 Rectangle {
     id: rect
     width: 100
     height: 100
     color: "transparent"
-    border.color: "red"
+    border.color: "transparent"
     border.width: 5
     radius: 1
     property string name: ""
-    MouseArea{
-        anchors.fill: parent
-        drag.target: rect
-        drag.axis: Drag.XAndYAxis
+    property var rectColor: "transparent"
+    PinchHandler { }
+    Rectangle{
+        id:actualRect
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width/2
+        height: parent.height/2
+        color: parent.rectColor
+        border.color: "red"
+        border.width: parent.border.width
+        radius: parent.radius
     }
+
     Rectangle{
         id: target
         anchors.verticalCenter: parent.verticalCenter

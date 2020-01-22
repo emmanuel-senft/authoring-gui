@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.12
 import QtQuick.Controls 1.4
 
 Item {
@@ -8,24 +8,24 @@ Item {
     property var origin: null
     property var end: null
     property color color: "red"
+    property string name: ""
     z:10
     visible: true
-    rotation: 90
+
 
     width: 100
     height: 100
     x: 100
     y: 100
-    MouseArea{
-        anchors.fill: parent
-        drag.target: arrow
-        drag.axis: Drag.XAndYAxis
-    }
 
+    PinchHandler { }
 
     Canvas {
         id: canvas
-        anchors.fill: parent
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width/2
+        height: parent.height/2
         antialiasing: true
         z:20
         property var path: []
@@ -36,8 +36,8 @@ Item {
         onPaint: {
 
             var i = 0;
-            var p1 = {x: arrow.origin.x-parent.x,y:arrow.origin.y-parent.y}
-            var p2 = {x: arrow.end.x-parent.x,y:arrow.end.y-parent.y}
+            var p1 = {x: 0,y:height/2}
+            var p2 = {x: width,y:height/2}
 
             angle = -Math.atan2(p2.x-p1.x,p2.y-p1.y)+Math.PI/2
             p2.x -= arrowHeadLength * Math.cos(angle);

@@ -173,10 +173,14 @@ function QDollarRecognizer() // constructor
             console.log("Could not load json")
             return
         }
+        var names=[]
 
         for (var i=0;i < table.length;i++){
             this.AddGesture(table[i].name,table[i].points)
+            if (names.indexOf(table[i].name) <0)
+                names.push(table[i].name)
         }
+        return names
     }
 }
 //
