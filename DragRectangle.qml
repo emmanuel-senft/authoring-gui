@@ -3,23 +3,33 @@ import QtQuick 2.12
 
 Rectangle {
     id: rect
-    width: 100
-    height: 100
+    x:objX-margin/2
+    y:objY-margin/2
+    width: objWidth+margin
+    height: objHeight+margin
     color: "transparent"
     border.color: "transparent"
+    property int index: 0
+    property real objWidth: 100
+    property real objHeight: 100
+    property real objX: 100
+    property real objY: 100
+    property real margin:200
+
     border.width: 5
     radius: 1
     property string name: ""
-    property var rectColor: "transparent"
+    property var objColor: "transparent"
+    property var objBorderColor: "red"
     PinchHandler { }
     Rectangle{
         id:actualRect
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width/2
-        height: parent.height/2
-        color: parent.rectColor
-        border.color: "red"
+        width: parent.objWidth
+        height: parent.objHeight
+        color: parent.objColor
+        border.color: parent.objBorderColor
         border.width: parent.border.width
         radius: parent.radius
     }
@@ -32,5 +42,11 @@ Rectangle {
         height: width
         radius: width/2
         color: "red"
+    }
+    onXChanged: {
+        sendCommand("viz")
+    }
+    Component.onDestruction: {
+        commandPublisher.text="remove;"+name+":"+parseInt(index)
     }
 }

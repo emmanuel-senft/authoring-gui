@@ -6,7 +6,10 @@ Item{
     property var listFigure: []
     property var arrow: null
     property var pca: new PCA.PCA();
+    property int index: 0
     property var types: []
+    property bool toDelete: false
+    anchors.fill:parent
 
     function createFigure(name, points){
         var x=window.width
@@ -31,31 +34,15 @@ Item{
         if (name === "circle"){
             component = Qt.createComponent("DragRectangle.qml");
             width = Math.max(width,height)
-            figure = component.createObject(figures, {name:"circle",x:x-width/2,y:y-height/2,width:2*width,height:2*width,z:10,radius:width/2});
-            //figures.listFigure.push(figure);
-            if (figure === null) {
-                // Error Handling
-                console.log("Error creating object");
-            }
+            figure = component.createObject(figures, {name:"circle",index=index,objX:x,objY:y,objWidth:width,objHeight:width,z:10,radius:width/2});
         }
         if (name === "rec"){
             component = Qt.createComponent("DragRectangle.qml");
-            figure = component.createObject(figures, {name:"rect",x:x-width/2,y:y-height/2,width:2*width,height:2*height,z:10});
-            //figures.listFigure.push(figure);
-            if (figure === null) {
-                // Error Handling
-                console.log("Error creating object");
-            }
+            figure = component.createObject(figures, {name:"rect",index=index,objX:x,objY:y,objWidth:width,objHeight:height,z:10});
         }
         if (name === "surface"){
             component = Qt.createComponent("DragRectangle.qml");
-            figure = component.createObject(figures, {name:"surface",rectColor: "red",opacity:0.5,x:x-width/2,y:y-height/2,width:2*width,height:2*height,z:10});
-
-            //figures.listFigure.push(figure);
-            if (figure === null) {
-                // Error Handling
-                console.log("Error creating object");
-            }
+            figure = component.createObject(figures, {name:"surface",index=index,rectColor: "red",opacity:0.5,objX:x,objY:y,objWidth:width,objHeight:height,z:10});
         }
         if (name === "arrow"){
             var origin=Qt.point(points[0].X,points[0].Y)
@@ -67,21 +54,18 @@ Item{
                     end.y=points[i].Y-origin.y
                 }
             }
+
             var angle = Math.atan2(end.y,end.x)
             width = Math.sqrt(end.x*end.x+end.y*end.y)
             height = 150
 
+            console.log(angle*360/(2*Math.PI))
             end.x+=origin.x
             end.y+=origin.y
             component = Qt.createComponent("DragArrow.qml");
-            figure = component.createObject(figures, {name:"arrow",x:origin.x-width/2*(1-Math.cos(angle))-width/2,y:origin.y-height+width/2*Math.sin(angle),width:2*width,height:2*height,rotation:angle*360/(2*Math.PI),z:10});
+            figure = component.createObject(figures, {name:"arrow",index=index,objX:origin.x-width/2*(1-Math.cos(angle)),objY:origin.y-height/2+width/2*Math.sin(angle),objWidth:width,objHeight:height,rotation:angle*360/(2*Math.PI),z:10});
 
-            //figures.listFigure.push(figure);
-            if (figure === null) {
-                // Error Handling
-                console.log("Error creating object");
-            }
-            /* if using pca:
+              /* if using pca:
                 var vectors = pca.getEigenVectors(data);
                 console.log("vector")
                 console.log(vectors[0].vector[0])
@@ -90,22 +74,30 @@ Item{
                 console.log(rot)
             */
         }
+        if (figure === null) {
+            // Error Handling
+            console.log("Error creating object");
+        }
+        else {
+            figures.index += 1
+            sendCommand("viz")
+        }
     }
 
-    function sendCommand(){
-        var str=""
+    function getStringItem(item){
+        var width = item.objWidth*item.scale/map.paintedWidth * map.sourceSize.width
+        var height = item.objHeight*item.scale/map.paintedWidth * map.sourceSize.width
+        var mid = getImagePosition(item.x+item.width/2,item.y+item.height/2)
+        return item.name+":"+parseInt(item.index)+":"+parseInt(mid.x)+":"+parseInt(mid.y)+":"+parseInt(width)+":"+parseInt(height)+":"+parseInt(item.rotation)
+    }
+
+    function sendCommand(type){
+        var str=type
         for (var i = 0; i < figures.children.length; i++) {
-            console.log("item "+i);
             var item = figures.children[i]
-            console.log(item.name);
-            var width = item.width/2*item.scale/map.paintedWidth * map.sourceSize.width
-            console.log(width);
-            var mid = getImagePosition(item.x+item.width/2,item.y+item.height/2)
-            console.log(mid.x)
-            console.log(mid.y)
-            str+=item.name+":"+parseInt(mid.x)+":"+parseInt(mid.y)+":"+parseInt(width)+";"
+            str+=";"+getStringItem(figures.children[i])
         }
-        commandPublisher.text=str.slice(0, -1)
+        commandPublisher.text=str
 
     }
 

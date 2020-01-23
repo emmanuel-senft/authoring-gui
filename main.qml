@@ -143,6 +143,20 @@ Window {
                 color: "white"
             }
         }
+        Button{
+            id: saveButton
+            width: parent.width/10
+            height: parent.height/10
+            z:10
+            anchors.left: addGestureButton.right
+            anchors.leftMargin: height
+            anchors.verticalCenter: addGestureButton.verticalCenter
+            text: "Save"
+            onClicked:{
+                var string = recognizer._r.GetUserGestures()
+                fileio.write("/home/senft/src/authoring-gui/res/gestures.json",string)
+            }
+        }
     }
     Item{
         id:userGui
@@ -158,8 +172,36 @@ Window {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Send Command"
             onClicked:{
-                figures.sendCommand();
+                figures.sendCommand("exec");
             }
+        }
+        Button{
+            id: deleteButton
+            width: parent.width/10
+            height: parent.height/10
+            z:10
+            anchors.left: commandButton.right
+            anchors.leftMargin: height
+            anchors.verticalCenter: commandButton.verticalCenter
+            text: "Delete"
+            onClicked:{
+                figures.toDelete = true
+            }
+        }
+    }
+    Button{
+        id: stateButton
+        width: parent.width/10
+        height: parent.height/10
+        z:10
+        anchors.left: parent.left
+        anchors.top: parent.top
+        text: "Switch mode"
+        onClicked:{
+            if (globalStates.state === "gestureEdit")
+                globalStates.state = "user"
+            else
+                globalStates.state = "gestureEdit"
         }
     }
 
@@ -202,5 +244,8 @@ Window {
     }
     Component.onCompleted: {
         globalStates.state = "user"
+    }
+    Component.onDestruction: {
+        commandPublisher.text="remove;all"
     }
 }

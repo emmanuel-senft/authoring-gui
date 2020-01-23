@@ -5,18 +5,22 @@ Item {
 
     id: arrow
 
+    x:objX-margin/2
+    y:objY-margin/2
+    width: objWidth+margin
+    height: objHeight+margin
     property var origin: null
     property var end: null
     property color color: "red"
     property string name: ""
+    property int index: 0
+    property real objWidth: canvas.width
+    property real objHeight: canvas.height
+    property real objX: 100
+    property real objY: 100
+    property real margin:200
     z:10
     visible: true
-
-
-    width: 100
-    height: 100
-    x: 100
-    y: 100
 
     PinchHandler { }
 
@@ -24,8 +28,8 @@ Item {
         id: canvas
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width/2
-        height: parent.height/2
+        width: objWidth
+        height: objHeight
         antialiasing: true
         z:20
         property var path: []
@@ -74,5 +78,11 @@ Item {
     }
     function paint(){
         canvas.requestPaint()
+    }
+    onXChanged: {
+        sendCommand("viz")
+    }
+    Component.onDestruction: {
+        commandPublisher.text="remove;"+name+":"+parseInt(index)
     }
 }

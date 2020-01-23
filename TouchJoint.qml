@@ -26,10 +26,12 @@ TouchPoint {
 
         if (pressed) {
             console.log("pressed")
-            var obj = drawingarea.childAt(x, y);
-            console.log(obj.objectName)
-
-            if (drawingarea.drawEnabled) {
+            var obj = figures.childAt(x, y);
+            if(obj !== null && figures.toDelete){
+                obj.destroy()
+                figures.toDelete = false
+            }
+            else if (drawingarea.drawEnabled) {
                 currentStroke = [];
                 color = drawingarea.fgColor;
                 drawing = true;

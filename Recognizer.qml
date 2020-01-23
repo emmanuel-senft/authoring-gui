@@ -2,7 +2,7 @@ import QtQuick 2.2
 import "QClassifier.js" as QClassifier
 
 Item {
-    id:recogniser
+    id:recognizer
     property var _points: new Array();
     property var _strokeID: 0
     property var _r: new QClassifier.QDollarRecognizer();
