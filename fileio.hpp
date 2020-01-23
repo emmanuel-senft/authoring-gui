@@ -36,7 +36,7 @@ public slots:
     QString read() {
           QString val;
           QFile file;
-          file.setFileName("/home/senft/src/authoring-interface/res/gestures.json");
+          file.setFileName("/home/senft/src/authoring-gui/res/gestures.json");
           file.open(QIODevice::ReadOnly | QIODevice::Text);
           val = file.readAll();
           file.close();
