@@ -11,7 +11,7 @@ Item {
     height: objHeight+margin
     property var origin: null
     property var end: null
-    property color color: "red"
+    property color objColor: "red"
     property string name: ""
     property int index: 0
     property real objWidth: canvas.width
@@ -55,8 +55,8 @@ Item {
 
             ctx.lineWidth = 10;
 
-            ctx.strokeStyle = arrow.color;
-            ctx.fillStyle = arrow.color;
+            ctx.strokeStyle = arrow.objColor;
+            ctx.fillStyle = arrow.objColor;
 
             ctx.beginPath();
 
@@ -80,9 +80,15 @@ Item {
         canvas.requestPaint()
     }
     onXChanged: {
-        sendCommand("viz")
+        //Prevent emission on creation
+        if (objColor !== "red")
+            sendCommand("viz")
     }
     Component.onDestruction: {
         commandPublisher.text="remove;"+name+":"+parseInt(index)
+        indexArrows.splice(indexArrows.indexOf(index), 1);
+    }
+    Component.onCompleted: {
+        objColor = figures.colors[index]
     }
 }

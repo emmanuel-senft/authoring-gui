@@ -19,8 +19,8 @@ Rectangle {
     border.width: 5
     radius: 1
     property string name: ""
-    property var objColor: "transparent"
-    property var objBorderColor: "red"
+    property var objColor: "red"
+    property var objInside: "transparent"
     PinchHandler { }
     Rectangle{
         id:actualRect
@@ -28,8 +28,8 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.objWidth
         height: parent.objHeight
-        color: parent.objColor
-        border.color: parent.objBorderColor
+        color: parent.objInside
+        border.color: parent.objColor
         border.width: parent.border.width
         radius: parent.radius
     }
@@ -44,9 +44,25 @@ Rectangle {
         color: "red"
     }
     onXChanged: {
-        sendCommand("viz")
+        //Prevent emission on creation
+        if (objColor !== "red")
+            sendCommand("viz")
     }
     Component.onDestruction: {
         commandPublisher.text="remove;"+name+":"+parseInt(index)
+        console.log(name)
+        var indexes = null
+        if (name === "circle")
+            indexes = indexCircles
+        if (name === "rect")
+            indexes = indexRects
+        if (name === "surface")
+            indexes = indexSurfaces
+
+        indexes.splice(indexes.indexOf(index), 1);
+
+    }
+    Component.onCompleted: {
+        objColor = figures.colors[index]
     }
 }

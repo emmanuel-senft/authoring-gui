@@ -170,6 +170,7 @@ Window {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: height
             anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: -parent.width/4
             text: "Send Command"
             onClicked:{
                 figures.sendCommand("exec");
@@ -180,8 +181,8 @@ Window {
             width: parent.width/10
             height: parent.height/10
             z:10
-            anchors.left: commandButton.right
-            anchors.leftMargin: height
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: parent.width/4
             anchors.verticalCenter: commandButton.verticalCenter
             text: "Delete"
             onClicked:{
