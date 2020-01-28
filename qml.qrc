@@ -10,5 +10,6 @@
         <file>Figures.qml</file>
         <file>DragArrow.qml</file>
         <file>PCA.js</file>
+        <file>DragSpiral.qml</file>
     </qresource>
 </RCC>

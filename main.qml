@@ -54,8 +54,8 @@ Window {
             source: "image://rosimage/rbg/image_raw"
             cache: false
             Timer {
-                id: imageLoder
-                interval: 100
+                id: imageLoader
+                interval: 1000
                 repeat: true
                 running: true
                 onTriggered: {
