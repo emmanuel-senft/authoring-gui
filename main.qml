@@ -205,6 +205,17 @@ Window {
                 globalStates.state = "gestureEdit"
         }
     }
+    Label{
+        id: warningDepth
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: parent.height/10.
+        text: "Bad depth, please move one drawing"
+        font.pixelSize: 50
+        color: "red"
+        visible: false
+
+    }
 
     TFListener {
         id: frameManager
@@ -218,6 +229,21 @@ Window {
         id: commandPublisher
         topic: "/gui/command"
         text:""
+    }
+
+    RosStringSubscriber{
+        id: feedbackSubscriber
+        topic: "/gui/feedback"
+        text:""
+        onTextChanged:{
+            console.log(text)
+            if(text === "bad_depth"){
+                warningDepth.visible = true
+            }
+            else{
+                warningDepth.visible = false
+            }
+        }
     }
 
     Recognizer{
