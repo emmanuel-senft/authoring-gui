@@ -1,7 +1,8 @@
-import QtQuick 2.7
+import QtQuick 2.12
 import QtQuick.Window 2.2
 import QtGraphicalEffects 1.0
 import QtQuick.Controls 1.4
+
 
 import Ros 1.0
 
@@ -177,6 +178,19 @@ Window {
             }
         }
         Button{
+            id: simulateButton
+            width: parent.width/10
+            height: parent.height/10
+            z:10
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: height
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "simulate Command"
+            onClicked:{
+                figures.sendCommand("sim");
+            }
+        }
+        Button{
             id: deleteButton
             width: parent.width/10
             height: parent.height/10
@@ -269,6 +283,41 @@ Window {
             }
         }
     }
+    Item{
+        id: virtualMouseCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: parent.height/2.
+        anchors.right: parent.right
+        anchors.rightMargin: parent.width/2.
+    }
+    Rectangle{
+        id:virtualMouse
+        visible: false
+        x:virtualMouseCenter.x
+        y:virtualMouseCenter.y
+        width: parent.width/5
+        height: width
+        color: "red"
+        radius: height/2
+        PinchHandler {
+            id: handler
+            onActiveChanged: {
+                if(!active){
+                    virtualMouse.x=virtualMouseCenter.x
+                    virtualMouse.y=virtualMouseCenter.y
+                    virtualMouse.scale = 1
+                    virtualMouse.rotation = 0
+                    commandPublisher.text = "mouse;0:0:0:0:0"
+                }
+            }
+        }
+        onXChanged: {
+            console.log(handler.translation)
+            commandPublisher.text = "mouse;"+parseInt(handler.translation.y)+":"+parseInt(handler.translation.x)+":"+parseInt(100*(handler.scale-1))+":"+parseInt(handler.rotation)
+        }
+
+    }
+
     Component.onCompleted: {
         globalStates.state = "user"
     }
