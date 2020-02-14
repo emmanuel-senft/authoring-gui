@@ -9,6 +9,7 @@ Item{
     property var indexArrows: []
     property var indexCircles: []
     property var indexSpiral: []
+    property var indexCross: []
     property var indexRects: []
     property var indexSurfaces: []
     property var types: []
@@ -49,11 +50,16 @@ Item{
         }
         if (name === "surface"){
             component = Qt.createComponent("DragRectangle.qml");
-            figure = component.createObject(figures, {name:name,index:getIndex(name),objInside: figure.objColor,opacity:0.5,objX:x,objY:y,objWidth:width,objHeight:height,z:10});
+            figure = component.createObject(figures, {name:name,index:getIndex(name),opacity:0.5,objX:x,objY:y,objWidth:width,objHeight:height,z:10});
+            figure.objInside= figure.objColor
         }
         if (name === "spiral"){
             component = Qt.createComponent("DragSpiral.qml");
             figure = component.createObject(figures, {name:name,index:getIndex(name),objX:x,objY:y,objWidth:width,z:10});
+        }
+        if (name === "cross"){
+            component = Qt.createComponent("DragCross.qml");
+            figure = component.createObject(figures, {name:name,index:getIndex(name),objX:x,objY:y,objWidth:width,objHeight:width,z:10});
         }
         if (name === "arrow"){
             var origin=Qt.point(points[0].X,points[0].Y)
@@ -130,6 +136,8 @@ Item{
             index = indexSurfaces
         if (name === "spiral")
             index = indexSpiral
+        if (name === "cross")
+            index = indexCross
         for(var i = 0;i< index.length+1;i++)
             if (index.indexOf(i)<0){
                 index.push(i)

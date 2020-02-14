@@ -11,5 +11,6 @@
         <file>DragArrow.qml</file>
         <file>PCA.js</file>
         <file>DragSpiral.qml</file>
+        <file>DragCross.qml</file>
     </qresource>
 </RCC>
