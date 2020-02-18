@@ -6,11 +6,14 @@
         <file>TouchJoint.qml</file>
         <file>DrawingArea.qml</file>
         <file>QClassifier.js</file>
-        <file>DragRectangle.qml</file>
         <file>Figures.qml</file>
         <file>DragArrow.qml</file>
         <file>PCA.js</file>
         <file>DragSpiral.qml</file>
         <file>DragCross.qml</file>
+        <file>DragCircle.qml</file>
+        <file>DragRectangle.qml</file>
+        <file>DragAnchor.qml</file>
+        <file>DragSurface.qml</file>
     </qresource>
 </RCC>

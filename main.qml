@@ -30,7 +30,35 @@ Window {
 
     color: "white"
     title: qsTr("Authoring GUI")
-
+    /*Item {
+        id: simulatorView
+        anchors.right: parent.right
+        anchors.top: parent.top
+        width: parent.width/5
+        height: parent.height/5
+        z:20
+        Image {
+            id: simu
+            fillMode: Image.PreserveAspectFit
+            height: parent.height
+            width: parent.width
+            anchors.left: parent.left
+            anchors.top: parent.top
+            source: "image://rosimage/virtual_camera/image"
+            cache: false
+            Timer {
+                id: imageLoaderSimu
+                interval: 1000
+                repeat: true
+                running: true
+                onTriggered: {
+                    simu.source = "";
+                    simu.source = "image://rosimage/virtual_camera/image";
+                    interval = 100
+                }
+            }
+        }
+    }*/
     Item {
         id: displayView
         property int lineWidth: 50

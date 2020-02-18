@@ -3,7 +3,7 @@ import QtQuick.Controls 1.4
 
 Item {
 
-    id: rect
+    id: surf
     anchors.fill: parent
     property color objColor: "red"
     property string name: ""
@@ -31,8 +31,8 @@ Item {
 
             ctx.lineWidth = 10;
 
-            ctx.strokeStyle = rect.objColor;
-            ctx.fillStyle = rect.objColor;
+            ctx.strokeStyle = surf.objColor;
+            ctx.fillStyle = Qt.hsla(surf.objColor.hslHue, surf.objColor.hslSaturation, surf.objColor.hslLightness, .5)
 
             ctx.beginPath();
 
@@ -43,6 +43,7 @@ Item {
             ctx.lineTo(p0.x+p0.width/2, p0.y+p0.width/2);
 
             ctx.stroke();
+            ctx.fill();
         }
     }
     function paint(){
@@ -75,7 +76,7 @@ Item {
     }
     Component.onDestruction: {
         commandPublisher.text="remove;"+name+":"+parseInt(index)
-        indexRects.splice(indexRects.indexOf(index), 1);
+        indexSurfaces.splice(indexSurfaces.indexOf(index), 1);
     }
     Component.onCompleted: {
         objColor = figures.colors[index]

@@ -5,31 +5,18 @@ Item {
 
     id: arrow
 
-    x:objX-margin/2
-    y:objY-margin/2
-    width: objWidth+margin
-    height: objHeight+margin
-    property var origin: null
-    property var end: null
+    anchors.fill: parent
+    property var originCoord: null
+    property var endCoord: null
     property color objColor: "red"
     property string name: ""
     property int index: 0
-    property real objWidth: canvas.width
-    property real objHeight: canvas.height
-    property real objX: 100
-    property real objY: 100
-    property real margin:200
     z:10
     visible: true
 
-    PinchHandler { }
-
     Canvas {
         id: canvas
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: objWidth
-        height: objHeight
+        anchors.fill: parent
         antialiasing: true
         z:20
         property var path: []
@@ -40,8 +27,8 @@ Item {
         onPaint: {
 
             var i = 0;
-            var p1 = {x: 0,y:height/2}
-            var p2 = {x: width,y:height/2}
+            var p1 = {x: origin.x+origin.width/2,y:origin.y+origin.width/2}
+            var p2 = {x: end.x+origin.width/2,y:end.y+origin.width/2}
 
             angle = -Math.atan2(p2.x-p1.x,p2.y-p1.y)+Math.PI/2
             p2.x -= arrowHeadLength * Math.cos(angle);
@@ -78,11 +65,22 @@ Item {
     }
     function paint(){
         canvas.requestPaint()
+        sendCommand("viz")
     }
-    onXChanged: {
-        //Prevent emission on creation
-        if (objColor !== "red")
-            sendCommand("viz")
+    function getPoints(){
+        return end.getCoord()+'_'+origin.getCoord()
+    }
+
+    DragAnchor{
+        id: origin
+        color:"transparent"
+        center:originCoord
+        onXChanged: paint();
+    }
+    DragAnchor{
+        id: end
+        center:endCoord
+        onXChanged: paint();
     }
     Component.onDestruction: {
         commandPublisher.text="remove;"+name+":"+parseInt(index)

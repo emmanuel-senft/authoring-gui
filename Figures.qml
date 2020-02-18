@@ -34,30 +34,40 @@ Item{
             data.push([points[i].X,points[i].Y])
         }
 
-
         var component = null
         var figure = null
         var width = (max_x-x)
         var height = (max_y-y)
+        var center=Qt.point(x+width/2,y+width/2)
         if (name === "circle"){
-            component = Qt.createComponent("DragRectangle.qml");
+            component = Qt.createComponent("DragCircle.qml");
             width = Math.max(width,height)
-            figure = component.createObject(figures, {name:name,index:getIndex(name),objX:x,objY:y,objWidth:width,objHeight:width,z:10,radius:width/2});
+            figure = component.createObject(figures, {name:name,index:getIndex(name),centerCoord:center,r_max:width/2});
         }
         if (name === "rect"){
             component = Qt.createComponent("DragRectangle.qml");
-            figure = component.createObject(figures, {name:name,index:getIndex(name),objX:x,objY:y,objWidth:width,objHeight:height,z:10});
+            var p0=Qt.point(x,y)
+            var p1=Qt.point(x+width,y)
+            var p2=Qt.point(x+width,y+height)
+            var p3=Qt.point(x,y+height)
+            figure = component.createObject(figures, {name:name,index:getIndex(name),p0Coord:p0,p1Coord:p1,p2Coord:p2,p3Coord:p3});
         }
         if (name === "surface"){
-            component = Qt.createComponent("DragRectangle.qml");
-            figure = component.createObject(figures, {name:name,index:getIndex(name),opacity:0.5,objX:x,objY:y,objWidth:width,objHeight:height,z:10});
-            figure.objInside= figure.objColor
+            component = Qt.createComponent("DragSurface.qml");
+            var p0=Qt.point(x,y)
+            var p1=Qt.point(x+width,y)
+            var p2=Qt.point(x+width,y+height)
+            var p3=Qt.point(x,y+height)
+            figure = component.createObject(figures, {name:name,index:getIndex(name),p0Coord:p0,p1Coord:p1,p2Coord:p2,p3Coord:p3});
         }
         if (name === "spiral"){
             component = Qt.createComponent("DragSpiral.qml");
-            figure = component.createObject(figures, {name:name,index:getIndex(name),objX:x,objY:y,objWidth:width,z:10});
+            console.log(center)
+            console.log(width)
+            figure = component.createObject(figures, {name:name,index:getIndex(name),centerCoord:center,r_max:width/2});
         }
         if (name === "cross"){
+            return
             component = Qt.createComponent("DragCross.qml");
             figure = component.createObject(figures, {name:name,index:getIndex(name),objX:x,objY:y,objWidth:width,objHeight:width,z:10});
         }
@@ -78,8 +88,10 @@ Item{
 
             end.x+=origin.x
             end.y+=origin.y
+            console.log(origin)
+            console.log(end)
             component = Qt.createComponent("DragArrow.qml");
-            figure = component.createObject(figures, {name:"arrow",index:getIndex(name),objX:origin.x-width/2*(1-Math.cos(angle)),objY:origin.y-height/2+width/2*Math.sin(angle),objWidth:width,objHeight:height,rotation:angle*360/(2*Math.PI),z:10});
+            figure = component.createObject(figures, {name:"arrow",index:getIndex(name),originCoord:origin,endCoord:end});
 
               /* if using pca:
                 var vectors = pca.getEigenVectors(data);
@@ -100,10 +112,7 @@ Item{
     }
 
     function getStringItem(item){
-        var width = item.objWidth*item.scale/map.paintedWidth * map.sourceSize.width
-        var height = item.objHeight*item.scale/map.paintedWidth * map.sourceSize.width
-        var mid = getImagePosition(item.x+item.width/2,item.y+item.height/2)
-        return item.name+":"+parseInt(item.index)+":"+parseInt(mid.x)+":"+parseInt(mid.y)+":"+parseInt(width)+":"+parseInt(height)+":"+parseInt(item.rotation)+":"+item.objColor
+        return item.name+":"+parseInt(item.index)+":"+item.getPoints()+":"+item.objColor
     }
 
     function sendCommand(type){

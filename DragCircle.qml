@@ -3,7 +3,7 @@ import QtQuick.Controls 1.4
 
 Item {
 
-    id: spiral
+    id: circle
     anchors.fill: parent
     property color objColor: "red"
     property string name: ""
@@ -35,17 +35,15 @@ Item {
 
             ctx.lineWidth = 10;
 
-            ctx.strokeStyle = spiral.objColor;
-            ctx.fillStyle = spiral.objColor;
+            ctx.strokeStyle = circle.objColor;
+            ctx.fillStyle = circle.objColor;
 
             ctx.beginPath();
 
-            ctx.moveTo(c.x, c.y);
-            for (i=0;i<101;i++){
+            ctx.moveTo(c.x+r_max, c.y);
+            for (i=1;i<51;i++){
                 angle = i*Math.PI/25.
-                r = r_max*i/100.
-                console.log(angle)
-                ctx.lineTo(c.x+r*Math.cos(angle), c.y+r*Math.sin(angle));
+                ctx.lineTo(c.x+r_max*Math.cos(angle), c.y+r_max*Math.sin(angle));
 
             }
             ctx.stroke();
@@ -74,12 +72,13 @@ Item {
             paint();
         }
     }
+
     function getPoints(){
         return center.getCoord()+'_'+end.getCoord()
     }
     Component.onDestruction: {
         commandPublisher.text="remove;"+name+":"+parseInt(index)
-        indexSpiral.splice(indexSpiral.indexOf(index), 1);
+        indexCircles.splice(indexCircles.indexOf(index), 1);
     }
     Component.onCompleted: {
         objColor = figures.colors[index]
