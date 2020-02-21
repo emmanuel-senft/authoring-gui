@@ -59,7 +59,17 @@ Item {
         canvas.requestPaint()
     }
     Rectangle{
-        id: target
+        id: origin
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: 10
+        height: width
+        radius: width/2
+        z:30
+        color: "red"
+    }
+    Rectangle{
+        id: end
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
         width: 10

@@ -6,10 +6,12 @@ Item {
     id: circle
     anchors.fill: parent
     property color objColor: "red"
+    property bool snapping: false
     property string name: ""
     property int index: 0
     property var centerCoord: null
-    property var r_max: null
+    property var rMax: null
+    opacity: 1
     z:10
     visible: true
 
@@ -40,10 +42,10 @@ Item {
 
             ctx.beginPath();
 
-            ctx.moveTo(c.x+r_max, c.y);
+            ctx.moveTo(c.x+rMax, c.y);
             for (i=1;i<51;i++){
                 angle = i*Math.PI/25.
-                ctx.lineTo(c.x+r_max*Math.cos(angle), c.y+r_max*Math.sin(angle));
+                ctx.lineTo(c.x+rMax*Math.cos(angle), c.y+rMax*Math.sin(angle));
 
             }
             ctx.stroke();
@@ -57,20 +59,48 @@ Item {
         id: center
         center:centerCoord
         onXChanged: {
-            end.x=x+r_max
-            paint();
+            if(! snapping){
+                end.x=x+rMax
+                paint();
+            }
+        }
+        onReleasedChanged: {
+            if(released){
+                timerSnap.restart()
+            }
         }
     }
     DragAnchor{
         id: end
-        x:center.x+r_max
+        x:center.x+rMax
         y:center.y
         color:"transparent"
         onXChanged: {
-            r_max = x-center.x
-            y=center.y
-            paint();
+            if(! snapping){
+                rMax = x-center.x
+                y=center.y
+                paint();
+                center.resetSnap()
+            }
         }
+        onReleasedChanged: {
+            if(released){
+                timerSnap.restart()
+            }
+        }
+    }
+    Rectangle{
+        id: snap
+        color: objColor
+        width: 20
+        height: width
+        radius: width/2
+        x:0
+        y:0
+    }
+    function updateSnap(x,y){
+        snap.x = x
+        snap.y = y
     }
 
     function getPoints(){
@@ -82,5 +112,26 @@ Item {
     }
     Component.onCompleted: {
         objColor = figures.colors[index]
+    }
+    Timer{
+        id: timerSnap
+        interval: 100
+        onTriggered: {
+            snapping = true
+            var r = rMax
+            var x = center.x
+            var y = center.y
+            center.snapTo(snap.x-center.width/2+snap.width/2,snap.y-center.width/2+snap.width/2)
+            end.snapTo(center.x+r,center.y)
+            timerEndSnap.restart()
+            paint()
+        }
+    }
+    Timer{
+        id: timerEndSnap
+        interval: 100
+        onTriggered: {
+            snapping = false
+        }
     }
 }

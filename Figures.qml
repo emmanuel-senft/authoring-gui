@@ -42,7 +42,7 @@ Item{
         if (name === "circle"){
             component = Qt.createComponent("DragCircle.qml");
             width = Math.max(width,height)
-            figure = component.createObject(figures, {name:name,index:getIndex(name),centerCoord:center,r_max:width/2});
+            figure = component.createObject(figures, {name:name,index:getIndex(name),centerCoord:center,rMax:width/2});
         }
         if (name === "rect"){
             component = Qt.createComponent("DragRectangle.qml");
@@ -62,9 +62,7 @@ Item{
         }
         if (name === "spiral"){
             component = Qt.createComponent("DragSpiral.qml");
-            console.log(center)
-            console.log(width)
-            figure = component.createObject(figures, {name:name,index:getIndex(name),centerCoord:center,r_max:width/2});
+            figure = component.createObject(figures, {name:name,index:getIndex(name),centerCoord:center,rMax:width/2});
         }
         if (name === "cross"){
             return
@@ -88,8 +86,6 @@ Item{
 
             end.x+=origin.x
             end.y+=origin.y
-            console.log(origin)
-            console.log(end)
             component = Qt.createComponent("DragArrow.qml");
             figure = component.createObject(figures, {name:"arrow",index:getIndex(name),originCoord:origin,endCoord:end});
 

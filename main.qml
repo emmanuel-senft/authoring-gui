@@ -80,7 +80,8 @@ Window {
             width: parent.width
             anchors.left: parent.left
             anchors.top: parent.top
-            source: "image://rosimage/rbg/image_raw"
+            property string toLoad: "image://rosimage/rgb/image_raw"
+            source: toLoad
             cache: false
             Timer {
                 id: imageLoader
@@ -89,7 +90,7 @@ Window {
                 running: true
                 onTriggered: {
                     map.source = "";
-                    map.source = "image://rosimage/rgb/image_raw";
+                    map.source = map.toLoad;
                     interval = 100
                 }
             }
@@ -247,6 +248,21 @@ Window {
                 globalStates.state = "gestureEdit"
         }
     }
+    Button{
+        id: viewButton
+        width: parent.width/10
+        height: parent.height/10
+        z:10
+        anchors.right: parent.right
+        anchors.top: parent.top
+        text: "Switch view"
+        onClicked:{
+            if (map.toLoad === "image://rosimage/virtual_camera/image")
+                map.toLoad = "image://rosimage/rgb/image_raw"
+            else
+                map.toLoad = "image://rosimage/virtual_camera/image"
+        }
+    }
     Label{
         id: warningDepth
         anchors.horizontalCenter: parent.horizontalCenter
@@ -281,10 +297,29 @@ Window {
             console.log(text)
             if(text === "bad_depth"){
                 warningDepth.visible = true
+                return
             }
-            else{
+            if(text === "good_depth"){
                 warningDepth.visible = false
+                return
             }
+            var cmd = text.split(";")
+            if(cmd[0] === "snap"){
+                for(var i=0;i<cmd.length-2;i++){
+                    var info = cmd[i+1].split(":")
+                    var name = info[0]
+                    var id = parseInt(info[1])
+                    var coord = info[2]
+                    var x = parseInt(coord.split(",")[0])/map.sourceSize.width * map.paintedWidth + (map.width-map.paintedWidth)/2
+                    var y = parseInt(coord.split(",")[1])/map.sourceSize.height * map.paintedHeight + (map.height-map.paintedHeight)/2
+                    for (var j = 0; j < figures.children.length; j++) {
+                        if(figures.children[j].name === name && figures.children[j].index === id){
+                            figures.children[i].updateSnap(x,y)
+                        }
+                    }
+                }
+            }
+
         }
     }
 
@@ -344,6 +379,19 @@ Window {
             commandPublisher.text = "mouse;"+parseInt(handler.translation.y)+":"+parseInt(handler.translation.x)+":"+parseInt(100*(handler.scale-1))+":"+parseInt(handler.rotation)
         }
 
+    }
+    Item{
+        id: pois
+        property var listPois: []
+        function addPoi(x,y,name){
+            component = Qt.createComponent("POI.qml")
+            poi = component.createObject(pois, {name:name,x:x,y:y})
+        }
+        function clearPoi(){
+            while(listPois.length > 0){
+                pois.children[0].destroy()
+            }
+        }
     }
 
     Component.onCompleted: {

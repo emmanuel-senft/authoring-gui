@@ -11,6 +11,7 @@ Item {
     property color objColor: "red"
     property string name: ""
     property int index: 0
+    opacity: .6
     z:10
     visible: true
 
@@ -71,6 +72,21 @@ Item {
         return end.getCoord()+'_'+origin.getCoord()
     }
 
+    Rectangle{
+        id: snap
+        color: objColor
+        width: 20
+        height: width
+        radius: width/2
+        x:0
+        y:0
+    }
+
+    function updateSnap(x,y){
+        snap.x = x
+        snap.y = y
+    }
+
     DragAnchor{
         id: origin
         color:"transparent"
@@ -81,6 +97,19 @@ Item {
         id: end
         center:endCoord
         onXChanged: paint();
+        onReleasedChanged: {
+            if(released){
+                timerSnap.restart()
+            }
+        }
+    }
+    Timer{
+        id: timerSnap
+        interval: 100
+        onTriggered: {
+            end.snapTo(snap.x-end.width/2+snap.width/2,snap.y-end.width/2+snap.width/2)
+            paint()
+        }
     }
     Component.onDestruction: {
         commandPublisher.text="remove;"+name+":"+parseInt(index)
