@@ -1,19 +1,12 @@
 import QtQuick 2.12
 import QtQuick.Controls 1.4
 
-Item {
+DragItem {
 
     id: arrow
 
-    anchors.fill: parent
     property var originCoord: null
     property var endCoord: null
-    property color objColor: "red"
-    property string name: ""
-    property int index: 0
-    opacity: .6
-    z:10
-    visible: true
 
     Canvas {
         id: canvas
@@ -72,21 +65,6 @@ Item {
         return end.getCoord()+'_'+origin.getCoord()
     }
 
-    Rectangle{
-        id: snap
-        color: objColor
-        width: 20
-        height: width
-        radius: width/2
-        x:0
-        y:0
-    }
-
-    function updateSnap(x,y){
-        snap.x = x
-        snap.y = y
-    }
-
     DragAnchor{
         id: origin
         color:"transparent"
@@ -96,26 +74,62 @@ Item {
     DragAnchor{
         id: end
         center:endCoord
-        onXChanged: paint();
-        onReleasedChanged: {
-            if(released){
-                timerSnap.restart()
-            }
-        }
-    }
-    Timer{
-        id: timerSnap
-        interval: 100
-        onTriggered: {
-            end.snapTo(snap.x-end.width/2+snap.width/2,snap.y-end.width/2+snap.width/2)
+        onXChanged: {
+            checkSnap()
             paint()
         }
+        onReleasedChanged: {
+            doSnap()
+        }
     }
-    Component.onDestruction: {
-        commandPublisher.text="remove;"+name+":"+parseInt(index)
-        indexArrows.splice(indexArrows.indexOf(index), 1);
-    }
+
     Component.onCompleted: {
-        objColor = figures.colors[index]
+        doSnap()
+        indexes = indexArrows
+    }
+
+    function checkSnap(){
+        var dMin=Math.pow(end.x-origin.x,2)+Math.pow(end.y-origin.y,2)
+        for (var i=0;i<pois.children.length;i++){
+            var d = Math.pow(pois.children[i].x-end.x,2)+Math.pow(pois.children[i].y-end.y,2)
+            console.log(d)
+            if(d < dMin){
+                console.log("snapping")
+                console.log(d)
+                dMin=d
+                snap.x=pois.children[i].x+pois.children[i].width/2-snap.width/2
+                snap.y=pois.children[i].y+pois.children[i].width/2-snap.width/2
+                snappedPoi = pois.children[i]
+            }
+        }
+        if(dMin === Math.pow(end.x-origin.x,2)+Math.pow(end.y-origin.y,2)){
+            snap.x=end.x+end.width/2-snap.width/2
+            snap.y=end.y+end.width/2-snap.width/2
+            snappedPoi=null
+        }
+    }
+    function doSnap(){
+        end.x = snap.x-end.width/2+snap.width/2
+        end.y = snap.y-end.width/2+snap.width/2
+    }
+    function selected(val){
+        console.log(val)
+        currentItem = val
+    }
+
+    onCurrentItemChanged: {
+        console.log(currentItem)
+        if(currentItem){
+            objColor = Qt.lighter(objColor,1.3)
+            if(figures.currentItem !== null && figures.currentItem !== arrow)
+                figures.currentItem.selected(false)
+            figures.currentItem = arrow
+            paint()
+        }
+        else{
+            objColor = figures.colors[index]
+            paint()
+            console.log("resetting color")
+        }
     }
 }

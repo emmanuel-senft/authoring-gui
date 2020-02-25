@@ -28,28 +28,21 @@ Rectangle{
 
             virtualX=0
             virtualY=0
-            if(figures.toDelete){
-                anchor.parent.destroy()
-                figures.toDelete = false
-            }
+            anchor.parent.selected(true)
         }
         onReleased: {
             anchor.released = true
         }
     }
     onXChanged: {
-        if(!snapping){
-            virtualX=0
-            virtualY=0
-        }
         released = false
-
+        actionList.update()
     }
     function getCoord(){
         var off_x = (map.width-map.paintedWidth)/2
         var off_y = (map.height-map.paintedHeight)/2
-        var imx = (x+virtualX - off_x)/map.paintedWidth * map.sourceSize.width;
-        var imy = (y+virtualY - off_y)/map.paintedHeight * map.sourceSize.height;
+        var imx = (x - off_x)/map.paintedWidth * map.sourceSize.width;
+        var imy = (y - off_y)/map.paintedHeight * map.sourceSize.height;
         return parseInt(imx)+','+parseInt(imy)
     }
 
@@ -60,25 +53,5 @@ Rectangle{
         x=X
         y=Y
         timerEndSnap.restart()
-    }
-    function resetSnap(){
-        virtualX=0
-        virtualY=0
-    }
-
-    Rectangle{
-        visible: false
-        x:virtualX
-        y:virtualY
-        color: "blue"
-        width:50
-        height: 50
-    }
-    Timer{
-        id: timerEndSnap
-        interval: 100
-        onTriggered: {
-            snapping = false
-        }
     }
 }

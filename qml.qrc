@@ -15,5 +15,8 @@
         <file>DragRectangle.qml</file>
         <file>DragAnchor.qml</file>
         <file>DragSurface.qml</file>
+        <file>POI.qml</file>
+        <file>DragItem.qml</file>
+        <file>PaletteElement.qml</file>
     </qresource>
 </RCC>

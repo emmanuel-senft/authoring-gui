@@ -23,6 +23,7 @@ Window {
     property bool autonomous: false
    onWidthChanged: {
         prevWidth=width;
+        pois.updatePois()
     }
     onHeightChanged: {
         prevHeight=height;
@@ -93,6 +94,8 @@ Window {
                     map.source = map.toLoad;
                     interval = 100
                 }
+            }
+            onPaintedWidthChanged: {
             }
         }
 
@@ -229,7 +232,8 @@ Window {
             anchors.verticalCenter: commandButton.verticalCenter
             text: "Delete"
             onClicked:{
-                figures.toDelete = true
+                figures.currentItem.destroy()
+                figures.currentItem = null
             }
         }
     }
@@ -291,7 +295,7 @@ Window {
 
     RosStringSubscriber{
         id: feedbackSubscriber
-        topic: "/gui/feedback"
+        topic: "/parser/gui_info"
         text:""
         onTextChanged:{
             console.log(text)
@@ -304,20 +308,8 @@ Window {
                 return
             }
             var cmd = text.split(";")
-            if(cmd[0] === "snap"){
-                for(var i=0;i<cmd.length-2;i++){
-                    var info = cmd[i+1].split(":")
-                    var name = info[0]
-                    var id = parseInt(info[1])
-                    var coord = info[2]
-                    var x = parseInt(coord.split(",")[0])/map.sourceSize.width * map.paintedWidth + (map.width-map.paintedWidth)/2
-                    var y = parseInt(coord.split(",")[1])/map.sourceSize.height * map.paintedHeight + (map.height-map.paintedHeight)/2
-                    for (var j = 0; j < figures.children.length; j++) {
-                        if(figures.children[j].name === name && figures.children[j].index === id){
-                            figures.children[i].updateSnap(x,y)
-                        }
-                    }
-                }
+            if(cmd[0] === "poi"){
+                pois.cmd = cmd
             }
 
         }
@@ -382,17 +374,135 @@ Window {
     }
     Item{
         id: pois
-        property var listPois: []
-        function addPoi(x,y,name){
-            component = Qt.createComponent("POI.qml")
-            poi = component.createObject(pois, {name:name,x:x,y:y})
+        property var cmd: null
+        function addPoi(name,id,x,y){
+            var component = Qt.createComponent("POI.qml")
+            var color = "red"
+            if(name === "screw")
+                color = "yellow"
+            if(name === "hole")
+                color = "black"
+            var poi = component.createObject(pois, {name:name,index:id,color:color,x:x,y:y})
         }
         function clearPoi(){
-            while(listPois.length > 0){
-                pois.children[0].destroy()
+            for(var i =0;i<pois.children.length;i++){
+                console.log(pois.children.length)
+                pois.children[i].destroy()
             }
         }
+
+        onCmdChanged: {timerPoi.start()}
+        Timer{
+            id: timerPoi
+            interval: 1500
+            onTriggered: {pois.updatePois()}
+        }
+        function updatePois(){
+            clearPoi()
+            for(var i=0;i<cmd.length-1;i++){
+                var info = cmd[i+1].split(":")
+                var name = info[0]
+                var id = parseInt(info[1])
+                var coord = info[2]
+                var x = parseInt(coord.split(",")[0])/map.sourceSize.width * map.paintedWidth + (map.width-map.paintedWidth)/2
+                var y = parseInt(coord.split(",")[1])/map.sourceSize.height * map.paintedHeight + (map.height-map.paintedHeight)/2
+                pois.addPoi(name, id, x, y)
+            }
+        }
+
+
     }
+    Column{
+        id: palette
+        anchors.top: parent.top
+        anchors.topMargin: parent.height/10
+        anchors.right: parent.right
+        anchors.rightMargin: parent.width/10
+        spacing: 10
+        PaletteElement{index:0}
+        PaletteElement{index:1}
+        PaletteElement{index:2}
+        PaletteElement{index:3}
+
+
+    }
+
+    ListModel {
+        id: actionList
+        function update(){
+            var actions=[]
+            for(var i=0;i<figures.children.length;i++){
+                var action ={}
+                var fig = figures.children[i]
+                if(fig.name === "circle")
+                    action.name = "Pick"
+                if(fig.name === "arrow")
+                    action.name = "Place in"
+                if(fig.name === "spiral")
+                    action.name = "Screw"
+                if(fig.snappedPoi !== null){
+                    action.item = fig.snappedPoi.name+"_"+fig.snappedPoi.index.toString()
+                }
+                else{
+                    action.item = "unknown"
+                }
+                action.order = fig.index
+                action.color = fig.objColor
+                console.log(action.name)
+
+                actions.push(action)
+            }
+            actions.sort(compare)
+            actionList.clear()
+            for(var i=0;i<actions.length;i++){
+                console.log(action)
+                actionList.append(actions[i])
+            }
+        }
+        function compare(a, b) {
+            if(a.order<b.order)
+                return -1
+            if(a.order>b.order)
+                return 1
+            var order = ["Pick","Place in","Screw"]
+            if(order.indexOf(a.name)<order.indexOf(b.name))
+                return -1
+            return 1
+        }
+    }
+    Timer{
+        id: timerUpdateActions
+        interval: 100
+        onTriggered: actionList.update()
+    }
+
+    Rectangle {
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        height: parent.height/2
+        width: parent.width/10
+        z:100
+
+        Component {
+            id: actionDelegate
+            Item {
+                width: 180; height: 80
+                Column {
+                    Text { text: '<b>'+name+':</b> ' + item
+
+                    }
+                }
+            }
+        }
+
+        ListView {
+            anchors.fill: parent
+            model: actionList
+            delegate: actionDelegate
+            focus: true
+        }
+    }
+
 
     Component.onCompleted: {
         globalStates.state = "user"

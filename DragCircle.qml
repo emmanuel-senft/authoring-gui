@@ -1,21 +1,11 @@
 import QtQuick 2.12
 import QtQuick.Controls 1.4
 
-Item {
+DragItem {
 
     id: circle
-    anchors.fill: parent
-    property color objColor: "red"
-    property bool snapping: false
-    property string name: ""
-    property int index: 0
     property var centerCoord: null
     property var rMax: null
-    opacity: 1
-    z:10
-    visible: true
-
-    PinchHandler { }
 
     Canvas {
         id: canvas
@@ -59,15 +49,12 @@ Item {
         id: center
         center:centerCoord
         onXChanged: {
-            if(! snapping){
-                end.x=x+rMax
-                paint();
-            }
+            checkSnap()
+            end.x=x+rMax
+            paint();
         }
         onReleasedChanged: {
-            if(released){
-                timerSnap.restart()
-            }
+            doSnap()
         }
     }
     DragAnchor{
@@ -76,62 +63,46 @@ Item {
         y:center.y
         color:"transparent"
         onXChanged: {
-            if(! snapping){
+                checkSnap()
                 rMax = x-center.x
                 y=center.y
                 paint();
-                center.resetSnap()
-            }
         }
         onReleasedChanged: {
-            if(released){
-                timerSnap.restart()
-            }
+            doSnap()
         }
-    }
-    Rectangle{
-        id: snap
-        color: objColor
-        width: 20
-        height: width
-        radius: width/2
-        x:0
-        y:0
-    }
-    function updateSnap(x,y){
-        snap.x = x
-        snap.y = y
     }
 
     function getPoints(){
         return center.getCoord()+'_'+end.getCoord()
     }
-    Component.onDestruction: {
-        commandPublisher.text="remove;"+name+":"+parseInt(index)
-        indexCircles.splice(indexCircles.indexOf(index), 1);
-    }
+
     Component.onCompleted: {
-        objColor = figures.colors[index]
+        doSnap()
+        indexes = indexCircles
     }
-    Timer{
-        id: timerSnap
-        interval: 100
-        onTriggered: {
-            snapping = true
-            var r = rMax
-            var x = center.x
-            var y = center.y
-            center.snapTo(snap.x-center.width/2+snap.width/2,snap.y-center.width/2+snap.width/2)
-            end.snapTo(center.x+r,center.y)
-            timerEndSnap.restart()
-            paint()
+    function checkSnap(){
+        var dMin=rMax*rMax
+        for (var i=0;i<pois.children.length;i++){
+            var d = Math.pow(pois.children[i].x-center.x,2)+Math.pow(pois.children[i].y-center.y,2)
+            if(d < dMin){
+                dMin=d
+                snap.x=pois.children[i].x+pois.children[i].width/2-snap.width/2
+                snap.y=pois.children[i].y+pois.children[i].width/2-snap.width/2
+                snappedPoi = pois.children[i]
+            }
+        }
+        if(dMin === rMax*rMax){
+            snap.x=center.x+center.width/2-snap.width/2
+            snap.y=center.y+center.width/2-snap.width/2
+            snappedPoi=null
         }
     }
-    Timer{
-        id: timerEndSnap
-        interval: 100
-        onTriggered: {
-            snapping = false
-        }
+    function doSnap(){
+        center.x = snap.x-center.width/2+snap.width/2
+        center.y = snap.y-center.width/2+snap.width/2
+        end.x=center.x+rMax
+        end.y=center.y
+        paint()
     }
 }

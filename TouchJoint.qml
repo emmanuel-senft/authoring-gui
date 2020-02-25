@@ -28,7 +28,6 @@ TouchPoint {
             console.log("pressed")
             var obj = figures.childAt(x, y);
             if (drawingarea.drawEnabled) {
-                figures.toDelete = false
                 currentStroke = [];
                 color = drawingarea.fgColor;
                 drawing = true;
