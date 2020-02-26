@@ -81,7 +81,7 @@ Window {
             width: parent.width
             anchors.left: parent.left
             anchors.top: parent.top
-            property string toLoad: "image://rosimage/rgb/image_raw"
+            property string toLoad: "image://rosimage/gui/display/image"
             source: toLoad
             cache: false
             Timer {
@@ -261,10 +261,7 @@ Window {
         anchors.top: parent.top
         text: "Switch view"
         onClicked:{
-            if (map.toLoad === "image://rosimage/virtual_camera/image")
-                map.toLoad = "image://rosimage/rgb/image_raw"
-            else
-                map.toLoad = "image://rosimage/virtual_camera/image"
+            commandPublisher.text = 'camera_switch'
         }
     }
     Label{
