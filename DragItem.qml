@@ -23,8 +23,8 @@ Item {
         width: 20
         height: width
         radius: width/2
-        x:center.x
-        y:center.y
+        x:0
+        y:0
         opacity: 1
     }
 
@@ -47,6 +47,9 @@ Item {
         currentItem = false
         currentItem = true
         actionList.update()
+    }
+    function setIndexes(val){
+        indexes = val
     }
 
     onCurrentItemChanged: {

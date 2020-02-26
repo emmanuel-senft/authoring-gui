@@ -1,27 +1,11 @@
 import QtQuick 2.12
 import QtQuick.Controls 1.4
 
-Item {
+DragItem {
 
     id: cross
 
-    x:objX-margin/2
-    y:objY-margin/2
-    width: objWidth+margin
-    height: objHeight+margin
-    property color objColor: "red"
-    property string name: ""
-    property int index: 0
-    property real objWidth: canvas.width
-    property real objHeight: objWidth
-    property real objX: 100
-    property real objY: 100
-    property real margin:200
-    z:10
-    visible: true
-
-    PinchHandler { }
-
+    
     Canvas {
         id: canvas
         anchors.verticalCenter: parent.verticalCenter
@@ -57,6 +41,7 @@ Item {
     }
     function paint(){
         canvas.requestPaint()
+        actionList.update()
     }
     Rectangle{
         id: origin
@@ -77,11 +62,6 @@ Item {
         radius: width/2
         z:30
         color: "red"
-    }
-    onXChanged: {
-        //Prevent emission on creation
-        if (objColor !== "red")
-            sendCommand("viz")
     }
     Component.onDestruction: {
         commandPublisher.text="remove;"+name+":"+parseInt(index)

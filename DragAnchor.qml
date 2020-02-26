@@ -4,10 +4,7 @@ import QtQuick.Controls 1.4
 Rectangle{
     id: anchor
     property var center: null
-    property var virtualX: null
-    property var virtualY: null
     property bool released: false
-    property bool snapping: false
     x:center.x
     y:center.y
     width: 50
@@ -25,9 +22,6 @@ Rectangle{
         drag.target: parent
         drag.axis: Drag.XAndYAxis
         onClicked: {
-
-            virtualX=0
-            virtualY=0
             anchor.parent.selected(true)
         }
         onReleased: {
@@ -36,7 +30,6 @@ Rectangle{
     }
     onXChanged: {
         released = false
-        actionList.update()
     }
     function getCoord(){
         var off_x = (map.width-map.paintedWidth)/2
@@ -44,14 +37,5 @@ Rectangle{
         var imx = (x - off_x)/map.paintedWidth * map.sourceSize.width;
         var imy = (y - off_y)/map.paintedHeight * map.sourceSize.height;
         return parseInt(imx)+','+parseInt(imy)
-    }
-
-    function snapTo(X,Y){
-        snapping = true
-        virtualX=x-X
-        virtualY=y-Y
-        x=X
-        y=Y
-        timerEndSnap.restart()
     }
 }

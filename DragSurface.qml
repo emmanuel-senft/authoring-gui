@@ -1,21 +1,13 @@
 import QtQuick 2.12
 import QtQuick.Controls 1.4
 
-Item {
+DragItem {
 
     id: surf
-    anchors.fill: parent
-    property color objColor: "red"
-    property string name: ""
-    property int index: 0
     property var p0Coord: null
     property var p1Coord: null
     property var p2Coord: null
     property var p3Coord: null
-    z:10
-    visible: true
-
-    PinchHandler { }
 
     Canvas {
         id: canvas
@@ -48,7 +40,7 @@ Item {
     }
     function paint(){
         canvas.requestPaint()
-        sendCommand("viz")
+        actionList.update()
     }
     DragAnchor{
         id:p0
@@ -73,12 +65,5 @@ Item {
 
     function getPoints(){
         return p0.getCoord()+'_'+p1.getCoord()+'_'+p2.getCoord()+'_'+p3.getCoord()
-    }
-    Component.onDestruction: {
-        commandPublisher.text="remove;"+name+":"+parseInt(index)
-        indexSurfaces.splice(indexSurfaces.indexOf(index), 1);
-    }
-    Component.onCompleted: {
-        objColor = figures.colors[index]
     }
 }

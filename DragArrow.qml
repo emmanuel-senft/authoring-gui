@@ -59,10 +59,10 @@ DragItem {
     }
     function paint(){
         canvas.requestPaint()
-        sendCommand("viz")
+        actionList.update()
     }
     function getPoints(){
-        return end.getCoord()+'_'+origin.getCoord()
+        return end.getCoord()//+'_'+origin.getCoord()
     }
 
     DragAnchor{
@@ -85,7 +85,6 @@ DragItem {
 
     Component.onCompleted: {
         doSnap()
-        indexes = indexArrows
     }
 
     function checkSnap(){

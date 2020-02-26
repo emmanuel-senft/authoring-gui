@@ -88,38 +88,14 @@ Item{
             end.y+=origin.y
             component = Qt.createComponent("DragArrow.qml");
             figure = component.createObject(figures, {name:"arrow",index:getIndex(name),originCoord:origin,endCoord:end});
-
-              /* if using pca:
-                var vectors = pca.getEigenVectors(data);
-                console.log("vector")
-                console.log(vectors[0].vector[0])
-                console.log(vectors[0].vector[1])
-                var rot = Math.atan2(-vectors[0].vector[1],vectors[0].vector[0])*360/(2*Math.PI)
-                console.log(rot)
-            */
         }
         if (figure === null) {
             // Error Handling
             console.log("Error creating object");
         }
         else {
-            actionList.update()
-            sendCommand("viz")
+            figure.setIndexes(getIndexes(name))
         }
-    }
-
-    function getStringItem(item){
-        return item.name+":"+parseInt(item.index)+":"+item.getPoints()+":"+item.objColor
-    }
-
-    function sendCommand(type){
-        var str=type
-        for (var i = 0; i < figures.children.length; i++) {
-            var item = figures.children[i]
-            str+=";"+getStringItem(figures.children[i])
-        }
-        commandPublisher.text=str
-
     }
 
     function getImagePosition(x,y){
@@ -129,24 +105,28 @@ Item{
         var imy = (y - off_y)/map.paintedHeight * map.sourceSize.height;
         return Qt.point(imx,imy)
     }
-    function getIndex(name){
-        console.log(name)
-        var index = null
+    function getIndexes(name){
         if (name === "circle")
-            index = indexCircles
+            return indexCircles
         if (name === "rect")
-            index = indexRects
+            return indexRects
         if (name === "arrow")
-            index = indexArrows
+            return indexArrows
         if (name === "surface")
-            index = indexSurfaces
+            return indexSurfaces
         if (name === "spiral")
-            index = indexSpirals
+            return indexSpirals
         if (name === "cross")
-            index = indexCrosses
-        for(var i = 0;i< index.length+1;i++)
-            if (index.indexOf(i)<0){
-                index.push(i)
+            return indexCrosses
+        return null
+    }
+
+    function getIndex(name){
+        var indexes = getIndexes(name)
+
+        for(var i = 0;i< indexes.length+1;i++)
+            if (indexes.indexOf(i)<0){
+                indexes.push(i)
                 return i
             }
     }

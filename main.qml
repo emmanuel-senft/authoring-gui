@@ -430,21 +430,28 @@ Window {
     ListModel {
         id: actionList
         function update(){
-            var actions=[]
+            var actions = []
+            actions.length = 0
+            console.log(figures.children.length)
             for(var i=0;i<figures.children.length;i++){
                 var action ={}
+                var surface = false
                 var fig = figures.children[i]
                 if(fig.name === "circle")
                     action.name = "Pick"
                 if(fig.name === "arrow")
-                    action.name = "Place in"
+                    action.name = "Place"
                 if(fig.name === "spiral")
                     action.name = "Screw"
+                if(fig.name === "surface"){
+                    action.name = "Wipe"
+                    surface = true
+                }
                 if(fig.snappedPoi !== null){
                     action.item = fig.snappedPoi.name+"_"+fig.snappedPoi.index.toString()
                 }
                 else{
-                    action.item = "unknown"
+                    action.item = fig.getPoints()
                 }
                 action.order = fig.index
                 action.color = fig.objColor
@@ -452,22 +459,32 @@ Window {
 
                 actions.push(action)
             }
+            if(actions.length != figures.children.length)
+                return
             actions.sort(compare)
             actionList.clear()
             for(var i=0;i<actions.length;i++){
                 console.log(action)
                 actionList.append(actions[i])
             }
+            sendCommand("viz")
         }
         function compare(a, b) {
             if(a.order<b.order)
                 return -1
             if(a.order>b.order)
                 return 1
-            var order = ["Pick","Place in","Screw"]
+            var order = ["Pick","Place","Screw","Wipe"]
             if(order.indexOf(a.name)<order.indexOf(b.name))
                 return -1
             return 1
+        }
+        function sendCommand(type){
+            var str=type
+            for (var i=0;i<actionList.count;i++) {
+                str+=";"+actionList.get(i).name+":"+actionList.get(i).item
+            }
+            commandPublisher.text=str
         }
     }
     Timer{

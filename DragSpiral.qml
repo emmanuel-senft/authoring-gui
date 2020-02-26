@@ -45,7 +45,7 @@ DragItem {
     }
     function paint(){
         canvas.requestPaint()
-        sendCommand("viz")
+        actionList.update()
     }
     DragAnchor{
         id: center
@@ -76,11 +76,10 @@ DragItem {
     }
 
     function getPoints(){
-        return center.getCoord()+'_'+end.getCoord()
+        return center.getCoord()//+'_'+end.getCoord()
     }
     Component.onCompleted: {
         doSnap()
-        indexes = indexSpirals
     }
     function checkSnap(){
         var dMin=rMax*rMax
