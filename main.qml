@@ -187,7 +187,7 @@ Window {
             text: "Save"
             onClicked:{
                 var string = recognizer._r.GetUserGestures()
-                fileio.write("/home/senft/src/authoring-gui/res/gestures.json",string)
+                fileio.write("~/src/authoring-gui/res/gestures.json",string)
             }
         }
     }
