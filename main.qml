@@ -421,20 +421,20 @@ Window {
             actions.length = 0
             for(var i=0;i<figures.children.length;i++){
                 var action ={}
-                var surface = false
                 var fig = figures.children[i]
                 action.name = figures.children[i].action
-                if(fig.name === "surface"){
-                    surface = true
-                }
                 action.target = figures.children[i].target
-
+                if (action.name === "Wipe")
+                    action.targetDisplay = figures.colorNames[figures.children[i].index]+" Area"
+                else
+                    action.targetDisplay = action.target.replace("_"," ")
                 action.order = fig.index
                 action.color = fig.objColor
                 action.done = fig.done
+                console.log(action.name)
                 actions.push(action)
             }
-            if(actions.length != figures.children.length)
+            if(actions.length !== figures.children.length)
                 return
             actions.sort(compare)
                 actionList.clear()
@@ -480,7 +480,7 @@ Window {
             Item {
                 width: 180; height: 80
                 Column {
-                    Text { text: '<b>'+name+':</b> ' + target
+                    Text { text: '<b>'+name+':</b> ' + targetDisplay
                         font.strikeout: done
                     }
                 }

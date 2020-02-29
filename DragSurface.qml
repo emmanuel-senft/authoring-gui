@@ -8,6 +8,8 @@ DragItem {
     property var p1Coord: null
     property var p2Coord: null
     property var p3Coord: null
+    name: "surface"
+    action: "Wipe"
 
     Canvas {
         id: canvas
@@ -40,6 +42,7 @@ DragItem {
     }
     function paint(){
         canvas.requestPaint()
+        target = getPoints()
     }
     DragAnchor{
         id:p0
