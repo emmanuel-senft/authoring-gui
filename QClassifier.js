@@ -139,7 +139,6 @@ function QDollarRecognizer() // constructor
 	}
 	this.AddGesture = function(name, points)
 	{
-        console.log("Adding gesture "+name)
 		this.PointClouds[this.PointClouds.length] = new PointCloud(name, points);
 		var num = 0;
 		for (var i = 0; i < this.PointClouds.length; i++) {
@@ -164,8 +163,6 @@ function QDollarRecognizer() // constructor
     }
     this.Init = function(data)
     {
-        console.log("init")
-        console.log(data)
         try {
             var table = JSON.parse(data)
         }

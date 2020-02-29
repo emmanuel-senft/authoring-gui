@@ -1,11 +1,9 @@
 import QtQuick 2.0
-import "PCA.js" as PCA
 
 Item{
     id: figures
     property var listFigure: []
     property var arrow: null
-    property var pca: new PCA.PCA();
     property var indexArrows: []
     property var indexCircles: []
     property var indexSpirals: []

@@ -15,7 +15,7 @@ Item {
     function recognize(){
         if (_points.length >= 10) {
             var result = _r.Recognize(_points);
-            console.log("Result: " + result.Name + " (" + Math.round(result.Score,2) + ") in " + result.Time + " ms.");
+            console.log("Result: " + result.Name + " (" + result.Score.toFixed(2) + ") in " + result.Time + " ms.");
             figures.createFigure(result.Name, _points)
         }
         else {
@@ -36,7 +36,6 @@ Item {
     }
     Component.onCompleted: {
         var data=fileio.read()
-        console.log(data)
         figures.types = _r.Init(data);
     }
 

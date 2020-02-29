@@ -31,49 +31,15 @@ Window {
 
     color: "white"
     title: qsTr("Authoring GUI")
-    /*Item {
-        id: simulatorView
-        anchors.right: parent.right
-        anchors.top: parent.top
-        width: parent.width/5
-        height: parent.height/5
-        z:20
-        Image {
-            id: simu
-            fillMode: Image.PreserveAspectFit
-            height: parent.height
-            width: parent.width
-            anchors.left: parent.left
-            anchors.top: parent.top
-            source: "image://rosimage/virtual_camera/image"
-            cache: false
-            Timer {
-                id: imageLoaderSimu
-                interval: 1000
-                repeat: true
-                running: true
-                onTriggered: {
-                    simu.source = "";
-                    simu.source = "image://rosimage/virtual_camera/image";
-                    interval = 100
-                }
-            }
-        }
-    }*/
+
     Item {
         id: displayView
         property int lineWidth: 50
-
         property color fgColor: "steelblue"
-
         property bool drawEnabled: true
-
         property var touchs
-
         property bool bgHasChanged: true
-
         anchors.fill: parent
-
         Image {
             id: map
             fillMode: Image.PreserveAspectFit
@@ -81,12 +47,12 @@ Window {
             width: parent.width
             anchors.left: parent.left
             anchors.top: parent.top
-            property string toLoad: "image://rosimage/gui/display/image"
+            property string toLoad: "image://rosimage/rgb/image_raw"
             source: toLoad
             cache: false
             Timer {
                 id: imageLoader
-                interval: 1000
+                interval: 100
                 repeat: true
                 running: true
                 onTriggered: {
@@ -101,13 +67,6 @@ Window {
 
         DrawingArea {
             id: drawingarea
-            height: parent.height
-            width: parent.width
-            anchors.left: parent.left
-            anchors.top: parent.top
-            lineWidth: 10
-
-            fgColor: "steelblue"
 
             touchs: touchArea
 
@@ -126,15 +85,11 @@ Window {
 
         MultiPointTouchArea {
             id: touchArea
+            enabled: drawingarea.enabled
             anchors.fill: parent
 
             touchPoints: [
-                TouchJoint {id:touch1;name:"touch1"},
-                TouchJoint {id:touch2;name:"touch2"},
-                TouchJoint {id:touch3;name:"touch3"},
-                TouchJoint {id:touch4;name:"touch4"},
-                TouchJoint {id:touch5;name:"touch5"},
-                TouchJoint {id:touch6;name:"touch6"}
+                TouchJoint {id:touch1;name:"touch1"}
             ]
         }
 
@@ -142,10 +97,7 @@ Window {
             anchors.fill: parent
             acceptedButtons: Qt.RightButton
             onClicked: {
-                var point = figures.getImagePosition(mouseX,mouseY)
-                var str = "click:"+parseInt(point.x)+":"+parseInt(point.y)
                 commandPublisher.text=str
-                console.log(str)
             }
         }
     }
@@ -153,6 +105,7 @@ Window {
     Item{
         id:gestureGui
         anchors.fill: parent
+        visible: false
 
         Button{
             id: addGestureButton
@@ -192,8 +145,51 @@ Window {
         }
     }
     Item{
-        id:userGui
+        id:visualizationGui
         anchors.fill: parent
+        visible: true
+        Button{
+            id: viewButton
+            width: parent.width/10
+            height: parent.height/10
+            z:10
+            visible: true
+            anchors.right: parent.right
+            anchors.top: parent.top
+            text: "Switch view"
+            onClicked:{
+                if (globalStates.state === "visualization"){
+                    globalStates.state = "drawing"
+                    map.toLoad = "image://rosimage/rgb/image_raw"
+                }
+                if (globalStates.state === "drawing"){
+                    globalStates.state = "visualization"
+                    map.toLoad = "image://rosimage/virtual_camera/image"
+                }
+                if (globalStates.state === "simulation"){
+                    globalStates.state = "drawing"
+                }
+            }
+        }
+        Button{
+            id: lockViewButton
+            width: parent.width/10
+            height: parent.height/10
+            visible: false
+            z:10
+            anchors.left: viewButton.left
+            anchors.top: viewButton.bottom
+            anchors.topMargin: height/2
+            text: "Lock View"
+            onClicked:{
+                globalStates.state = "drawing"
+            }
+        }
+    }
+    Item{
+        id:drawingGui
+        anchors.fill: parent
+        visible: false
 
         Button{
             id: commandButton
@@ -205,8 +201,7 @@ Window {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: -parent.width/4
             text: "Send Command"
-            onClicked:{
-                figures.sendCommand("exec");
+            onClicked:{actionList.sendCommand("exec");
             }
         }
         Button{
@@ -219,7 +214,8 @@ Window {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "simulate Command"
             onClicked:{
-                figures.sendCommand("sim");
+                 actionList.sendCommand("sim");
+                globalStates.state = "simulation"
             }
         }
         Button{
@@ -238,7 +234,7 @@ Window {
         }
     }
     Button{
-        id: stateButton
+        id: gestureEditButton
         width: parent.width/10
         height: parent.height/10
         z:10
@@ -247,23 +243,12 @@ Window {
         text: "Switch mode"
         onClicked:{
             if (globalStates.state === "gestureEdit")
-                globalStates.state = "user"
+                globalStates.state = "drawing"
             else
                 globalStates.state = "gestureEdit"
         }
     }
-    Button{
-        id: viewButton
-        width: parent.width/10
-        height: parent.height/10
-        z:10
-        anchors.right: parent.right
-        anchors.top: parent.top
-        text: "Switch view"
-        onClicked:{
-            commandPublisher.text = 'camera_switch'
-        }
-    }
+
     Label{
         id: warningDepth
         anchors.horizontalCenter: parent.horizontalCenter
@@ -274,10 +259,6 @@ Window {
         color: "red"
         visible: false
 
-    }
-
-    TFListener {
-        id: frameManager
     }
 
     Figures {
@@ -291,11 +272,39 @@ Window {
     }
 
     RosStringSubscriber{
-        id: feedbackSubscriber
+        id: eventsSubscriber
+        topic: "/event"
+        text:""
+        onTextChanged:{
+            if(text === "motion_finished" && globalStates.state === 'simulation'){
+                for (var i = 0; i<figures.children.length;i++)
+                        figures.children[i].done = false
+                globalStates.state = "drawing"
+                return
+            }
+            var cmd = text.split(";")
+            if (cmd[0] === "action_finished"){
+                cmd = cmd[1].split(":")
+                var name = cmd[0]
+                var target = cmd[1]
+                for (var i = 0; i<figures.children.length;i++){
+                    var fig = figures.children[i]
+                    console.log(fig.action)
+                    console.log(fig.target)
+                    if(fig.action === name && fig.target === target){
+                        console.log("Done")
+                        fig.done = true
+                        actionList.update()
+                    }
+                }
+            }
+        }
+    }
+    RosStringSubscriber{
+        id: infoSubscriber
         topic: "/parser/gui_info"
         text:""
         onTextChanged:{
-            console.log(text)
             if(text === "bad_depth"){
                 warningDepth.visible = true
                 return
@@ -306,6 +315,7 @@ Window {
             }
             var cmd = text.split(";")
             if(cmd[0] === "poi"){
+                console.log(cmd)
                 pois.cmd = cmd
             }
 
@@ -316,25 +326,7 @@ Window {
         id: recognizer
     }
 
-    StateGroup {
-        id: globalStates
-        states: [
-            State {name: "gestureEdit"},
-            State {name: "user"}
-    ]
-        onStateChanged: {
-            switch (globalStates.state){
-                case "gestureEdit":
-                    gestureGui.visible = true
-                    userGui.visible = false
-                    break
-                case "user":
-                    gestureGui.visible = false
-                    userGui.visible = true
-                    break
-            }
-        }
-    }
+
     Item{
         id: virtualMouseCenter
         anchors.bottom: parent.bottom
@@ -364,15 +356,16 @@ Window {
             }
         }
         onXChanged: {
-            console.log(handler.translation)
             commandPublisher.text = "mouse;"+parseInt(handler.translation.y)+":"+parseInt(handler.translation.x)+":"+parseInt(100*(handler.scale-1))+":"+parseInt(handler.rotation)
         }
 
     }
     Item{
         id: pois
+        visible: true
         property var cmd: null
         function addPoi(name,id,x,y){
+            console.log("Adding poi")
             var component = Qt.createComponent("POI.qml")
             var color = "red"
             if(name === "screw")
@@ -383,7 +376,6 @@ Window {
         }
         function clearPoi(){
             for(var i =0;i<pois.children.length;i++){
-                console.log(pois.children.length)
                 pois.children[i].destroy()
             }
         }
@@ -420,8 +412,6 @@ Window {
         PaletteElement{index:1}
         PaletteElement{index:2}
         PaletteElement{index:3}
-
-
     }
 
     ListModel {
@@ -429,42 +419,30 @@ Window {
         function update(){
             var actions = []
             actions.length = 0
-            console.log(figures.children.length)
             for(var i=0;i<figures.children.length;i++){
                 var action ={}
                 var surface = false
                 var fig = figures.children[i]
-                if(fig.name === "circle")
-                    action.name = "Pick"
-                if(fig.name === "arrow")
-                    action.name = "Place"
-                if(fig.name === "spiral")
-                    action.name = "Screw"
+                action.name = figures.children[i].action
                 if(fig.name === "surface"){
-                    action.name = "Wipe"
                     surface = true
                 }
-                if(fig.snappedPoi !== null){
-                    action.item = fig.snappedPoi.name+"_"+fig.snappedPoi.index.toString()
-                }
-                else{
-                    action.item = fig.getPoints()
-                }
+                action.target = figures.children[i].target
+
                 action.order = fig.index
                 action.color = fig.objColor
-                console.log(action.name)
-
+                action.done = fig.done
                 actions.push(action)
             }
             if(actions.length != figures.children.length)
                 return
             actions.sort(compare)
-            actionList.clear()
+                actionList.clear()
             for(var i=0;i<actions.length;i++){
-                console.log(action)
                 actionList.append(actions[i])
             }
-            sendCommand("viz")
+            if(globalStates.state === "drawing")
+                sendCommand("viz")
         }
         function compare(a, b) {
             if(a.order<b.order)
@@ -479,7 +457,7 @@ Window {
         function sendCommand(type){
             var str=type
             for (var i=0;i<actionList.count;i++) {
-                str+=";"+actionList.get(i).name+":"+actionList.get(i).item
+                str+=";"+actionList.get(i).name+":"+actionList.get(i).target
             }
             commandPublisher.text=str
         }
@@ -487,7 +465,7 @@ Window {
     Timer{
         id: timerUpdateActions
         interval: 100
-        onTriggered: actionList.update()
+        onTriggered:actionList.update()
     }
 
     Rectangle {
@@ -502,8 +480,8 @@ Window {
             Item {
                 width: 180; height: 80
                 Column {
-                    Text { text: '<b>'+name+':</b> ' + item
-
+                    Text { text: '<b>'+name+':</b> ' + target
+                        font.strikeout: done
                     }
                 }
             }
@@ -512,14 +490,50 @@ Window {
         ListView {
             anchors.fill: parent
             model: actionList
+
             delegate: actionDelegate
             focus: true
         }
     }
 
+    StateGroup {
+        id: globalStates
+        states: [
+            State {name: "gestureEdit"
+                PropertyChanges { target: gestureGui; visible: true }},
+            State {name: "drawing"
+                PropertyChanges { target: drawingGui; visible: true }},
+            State {name: "visualization"
+                PropertyChanges { target: lockViewButton; visible: true }
+                PropertyChanges { target: pois; visible: false }
+                PropertyChanges { target: figures; visible: false}
+                PropertyChanges { target: drawingarea; enabled: false }
+                PropertyChanges { target: lockViewButton; visible: true }
+            },
+            State {name: "simulation"
+                PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
+                PropertyChanges { target: pois; visible: false }
+                PropertyChanges { target: figures; visible: false}
+                PropertyChanges { target: drawingarea; enabled: false }
+                PropertyChanges { target: viewButton; text: "Exit Simulation"}
+            }
+    ]
+        onStateChanged: {
+            switch (globalStates.state){
+                case "gestureEdit":
+                    break
+                case "drawing":
+                    break
+                case "visualization":
+                    break
+            }
+        }
+    }
 
     Component.onCompleted: {
-        globalStates.state = "user"
+        globalStates.state = "drawing"
+        commandPublisher.text="init_gui"
+
     }
     Component.onDestruction: {
         commandPublisher.text="remove;all"

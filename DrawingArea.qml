@@ -7,19 +7,23 @@ Item {
 
     id: drawingarea
 
+    height: parent.height
+    width: parent.width
+    anchors.left: parent.left
+    anchors.top: parent.top
+
     property double pixelscale: 1.0 // how many meters does 1 pixel represent?
 
     property string bgImage
-    property int lineWidth: 50
+    property int lineWidth: 10
 
-    property color fgColor
+    property color fgColor: "steelblue"
 
     property bool drawEnabled: true
 
     property var touchs
 
     property bool bgHasChanged: true
-    property int rosBackgroundPublishingPeriod: 250 //ms
 
     property bool addGesture: false
 
@@ -157,7 +161,7 @@ Item {
 
     Timer{
         id: timerGesture
-        interval: 1000
+        interval: 800
         onTriggered: {
             console.log("gesture finished")
             endGesture()

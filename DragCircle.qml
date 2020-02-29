@@ -6,6 +6,8 @@ DragItem {
     id: circle
     property var centerCoord: null
     property var rMax: null
+    name: "circle"
+    action: "Pick"
 
     Canvas {
         id: canvas
