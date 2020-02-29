@@ -158,17 +158,23 @@ Window {
             anchors.top: parent.top
             text: "Switch view"
             onClicked:{
-                if (globalStates.state === "visualization"){
-                    globalStates.state = "drawing"
-                    map.toLoad = "image://rosimage/rgb/image_raw"
+                console.log(globalStates.state)
+                switch(globalStates.state){
+                    case "visualization":
+                        globalStates.state = "drawing"
+                        map.toLoad = "image://rosimage/rgb/image_raw"
+                        break
+
+                    case "drawing":
+                        globalStates.state = "visualization"
+                        map.toLoad = "image://rosimage/virtual_camera/image"
+                        break
+
+                    case "simulation":
+                        globalStates.state = "drawing"
+                        break
                 }
-                if (globalStates.state === "drawing"){
-                    globalStates.state = "visualization"
-                    map.toLoad = "image://rosimage/virtual_camera/image"
-                }
-                if (globalStates.state === "simulation"){
-                    globalStates.state = "drawing"
-                }
+                console.log(globalStates.state)
             }
         }
         GuiButton{
@@ -263,6 +269,7 @@ Window {
 
     Figures {
         id:figures
+        z:10
     }
 
     RosStringPublisher{
@@ -280,6 +287,7 @@ Window {
                 for (var i = 0; i<figures.children.length;i++)
                         figures.children[i].done = false
                 globalStates.state = "drawing"
+                actionList.update()
                 return
             }
             var cmd = text.split(";")
