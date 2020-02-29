@@ -10,22 +10,57 @@ Item {
     property int index: 0
     property var snappedPoi: null
     property bool currentItem: false
-    property var snap: snapRect
+    property var snap: snapPoint
     property var indexes: null
+    property var action: "undefined"
+    property var target: "undefined"
+    property bool done: false
 
     opacity: 1
     z:10
     visible: true
-
-    Rectangle{
-        id: snapRect
-        color: objColor
-        width: 20
-        height: width
-        radius: width/2
+    Item{
+        id: snapPoint
         x:0
         y:0
-        opacity: 1
+        Rectangle{
+            id: snapRect
+            color: objColor
+            width: 20
+            height: width
+            radius: width/2
+            x:-width/2
+            y:-height/2
+            opacity: 1
+        }
+        onXChanged: {
+            timerTarget.start()
+        }
+    }
+    Label{
+        z:30
+        id: actionDisplay
+        text:action+" "+target
+        x:snapPoint.x-snapRect.width
+        y:snapPoint.y-3*snapRect.height
+    }
+
+    Timer{
+        id:timerTarget
+        interval: 100
+        onTriggered: {
+            if(snappedPoi !== null){
+                target = snappedPoi.name+"_"+snappedPoi.index.toString()
+            }
+            else{
+                target = getPoints()
+            }
+        }
+    }
+
+    function snapTo(x,y){
+        snapPoint.x=x
+        snapPoint.y=y
     }
 
     Component.onDestruction: {
@@ -39,17 +74,20 @@ Item {
     }
 
     function selected(val){
-        console.log(val)
         currentItem = val
     }
     function setIndex(val){
         index = val
         currentItem = false
         currentItem = true
-        actionList.update()
+        timerUpdateActions.restart()
     }
     function setIndexes(val){
         indexes = val
+    }
+
+    onTargetChanged: {
+        actionList.update()
     }
 
     onCurrentItemChanged: {
@@ -63,7 +101,6 @@ Item {
         else{
             objColor = figures.colors[index]
             paint()
-            console.log("resetting color")
         }
     }
 }

@@ -8,8 +8,8 @@ Item{
     property color color: "red"
     width: 20
     Rectangle{
-        x:0
-        y:0
+        x:-width/2
+        y:-height/2
         width: parent.width
         height: width
         radius: width/2

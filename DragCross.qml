@@ -41,7 +41,6 @@ DragItem {
     }
     function paint(){
         canvas.requestPaint()
-        actionList.update()
     }
     Rectangle{
         id: origin
@@ -64,7 +63,6 @@ DragItem {
         color: "red"
     }
     Component.onDestruction: {
-        commandPublisher.text="remove;"+name+":"+parseInt(index)
         indexCross.splice(indexCross.indexOf(index), 1);
     }
     Component.onCompleted: {

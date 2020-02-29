@@ -39,7 +39,6 @@ DragItem {
     }
     function paint(){
         canvas.requestPaint()
-        actionList.update()
     }
     DragAnchor{
         id:p0

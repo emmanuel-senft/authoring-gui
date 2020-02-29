@@ -7,6 +7,8 @@ DragItem {
 
     property var originCoord: null
     property var endCoord: null
+    name: "arrow"
+    action: "Place"
 
     Canvas {
         id: canvas
@@ -59,7 +61,6 @@ DragItem {
     }
     function paint(){
         canvas.requestPaint()
-        actionList.update()
     }
     function getPoints(){
         return end.getCoord()//+'_'+origin.getCoord()
@@ -67,8 +68,8 @@ DragItem {
 
     DragAnchor{
         id: origin
-        color:"transparent"
-        center:originCoord
+        objColor:"transparent"
+        center: originCoord
         onXChanged: paint();
     }
     DragAnchor{
@@ -91,33 +92,26 @@ DragItem {
         var dMin=Math.pow(end.x-origin.x,2)+Math.pow(end.y-origin.y,2)
         for (var i=0;i<pois.children.length;i++){
             var d = Math.pow(pois.children[i].x-end.x,2)+Math.pow(pois.children[i].y-end.y,2)
-            console.log(d)
             if(d < dMin){
-                console.log("snapping")
-                console.log(d)
                 dMin=d
-                snap.x=pois.children[i].x+pois.children[i].width/2-snap.width/2
-                snap.y=pois.children[i].y+pois.children[i].width/2-snap.width/2
+                snapTo(pois.children[i].x,pois.children[i].y)
                 snappedPoi = pois.children[i]
             }
         }
         if(dMin === Math.pow(end.x-origin.x,2)+Math.pow(end.y-origin.y,2)){
-            snap.x=end.x+end.width/2-snap.width/2
-            snap.y=end.y+end.width/2-snap.width/2
+            snapTo(end.x,end.y)
             snappedPoi=null
         }
     }
     function doSnap(){
-        end.x = snap.x-end.width/2+snap.width/2
-        end.y = snap.y-end.width/2+snap.width/2
+        end.x = snap.x
+        end.y = snap.y
     }
     function selected(val){
-        console.log(val)
         currentItem = val
     }
 
     onCurrentItemChanged: {
-        console.log(currentItem)
         if(currentItem){
             objColor = Qt.lighter(objColor,1.3)
             if(figures.currentItem !== null && figures.currentItem !== arrow)
@@ -128,7 +122,6 @@ DragItem {
         else{
             objColor = figures.colors[index]
             paint()
-            console.log("resetting color")
         }
     }
 }
