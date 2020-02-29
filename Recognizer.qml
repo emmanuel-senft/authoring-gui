@@ -35,12 +35,12 @@ Item {
         _points[_points.length] = new QClassifier.Point(x, y, _strokeID); // append
     }
     Component.onCompleted: {
-        var data=fileio.read()
+        var data=fileio.read("/src/authoring-gui/res/gestures.json")
         figures.types = _r.Init(data);
     }
 
     Component.onDestruction: {
         var string = recognizer._r.GetUserGestures()
-        fileio.write("/home/senft/src/authoring-interface/res/gestures2.json",string)
+        fileio.write("/src/authoring-interface/res/gestures2.json",string)
     }
 }

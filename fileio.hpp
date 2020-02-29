@@ -24,7 +24,7 @@ public slots:
 
         QDir basepath = QDir(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
 
-        QFile file(basepath.absoluteFilePath(source));
+        QFile file(basepath.absoluteFilePath(QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first()+source));
         if (!file.open(QFile::WriteOnly ))
             return false;
 
@@ -33,10 +33,10 @@ public slots:
         file.close();
         return true;
     }
-    QString read() {
+    QString read(const QString& source) {
           QString val;
           QFile file;
-          file.setFileName("~/src/authoring-gui/res/gestures.json");
+          file.setFileName(QStandardPaths::standardLocations(QStandardPaths::HomeLocation).first()+source);
           file.open(QIODevice::ReadOnly | QIODevice::Text);
           val = file.readAll();
           file.close();
