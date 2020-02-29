@@ -43,6 +43,11 @@ Item {
         text:action+" "+target
         x:snapPoint.x-snapRect.width
         y:snapPoint.y-3*snapRect.height
+        font.bold: true
+        font.pixelSize: 40
+        style: Text.Outline
+        styleColor: "black"
+        color: "white"
     }
 
     Timer{

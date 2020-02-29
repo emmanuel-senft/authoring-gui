@@ -17,5 +17,6 @@
         <file>POI.qml</file>
         <file>DragItem.qml</file>
         <file>PaletteElement.qml</file>
+        <file>GuiButton.qml</file>
     </qresource>
 </RCC>

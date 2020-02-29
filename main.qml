@@ -107,7 +107,7 @@ Window {
         anchors.fill: parent
         visible: false
 
-        Button{
+        GuiButton{
             id: addGestureButton
             width: parent.width/10
             height: parent.height/10
@@ -129,7 +129,7 @@ Window {
                 color: "white"
             }
         }
-        Button{
+        GuiButton{
             id: saveButton
             width: parent.width/10
             height: parent.height/10
@@ -148,7 +148,7 @@ Window {
         id:visualizationGui
         anchors.fill: parent
         visible: true
-        Button{
+        GuiButton{
             id: viewButton
             width: parent.width/10
             height: parent.height/10
@@ -171,7 +171,7 @@ Window {
                 }
             }
         }
-        Button{
+        GuiButton{
             id: lockViewButton
             width: parent.width/10
             height: parent.height/10
@@ -191,7 +191,7 @@ Window {
         anchors.fill: parent
         visible: false
 
-        Button{
+        GuiButton{
             id: commandButton
             width: parent.width/10
             height: parent.height/10
@@ -200,11 +200,11 @@ Window {
             anchors.bottomMargin: height
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: -parent.width/4
-            text: "Send Command"
+            text: "Execute"
             onClicked:{actionList.sendCommand("exec");
             }
         }
-        Button{
+        GuiButton{
             id: simulateButton
             width: parent.width/10
             height: parent.height/10
@@ -212,13 +212,13 @@ Window {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: height
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "simulate Command"
+            text: "Simulate"
             onClicked:{
                  actionList.sendCommand("sim");
                 globalStates.state = "simulation"
             }
         }
-        Button{
+        GuiButton{
             id: deleteButton
             width: parent.width/10
             height: parent.height/10
@@ -233,7 +233,7 @@ Window {
             }
         }
     }
-    Button{
+    GuiButton{
         id: gestureEditButton
         width: parent.width/10
         height: parent.height/10
