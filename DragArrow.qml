@@ -60,6 +60,7 @@ DragItem {
         }
     }
     function paint(){
+        checkSnap()
         canvas.requestPaint()
     }
     function getPoints(){
@@ -76,7 +77,6 @@ DragItem {
         id: end
         center:endCoord
         onXChanged: {
-            checkSnap()
             paint()
         }
         onReleasedChanged: {
@@ -85,6 +85,8 @@ DragItem {
     }
 
     Component.onCompleted: {
+        paint()
+        doSnap()
         doSnap()
     }
 

@@ -46,6 +46,7 @@ DragItem {
         }
     }
     function paint(){
+        checkSnap()
         canvas.requestPaint()
     }
     DragAnchor{
@@ -53,7 +54,6 @@ DragItem {
         center:centerCoord
 
         onXChanged: {
-            checkSnap()
             end.x=x+rMax
             paint();
         }
@@ -82,6 +82,7 @@ DragItem {
     }
 
     Component.onCompleted: {
+        doSnap()
         doSnap()
     }
     function checkSnap(){

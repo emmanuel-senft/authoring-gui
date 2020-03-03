@@ -47,7 +47,10 @@ DragItem {
     DragAnchor{
         id:p0
         center: p0Coord
-        onXChanged: paint();
+        onXChanged: {
+            paint();
+            snapTo(p0.x,p0.y)
+        }
     }
     DragAnchor{
         id:p1

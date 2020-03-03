@@ -44,6 +44,7 @@ DragItem {
         }
     }
     function paint(){
+        checkSnap()
         canvas.requestPaint()
     }
     DragAnchor{
@@ -51,7 +52,6 @@ DragItem {
         center:centerCoord
 
         onXChanged: {
-            checkSnap()
             end.x=x+rMax
             paint();
         }
@@ -65,7 +65,6 @@ DragItem {
         y:center.y
         objColor:"transparent"
         onXChanged: {
-                checkSnap()
                 rMax = x-center.x
                 y=center.y
                 paint();
@@ -80,6 +79,8 @@ DragItem {
     }
 
     Component.onCompleted: {
+        paint()
+        doSnap()
         doSnap()
     }
     function checkSnap(){
