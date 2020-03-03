@@ -14,6 +14,7 @@ Item {
     property var indexes: null
     property var action: "undefined"
     property var target: "undefined"
+    property var targetDisplay: "undefined"
     property bool done: false
 
     opacity: 1
@@ -40,7 +41,7 @@ Item {
     Label{
         z:30
         id: actionDisplay
-        text:action+" "+target
+        text:action+" "+targetDisplay
         x:snapPoint.x-snapRect.width
         y:snapPoint.y-3*snapRect.height
         font.bold: true
@@ -92,6 +93,10 @@ Item {
     }
 
     onTargetChanged: {
+        if (name === "surface")
+            targetDisplay = figures.colorNames[index]+" Area"
+        else
+            targetDisplay = target.replace("_"," ")
         actionList.update()
     }
 

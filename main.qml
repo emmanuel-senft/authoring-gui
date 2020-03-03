@@ -431,10 +431,7 @@ Window {
                 var fig = figures.children[i]
                 action.name = figures.children[i].action
                 action.target = figures.children[i].target
-                if (action.name === "Wipe")
-                    action.targetDisplay = figures.colorNames[figures.children[i].index]+" Area"
-                else
-                    action.targetDisplay = action.target.replace("_"," ")
+                action.targetDisplay = figures.children[i].targetDisplay
                 action.order = fig.index
                 action.color = fig.objColor
                 action.done = fig.done
