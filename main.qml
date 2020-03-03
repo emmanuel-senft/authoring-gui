@@ -43,13 +43,12 @@ Window {
         Image {
             id: map
             fillMode: Image.PreserveAspectFit
-            height: parent.height
-            width: parent.width
-            anchors.left: parent.left
-            anchors.top: parent.top
+            anchors.fill: parent
             property string toLoad: "image://rosimage/rgb/image_raw"
             source: toLoad
             cache: false
+            horizontalAlignment: Image.AlignLeft
+            verticalAlignment: Image.AlignTop
             Timer {
                 id: imageLoader
                 interval: 100
@@ -401,8 +400,8 @@ Window {
                 var name = info[0]
                 var id = parseInt(info[1])
                 var coord = info[2]
-                var x = parseInt(coord.split(",")[0])/map.sourceSize.width * map.paintedWidth + (map.width-map.paintedWidth)/2
-                var y = parseInt(coord.split(",")[1])/map.sourceSize.height * map.paintedHeight + (map.height-map.paintedHeight)/2
+                var x = parseInt(coord.split(",")[0])/map.sourceSize.width * map.paintedWidth
+                var y = parseInt(coord.split(",")[1])/map.sourceSize.height * map.paintedHeight
                 pois.addPoi(name, id, x, y)
             }
         }

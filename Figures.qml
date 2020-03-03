@@ -97,10 +97,8 @@ Item{
     }
 
     function getImagePosition(x,y){
-        var off_x = (map.width-map.paintedWidth)/2
-        var off_y = (map.height-map.paintedHeight)/2
-        var imx = (x - off_x)/map.paintedWidth * map.sourceSize.width;
-        var imy = (y - off_y)/map.paintedHeight * map.sourceSize.height;
+        var imx = x/map.paintedWidth * map.sourceSize.width;
+        var imy = y/map.paintedHeight * map.sourceSize.height;
         return Qt.point(imx,imy)
     }
     function getIndexes(name){
