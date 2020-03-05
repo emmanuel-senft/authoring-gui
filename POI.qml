@@ -3,8 +3,9 @@ import QtQuick.Controls 1.4
 
 Item{
     id: poi
-    property var name: "poi"
+    property var type: "poi"
     property int index: 0
+    property var name: type+"_"+index
     property color color: "red"
     width: 20
     Rectangle{

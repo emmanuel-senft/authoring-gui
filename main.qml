@@ -44,7 +44,7 @@ Window {
             id: map
             fillMode: Image.PreserveAspectFit
             anchors.fill: parent
-            property string toLoad: "image://rosimage/rgb/image_raw"
+            property string toLoad: "res/default.jpg"
             source: toLoad
             cache: false
             horizontalAlignment: Image.AlignLeft
@@ -53,7 +53,7 @@ Window {
                 id: imageLoader
                 interval: 100
                 repeat: true
-                running: true
+                running: false
                 onTriggered: {
                     map.source = "";
                     map.source = map.toLoad;
@@ -108,8 +108,6 @@ Window {
 
         GuiButton{
             id: addGestureButton
-            width: parent.width/10
-            height: parent.height/10
             z:10
             anchors.bottom: parent.bottom
             anchors.bottomMargin: height
@@ -130,8 +128,6 @@ Window {
         }
         GuiButton{
             id: saveButton
-            width: parent.width/10
-            height: parent.height/10
             z:10
             anchors.left: addGestureButton.right
             anchors.leftMargin: height
@@ -145,17 +141,18 @@ Window {
     }
     Item{
         id:visualizationGui
-        anchors.fill: parent
+        width: map.width
+        height: map.height
+        anchors.left: parent.left
+        anchors.top: parent.top
         visible: true
         GuiButton{
             id: viewButton
-            width: parent.width/10
-            height: parent.height/10
             z:10
             visible: true
             anchors.right: parent.right
             anchors.top: parent.top
-            text: "Switch view"
+            text: "Switch View"
             onClicked:{
                 console.log(globalStates.state)
                 switch(globalStates.state){
@@ -178,8 +175,6 @@ Window {
         }
         GuiButton{
             id: lockViewButton
-            width: parent.width/10
-            height: parent.height/10
             visible: false
             z:10
             anchors.left: viewButton.left
@@ -198,8 +193,6 @@ Window {
 
         GuiButton{
             id: commandButton
-            width: parent.width/10
-            height: parent.height/10
             z:10
             anchors.bottom: parent.bottom
             anchors.bottomMargin: height
@@ -211,8 +204,6 @@ Window {
         }
         GuiButton{
             id: simulateButton
-            width: parent.width/10
-            height: parent.height/10
             z:10
             anchors.bottom: parent.bottom
             anchors.bottomMargin: height
@@ -225,8 +216,6 @@ Window {
         }
         GuiButton{
             id: deleteButton
-            width: parent.width/10
-            height: parent.height/10
             z:10
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: parent.width/4
@@ -240,12 +229,10 @@ Window {
     }
     GuiButton{
         id: gestureEditButton
-        width: parent.width/10
-        height: parent.height/10
         z:10
         anchors.left: parent.left
         anchors.top: parent.top
-        text: "Switch mode"
+        text: "Switch Mode"
         onClicked:{
             if (globalStates.state === "gestureEdit")
                 globalStates.state = "drawing"
@@ -295,15 +282,10 @@ Window {
                 var name = cmd[0]
                 var target = cmd[1]
                 for (var i = 0; i<figures.children.length;i++){
-                    var fig = figures.children[i]
-                    console.log(fig.action)
-                    console.log(fig.target)
-                    if(fig.action === name && fig.target === target){
-                        console.log("Done")
-                        fig.done = true
-                        actionList.update()
-                    }
+                    if(figures.children[i].testDone(name, target))
+                        break
                 }
+                actionList.update()
             }
         }
     }
@@ -379,7 +361,7 @@ Window {
                 color = "yellow"
             if(name === "hole")
                 color = "black"
-            var poi = component.createObject(pois, {name:name,index:id,color:color,x:x,y:y})
+            var poi = component.createObject(pois, {type:name,index:id,color:color,x:x,y:y})
         }
         function clearPoi(){
             for(var i =0;i<pois.children.length;i++){
@@ -427,21 +409,14 @@ Window {
             var actions = []
             actions.length = 0
             for(var i=0;i<figures.children.length;i++){
-                var action ={}
-                var fig = figures.children[i]
-                action.name = figures.children[i].action
-                action.target = figures.children[i].target
-                action.targetDisplay = figures.children[i].targetDisplay
-                action.order = fig.index
-                action.color = fig.objColor
-                action.done = fig.done
-                console.log(action.name)
-                actions.push(action)
+                var action = figures.children[i].getAction()
+                console.log(action)
+                actions = actions.concat(action)
             }
-            if(actions.length !== figures.children.length)
-                return
+            //if(actions.length !== figures.children.length)
+            //    return
             actions.sort(compare)
-                actionList.clear()
+            actionList.clear()
             for(var i=0;i<actions.length;i++){
                 actionList.append(actions[i])
             }
@@ -453,7 +428,7 @@ Window {
                 return -1
             if(a.order>b.order)
                 return 1
-            var order = ["Pick","Place","Screw","Wipe"]
+            var order = ["Move","Pick","Screw","Place","Wipe","Inspect"]
             if(order.indexOf(a.name)<order.indexOf(b.name))
                 return -1
             return 1
@@ -476,7 +451,7 @@ Window {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         height: parent.height/2
-        width: parent.width/10
+        width: parent.width/6
         z:100
 
         Component {

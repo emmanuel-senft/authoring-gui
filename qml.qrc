@@ -18,5 +18,8 @@
         <file>DragItem.qml</file>
         <file>PaletteElement.qml</file>
         <file>GuiButton.qml</file>
+        <file>SnapPoint.qml</file>
+        <file>res/default.jpg</file>
+        <file>GuiRadioButton.qml</file>
     </qresource>
 </RCC>

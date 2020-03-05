@@ -56,7 +56,7 @@ Item {
         interval: 100
         onTriggered: {
             if(snappedPoi !== null){
-                target = snappedPoi.name+"_"+snappedPoi.index.toString()
+                target = snappedPoi.name
             }
             else{
                 target = getPoints()
@@ -112,5 +112,22 @@ Item {
             objColor = figures.colors[index]
             paint()
         }
+    }
+    function getAction(){
+        var a ={}
+        a.name = item.action
+        a.target = item.target
+        a.targetDisplay = item.targetDisplay
+        a.order = item.index
+        a.color = item.objColor
+        a.done = item.done
+        return [a]
+    }
+    function testDone(act, t){
+        if(action === act && target === t){
+            fig.done = true
+            return true
+        }
+        return false
     }
 }

@@ -4,17 +4,16 @@ import QtQuick.Controls 1.4
 
 Button{
     id: button
+    width: parent.width/10
+    height: parent.height/15
     style: ButtonStyle {
         background: Rectangle {
             implicitWidth: 100
             implicitHeight: 25
-            border.width: width/20
-            border.color: "darkgoldenrod"
+            border.width: 0
+            border.color: "transparent"
             radius: 30
-            gradient: Gradient {
-                GradientStop { position: 0 ; color: control.pressed ? "goldenrod" : "darkgoldenrod" }
-                GradientStop { position: 1 ; color: control.pressed ? "darkgoldenrod" : "goldenrod" }
-            }
+            color: "yellowgreen"
         }
         label: Text {
           renderType: Text.NativeRendering
@@ -22,7 +21,7 @@ Button{
           horizontalAlignment: Text.AlignHCenter
           font.family: "Helvetica"
           font.pointSize: 15
-          color: "black"
+          color: "white"
           font.bold: true
           text: button.text
         }

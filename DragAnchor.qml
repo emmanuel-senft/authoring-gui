@@ -28,7 +28,7 @@ Item{
         anchors.fill: target
         drag.target: parent
         drag.axis: Drag.XAndYAxis
-        onClicked: {
+        onPressed: {
             anchor.parent.selected(true)
         }
         onReleased: {
