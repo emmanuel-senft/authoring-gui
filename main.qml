@@ -38,29 +38,40 @@ Window {
         property color fgColor: "steelblue"
         property bool drawEnabled: true
         property var touchs
-        property bool bgHasChanged: true
         anchors.fill: parent
         Image {
             id: map
             fillMode: Image.PreserveAspectFit
             anchors.fill: parent
-            property string toLoad: "res/default.jpg"
+            property string toLoad: "image://rosimage/rgb/image_raw"
+            property bool useRealImage: true
             source: toLoad
             cache: false
-            horizontalAlignment: Image.AlignLeft
+            horizontalAlignment: Image.AlignRight
             verticalAlignment: Image.AlignTop
+            rotation: 180
             Timer {
                 id: imageLoader
                 interval: 100
                 repeat: true
-                running: false
+                running: true
                 onTriggered: {
                     map.source = "";
-                    map.source = map.toLoad;
-                    interval = 100
+                    if(map.useRealImage){
+                        map.source = map.toLoad;
+                        interval = 100
+                    }
+                    else{
+                        toLoad: "res/default.jpg"
+                        repeat = false
+                    }
                 }
             }
-            onPaintedWidthChanged: {
+            onSourceChanged: {
+                if(source == "image://rosimage/rgb/image_raw")
+                    rotation = 180
+                else
+                    rotation = 0
             }
         }
 
@@ -169,6 +180,10 @@ Window {
                     case "simulation":
                         globalStates.state = "drawing"
                         break
+
+                    case "execution":
+                        globalStates.state = "drawing"
+                        break
                 }
                 console.log(globalStates.state)
             }
@@ -194,19 +209,19 @@ Window {
         GuiButton{
             id: commandButton
             z:10
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: height
+            anchors.top: parent.top
+            anchors.topMargin: height
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: -parent.width/4
             text: "Execute"
             onClicked:{actionList.sendCommand("exec");
+                globalStates.state = "execution"
             }
         }
         GuiButton{
             id: simulateButton
             z:10
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: height
+            anchors.bottom: commandButton.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Simulate"
             onClicked:{
@@ -230,6 +245,7 @@ Window {
     GuiButton{
         id: gestureEditButton
         z:10
+        visible: false
         anchors.left: parent.left
         anchors.top: parent.top
         text: "Switch Mode"
@@ -262,6 +278,7 @@ Window {
         id: commandPublisher
         topic: "/gui/command"
         text:""
+        Component.onCompleted: text="reset_position"
     }
 
     RosStringSubscriber{
@@ -269,11 +286,13 @@ Window {
         topic: "/event"
         text:""
         onTextChanged:{
-            if(text === "motion_finished" && globalStates.state === 'simulation'){
-                for (var i = 0; i<figures.children.length;i++)
-                        figures.children[i].done = false
+            if(text === "motion_finished"){
+                if(globalStates.state === 'simulation'){
+                    for (var i = 0; i<figures.children.length;i++)
+                            figures.children[i].done = false
+                    actionList.update()
+                }
                 globalStates.state = "drawing"
-                actionList.update()
                 return
             }
             var cmd = text.split(";")
@@ -353,15 +372,17 @@ Window {
         id: pois
         visible: true
         property var cmd: null
-        function addPoi(name,id,x,y){
+        function addPoi(type,id,x,y){
             console.log("Adding poi")
             var component = Qt.createComponent("POI.qml")
             var color = "red"
-            if(name === "screw")
+            if(type === "screw")
                 color = "yellow"
-            if(name === "hole")
+            if(type === "hole")
+                color = "white"
+            if(type === "pusher")
                 color = "black"
-            var poi = component.createObject(pois, {type:name,index:id,color:color,x:x,y:y})
+            var poi = component.createObject(pois, {type:type,index:id,color:color,x:x,y:y})
         }
         function clearPoi(){
             for(var i =0;i<pois.children.length;i++){
@@ -376,15 +397,29 @@ Window {
             onTriggered: {pois.updatePois()}
         }
         function updatePois(){
-            clearPoi()
+            //clearPoi()
             for(var i=0;i<cmd.length-1;i++){
                 var info = cmd[i+1].split(":")
-                var name = info[0]
+                var type = info[0]
                 var id = parseInt(info[1])
                 var coord = info[2]
-                var x = parseInt(coord.split(",")[0])/map.sourceSize.width * map.paintedWidth
-                var y = parseInt(coord.split(",")[1])/map.sourceSize.height * map.paintedHeight
-                pois.addPoi(name, id, x, y)
+                var x = (1 - parseInt(coord.split(",")[0])/map.sourceSize.width) * map.paintedWidth
+                var y = (1 - parseInt(coord.split(",")[1])/map.sourceSize.height) * map.paintedHeight
+                if(map.rotation === 0){
+                    x = (parseInt(coord.split(",")[0])/map.sourceSize.width) * map.paintedWidth
+                    y = (parseInt(coord.split(",")[1])/map.sourceSize.height) * map.paintedHeight
+                }
+                if(pois.children.length<cmd.length-1)
+                    pois.addPoi(type, id, x, y)
+                else{
+                    for(var i =0;i<pois.children.length;i++){
+                        var poi = pois.children[i]
+                        if(poi.type === type && poi.index === id){
+                            poi.x = x
+                            poi.y = y
+                        }
+                    }
+                }
             }
         }
 
@@ -420,8 +455,10 @@ Window {
             for(var i=0;i<actions.length;i++){
                 actionList.append(actions[i])
             }
-            if(globalStates.state === "drawing")
+
+            if(globalStates.state === "drawing"){
                 sendCommand("viz")
+            }
         }
         function compare(a, b) {
             if(a.order<b.order)
@@ -438,6 +475,7 @@ Window {
             for (var i=0;i<actionList.count;i++) {
                 str+=";"+actionList.get(i).name+":"+actionList.get(i).target
             }
+            str+=";Reset"
             commandPublisher.text=str
         }
     }
@@ -495,6 +533,13 @@ Window {
                 PropertyChanges { target: figures; visible: false}
                 PropertyChanges { target: drawingarea; enabled: false }
                 PropertyChanges { target: viewButton; text: "Exit Simulation"}
+            },
+            State {name: "execution"
+                //PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
+                PropertyChanges { target: pois; visible: false }
+                PropertyChanges { target: figures; visible: false}
+                PropertyChanges { target: drawingarea; enabled: false }
+                PropertyChanges { target: viewButton; text: "Stop"}
             }
     ]
         onStateChanged: {
