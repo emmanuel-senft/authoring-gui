@@ -47,9 +47,9 @@ Window {
             property bool useRealImage: true
             source: toLoad
             cache: false
-            horizontalAlignment: Image.AlignRight
+            horizontalAlignment: Image.AlignLeft
             verticalAlignment: Image.AlignTop
-            rotation: 180
+            rotation: 0
             Timer {
                 id: imageLoader
                 interval: 100
@@ -69,8 +69,8 @@ Window {
             }
             onSourceChanged: {
                 if(source == "image://rosimage/rgb/image_raw"){
-                    rotation = 180
-                    horizontalAlignment = Image.AlignRight
+                    rotation = 0
+                    horizontalAlignment = Image.AlignLeft
 
                 }
                 else{
@@ -208,6 +208,19 @@ Window {
                 commandPublisher.text = "lock"
             }
         }
+        GuiButton{
+            id: goToButton
+            visible: false
+            z:10
+            anchors.left: viewButton.left
+            anchors.top: lockViewButton.bottom
+            anchors.topMargin: height/2
+            text: "Go to View"
+            onClicked:{
+                globalStates.state = "execution"
+                commandPublisher.text = "go"
+            }
+        }
     }
     Item{
         id:drawingGui
@@ -217,8 +230,8 @@ Window {
         GuiButton{
             id: commandButton
             z:10
-            anchors.top: parent.top
-            anchors.topMargin: height
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: height
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: -parent.width/4
             text: "Execute"
@@ -533,7 +546,8 @@ Window {
                 PropertyChanges { target: drawingGui; visible: true }},
             State {name: "visualization"
                 PropertyChanges { target: lockViewButton; visible: true }
-                PropertyChanges { target: viewButton; text: "Return to camera" }
+                PropertyChanges { target: goToButton; visible: true }
+                PropertyChanges { target: viewButton; text: "Return" }
                 PropertyChanges { target: pois; visible: false }
                 PropertyChanges { target: figures; visible: false}
                 PropertyChanges { target: drawingarea; enabled: false }
