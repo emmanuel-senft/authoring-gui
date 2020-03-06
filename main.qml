@@ -175,6 +175,7 @@ Window {
                     case "visualization":
                         globalStates.state = "drawing"
                         map.toLoad = "image://rosimage/rgb/image_raw"
+                        commandPublisher.text = "init_gui"
                         break
 
                     case "drawing":
@@ -381,8 +382,6 @@ Window {
         property var cmd: null
         function addPoi(type,id,x,y){
             console.log("Adding poi")
-            if(map.paintedWidth < 1000)
-                return
             var component = Qt.createComponent("POI.qml")
             var color = "red"
             if(type === "screw")
@@ -402,11 +401,13 @@ Window {
         onCmdChanged: {timerPoi.start()}
         Timer{
             id: timerPoi
-            interval: 1500
+            interval: 500
             onTriggered: {pois.updatePois()}
         }
         function updatePois(){
             //clearPoi()
+            if(map.paintedWidth < 1000)
+                return
             for(var i=0;i<cmd.length-1;i++){
                 var info = cmd[i+1].split(":")
                 var type = info[0]
@@ -421,8 +422,8 @@ Window {
                 if(pois.children.length<cmd.length-1)
                     pois.addPoi(type, id, x, y)
                 else{
-                    for(var i =0;i<pois.children.length;i++){
-                        var poi = pois.children[i]
+                    for(var j =0;j<pois.children.length;j++){
+                        var poi = pois.children[j]
                         if(poi.type === type && poi.index === id){
                             poi.x = x
                             poi.y = y

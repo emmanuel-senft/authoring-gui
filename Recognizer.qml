@@ -13,7 +13,7 @@ Item {
     }
 
     function recognize(){
-        if (_points.length >= 10) {
+        if (_points.length >= 5) {
             var result = _r.Recognize(_points);
             console.log("Result: " + result.Name + " (" + result.Score.toFixed(2) + ") in " + result.Time + " ms.");
             figures.createFigure(result.Name, _points)
