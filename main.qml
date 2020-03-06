@@ -68,10 +68,15 @@ Window {
                 }
             }
             onSourceChanged: {
-                if(source == "image://rosimage/rgb/image_raw")
+                if(source == "image://rosimage/rgb/image_raw"){
                     rotation = 180
-                else
+                    horizontalAlignment = Image.AlignRight
+
+                }
+                else{
                     rotation = 0
+                    horizontalAlignment = Image.AlignLeft
+                }
             }
         }
 
@@ -175,6 +180,7 @@ Window {
                     case "drawing":
                         globalStates.state = "visualization"
                         map.toLoad = "image://rosimage/virtual_camera/image"
+                        commandPublisher.text = "unlock"
                         break
 
                     case "simulation":
@@ -198,6 +204,7 @@ Window {
             text: "Lock View"
             onClicked:{
                 globalStates.state = "drawing"
+                commandPublisher.text = "lock"
             }
         }
     }
@@ -374,6 +381,8 @@ Window {
         property var cmd: null
         function addPoi(type,id,x,y){
             console.log("Adding poi")
+            if(map.paintedWidth < 1000)
+                return
             var component = Qt.createComponent("POI.qml")
             var color = "red"
             if(type === "screw")
@@ -427,6 +436,7 @@ Window {
     }
     Column{
         id: palette
+        visible: false
         anchors.top: parent.top
         anchors.topMargin: parent.height/10
         anchors.right: parent.right
