@@ -533,10 +533,10 @@ Window {
                 PropertyChanges { target: drawingGui; visible: true }},
             State {name: "visualization"
                 PropertyChanges { target: lockViewButton; visible: true }
+                PropertyChanges { target: viewButton; text: "Return to camera" }
                 PropertyChanges { target: pois; visible: false }
                 PropertyChanges { target: figures; visible: false}
                 PropertyChanges { target: drawingarea; enabled: false }
-                PropertyChanges { target: lockViewButton; visible: true }
             },
             State {name: "simulation"
                 PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
