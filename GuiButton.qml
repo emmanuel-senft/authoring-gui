@@ -6,6 +6,7 @@ Button{
     id: button
     width: parent.width/10
     height: parent.height/15
+    property var color: "yellowgreen"
     style: ButtonStyle {
         background: Rectangle {
             implicitWidth: 100
@@ -13,7 +14,7 @@ Button{
             border.width: 0
             border.color: "transparent"
             radius: 30
-            color: "yellowgreen"
+            color: button.color
         }
         label: Text {
           renderType: Text.NativeRendering

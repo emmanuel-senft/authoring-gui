@@ -223,9 +223,95 @@ Window {
         }
     }
     Item{
+        id:executionGui
+        visible: false
+        anchors.fill: parent
+        GuiButton{
+            id: stopButton
+            z:10
+            visible: true
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: -
+                                            2.5*width
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: height
+            text: "Stop"
+            color: "red"
+            onClicked:{
+                commandPublisher.text = "stop"
+            }
+        }
+    }
+    Item{
+        id:waitGui
+        property bool waitPoi: false
+        visible: false
+        anchors.fill: parent
+        z:100
+        GuiButton{
+            id: pushButton
+            visible: roi.visible
+            z:20
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: 2.5*width
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: height
+            text: "Push"
+            onClicked:{
+                globalStates.state = "execution"
+                eventPublisher.text = "act"
+                roi.visible = false
+            }
+        }
+        GuiButton{
+            id: nextButton
+            visible: roi.visible
+            z:30
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: 1*width
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: height
+            text: "Next"
+            onClicked:{
+                globalStates.state = "execution"
+                eventPublisher.text = "skip"
+                roi.visible = false
+            }
+        }
+
+        Rectangle{
+            id: roi
+            x:0
+            y:0
+            visible: false
+            width: 100
+            height: width
+            radius: width/2
+            color: "transparent"
+            border.color: "red"
+            border.width: width/10
+        }
+        onVisibleChanged: {
+            waitPoi = true
+        }
+    }
+    Item{
         id:drawingGui
         anchors.fill: parent
         visible: false
+
+        GuiButton{
+            id: resetButton
+            z:10
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.topMargin: 2*height
+            text: "Reset Robot"
+            onClicked:{
+                globalStates.state = "drawing"
+                commandPublisher.text = "reset_position"
+            }
+        }
 
         GuiButton{
             id: commandButton
@@ -301,6 +387,11 @@ Window {
         text:""
         Component.onCompleted: text="reset_position"
     }
+    RosStringPublisher{
+        id: eventPublisher
+        topic: "/event"
+        text:""
+    }
 
     RosStringSubscriber{
         id: eventsSubscriber
@@ -327,6 +418,17 @@ Window {
                 }
                 actionList.update()
             }
+            if (cmd[0] === "wait"){
+                globalStates.state = "wait"
+                for(var j =0;j<pois.children.length;j++){
+                    var poi = pois.children[j]
+                    if(poi.name === cmd[1]){
+                        roi.x = poi.x-roi.width/2
+                        roi.y = poi.y-roi.width/2
+                    }
+                }
+            }
+
         }
     }
     RosStringSubscriber{
@@ -444,6 +546,8 @@ Window {
                     }
                 }
             }
+            if(waitGui.waitPoi)
+                roi.visible = true
         }
 
 
@@ -474,7 +578,7 @@ Window {
             }
             //if(actions.length !== figures.children.length)
             //    return
-            actions.sort(compare)
+            //actions.sort(compare)
             actionList.clear()
             for(var i=0;i<actions.length;i++){
                 actionList.append(actions[i])
@@ -494,10 +598,13 @@ Window {
                 return -1
             return 1
         }
-        function sendCommand(type){
+        function sendCommand(type,actionToInsert=""){
             var str=type
+            if(actionToInsert !== "")
+                str+=';'+actionToInsert
             for (var i=0;i<actionList.count;i++) {
-                str+=";"+actionList.get(i).name+":"+actionList.get(i).target
+                if(!actionList.get(i).done)
+                    str+=";"+actionList.get(i).name+":"+actionList.get(i).target
             }
             str+=";Reset"
             commandPublisher.text=str
@@ -511,7 +618,7 @@ Window {
 
     Rectangle {
         anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.bottom: parent.bottom
         height: parent.height/2
         width: parent.width/6
         z:100
@@ -543,7 +650,8 @@ Window {
             State {name: "gestureEdit"
                 PropertyChanges { target: gestureGui; visible: true }},
             State {name: "drawing"
-                PropertyChanges { target: drawingGui; visible: true }},
+                PropertyChanges { target: drawingGui; visible: true }
+                PropertyChanges { target: resetButton; enabled: true }},
             State {name: "visualization"
                 PropertyChanges { target: lockViewButton; visible: true }
                 PropertyChanges { target: goToButton; visible: true }
@@ -559,12 +667,21 @@ Window {
                 PropertyChanges { target: drawingarea; enabled: false }
                 PropertyChanges { target: viewButton; text: "Exit Simulation"}
             },
+            State {name: "wait"
+                PropertyChanges { target: waitGui; visible: true }
+                PropertyChanges { target: executionGui; visible: true}
+                PropertyChanges { target: pois; visible: false }
+                PropertyChanges { target: figures; visible: false}
+                PropertyChanges { target: drawingarea; enabled: false }
+                PropertyChanges { target: viewButton; visible: false}
+            },
             State {name: "execution"
                 //PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
                 PropertyChanges { target: pois; visible: false }
                 PropertyChanges { target: figures; visible: false}
                 PropertyChanges { target: drawingarea; enabled: false }
-                PropertyChanges { target: viewButton; text: "Stop"}
+                PropertyChanges { target: viewButton; visible: false}
+                PropertyChanges { target: executionGui; visible: true}
             }
     ]
         onStateChanged: {

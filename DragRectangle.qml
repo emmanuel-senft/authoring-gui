@@ -335,7 +335,20 @@ Item {
         for(var i =0; i < listPoints.length; i++){
             actions = actions.concat(listPoints[i].getAction())
         }
+
+        actions.sort(compare)
+
         return actions
+    }
+
+    function compare(a, b) {
+
+        console.log(a.target)
+        console.log(a.target.split("_")[1])
+        if(parseInt(a.target.split("_")[1])<parseInt(b.target.split("_")[1]))
+            return -1
+        if(a.order>b.order)
+            return 1
     }
 
     function testDone(act, t){
