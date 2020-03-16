@@ -53,6 +53,7 @@ Item{
             doSnap()
         }
     }
+
     Item{
         id: snapPoint
         x:x

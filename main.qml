@@ -186,6 +186,7 @@ Window {
 
                     case "simulation":
                         globalStates.state = "drawing"
+                        commandPublisher.text = "stop"
                         break
 
                     case "execution":
@@ -231,14 +232,17 @@ Window {
             z:10
             visible: true
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: -
-                                            2.5*width
+            anchors.horizontalCenterOffset: -2.5*width
             anchors.bottom: parent.bottom
             anchors.bottomMargin: height
             text: "Stop"
             color: "red"
             onClicked:{
                 commandPublisher.text = "stop"
+                globalStates.state = "drawing"
+            }
+        }
+    }
             }
         }
     }
@@ -287,6 +291,7 @@ Window {
             width: 100
             height: width
             radius: width/2
+            opacity: .5
             color: "transparent"
             border.color: "red"
             border.width: width/10
@@ -308,7 +313,7 @@ Window {
             anchors.topMargin: 2*height
             text: "Reset Robot"
             onClicked:{
-                globalStates.state = "drawing"
+                globalStates.state = "execution"
                 commandPublisher.text = "reset_position"
             }
         }
@@ -413,10 +418,11 @@ Window {
                 var name = cmd[0]
                 var target = cmd[1]
                 for (var i = 0; i<figures.children.length;i++){
-                    if(figures.children[i].testDone(name, target))
+                    if(figures.children[i].testDone(name, target)){
+                        actionList.update()
                         break
+                    }
                 }
-                actionList.update()
             }
             if (cmd[0] === "wait"){
                 globalStates.state = "wait"
@@ -491,6 +497,7 @@ Window {
         }
 
     }
+
     Item{
         id: pois
         visible: true

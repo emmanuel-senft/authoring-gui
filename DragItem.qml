@@ -125,7 +125,7 @@ Item {
     }
     function testDone(act, t){
         if(action === act && target === t){
-            fig.done = true
+            item.done = true
             return true
         }
         return false
