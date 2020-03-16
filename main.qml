@@ -43,7 +43,10 @@ Window {
             id: map
             fillMode: Image.PreserveAspectFit
             anchors.fill: parent
-            property string toLoad: "image://rosimage/rgb/image_raw"
+            property string toLoad: realCamera
+            //property string realCamera: "image://rosimage/rgb/image_raw"
+            property string realCamera: virtualCamera
+            property string virtualCamera: "image://rosimage/virtual_camera/image"
             property bool useRealImage: true
             source: toLoad
             cache: false
@@ -68,7 +71,7 @@ Window {
                 }
             }
             onSourceChanged: {
-                if(source == "image://rosimage/rgb/image_raw"){
+                if(source == realCamera){
                     rotation = 0
                     horizontalAlignment = Image.AlignLeft
 
@@ -174,13 +177,14 @@ Window {
                 switch(globalStates.state){
                     case "visualization":
                         globalStates.state = "drawing"
-                        map.toLoad = "image://rosimage/rgb/image_raw"
+                        map.toLoad = map.realCamera
                         commandPublisher.text = "init_gui"
+
                         break
 
                     case "drawing":
                         globalStates.state = "visualization"
-                        map.toLoad = "image://rosimage/virtual_camera/image"
+                        map.toLoad = map.virtualCamera
                         commandPublisher.text = "unlock"
                         break
 
@@ -668,7 +672,7 @@ Window {
                 PropertyChanges { target: drawingarea; enabled: false }
             },
             State {name: "simulation"
-                PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
+                PropertyChanges { target: map; toLoad: virtualCamera}
                 PropertyChanges { target: pois; visible: false }
                 PropertyChanges { target: figures; visible: false}
                 PropertyChanges { target: drawingarea; enabled: false }
