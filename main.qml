@@ -247,6 +247,22 @@ Window {
             }
         }
     }
+    Item{
+        id:fdGui
+        visible: false
+        anchors.fill: parent
+        GuiButton{
+            id: controlButton
+            z:10
+            visible: true
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            width: parent.width/5
+            anchors.bottomMargin: height
+            text: "Take Back Control"
+            onClicked:{
+                eventPublisher.text = "gui_takeover"
+                globalStates.state = "drawing"
             }
         }
     }
@@ -437,6 +453,9 @@ Window {
                         roi.y = poi.y-roi.width/2
                     }
                 }
+            }
+            if (cmd[0] === "fd_takeover"){
+                globalStates.state = "force_dimension"
             }
 
         }
@@ -696,6 +715,14 @@ Window {
                 PropertyChanges { target: drawingarea; enabled: false }
                 PropertyChanges { target: viewButton; visible: false}
                 PropertyChanges { target: executionGui; visible: true}
+            },
+            State {name: "force_dimension"
+                //PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
+                PropertyChanges { target: pois; visible: false }
+                PropertyChanges { target: figures; visible: false}
+                PropertyChanges { target: drawingarea; enabled: false }
+                PropertyChanges { target: viewButton; visible: false}
+                PropertyChanges { target: fdGui; visible: true}
             }
     ]
         onStateChanged: {
