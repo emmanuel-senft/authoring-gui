@@ -559,6 +559,9 @@ Window {
             }
             if(waitGui.waitPoi)
                 roi.visible = true
+            for(var i=0;i<figures.children.length;i++){
+                figures.children[i].poiUpdated()
+            }
         }
 
 

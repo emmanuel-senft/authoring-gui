@@ -130,4 +130,7 @@ Item {
         }
         return false
     }
+    function poiUpdated(){
+
+    }
 }

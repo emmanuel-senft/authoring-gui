@@ -366,4 +366,29 @@ Item {
             for(var i =0; i < listPoints.length; i++)
                 listPoints[i].done = false
     }
+
+    function poiUpdated(){
+        if(listPoints.length > 0){
+            var minX = width
+            var maxX = 0
+            var minY = height
+            var maxY = 0
+            for(var i =0; i < listPoints.length; i++){
+                listPoints[i].poiUpdated()
+                minX = Math.min(minX,listPoints[i].origin.x-width/40)
+                maxX = Math.max(maxX,listPoints[i].origin.x+width/40)
+                minY = Math.min(minY,listPoints[i].origin.y-height/20)
+                maxY = Math.max(maxY,listPoints[i].origin.y+height/20)
+            }
+            p0.x = minX
+            p0.y = minY
+            p1.x = maxX
+            p1.y = minY
+            p2.x = maxX
+            p2.y = maxY
+            p3.x = minX
+            p3.y = maxY
+        }
+
+    }
 }

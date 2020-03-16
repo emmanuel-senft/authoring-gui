@@ -238,4 +238,9 @@ Item{
         }
         return false
     }
+    function poiUpdated(){
+        x = snappedPoi.x
+        y = snappedPoi.y
+        paint()
+    }
 }
