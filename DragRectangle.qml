@@ -373,21 +373,28 @@ Item {
             var maxX = 0
             var minY = height
             var maxY = 0
+            var allInHull = true
             for(var i =0; i < listPoints.length; i++){
+                if (! inHull(listPoints[i].origin)){
+                    console.log("not in hull")
+                    allInHull = false
+                }
                 listPoints[i].poiUpdated()
                 minX = Math.min(minX,listPoints[i].origin.x-width/40)
                 maxX = Math.max(maxX,listPoints[i].origin.x+width/40)
-                minY = Math.min(minY,listPoints[i].origin.y-height/20)
-                maxY = Math.max(maxY,listPoints[i].origin.y+height/20)
+                minY = Math.min(minY,listPoints[i].origin.y-height/40)
+                maxY = Math.max(maxY,listPoints[i].origin.y+height/40)
             }
-            p0.x = minX
-            p0.y = minY
-            p1.x = maxX
-            p1.y = minY
-            p2.x = maxX
-            p2.y = maxY
-            p3.x = minX
-            p3.y = maxY
+            if (!allInHull){
+                p0.x = minX
+                p0.y = minY
+                p1.x = maxX
+                p1.y = minY
+                p2.x = maxX
+                p2.y = maxY
+                p3.x = minX
+                p3.y = maxY
+            }
         }
 
     }
