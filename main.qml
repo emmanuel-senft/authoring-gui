@@ -11,7 +11,7 @@ Window {
     id: window
 
     visible: true
-    //visibility: Window.FullScreen
+    visibility: Window.FullScreen
     //width: Screen.width
     //height: Screen.height
     width:3020
@@ -223,6 +223,7 @@ Window {
             text: "Go to View"
             onClicked:{
                 globalStates.state = "execution"
+                map.toLoad = map.realCamera
                 commandPublisher.text = "go"
             }
         }
@@ -284,7 +285,7 @@ Window {
             onClicked:{
                 globalStates.state = "execution"
                 eventPublisher.text = "act"
-                roi.visible = false
+                hideRoiTimer.start()
             }
         }
         GuiButton{
@@ -299,14 +300,20 @@ Window {
             onClicked:{
                 globalStates.state = "execution"
                 eventPublisher.text = "skip"
-                roi.visible = false
+                hideRoiTimer.start()
             }
+        }
+        Timer{
+            id: hideRoiTimer
+            interval: 100
+            onTriggered: roi.visible = false
         }
 
         Rectangle{
             id: roi
             x:0
             y:0
+            property var poi: null
             visible: false
             width: 100
             height: width
@@ -315,7 +322,6 @@ Window {
             color: "transparent"
             border.color: "red"
             border.width: width/10
-            property var poi: null
         }
         onVisibleChanged: {
             waitPoi = true
@@ -579,11 +585,13 @@ Window {
             }
             if(waitGui.waitPoi){
                 roi.visible = true
-                roi.x = roi.poi.x-roi.width/2
-                roi.y = roi.poi.y-roi.width/2
             }
             for(var i=0;i<figures.children.length;i++){
                 figures.children[i].poiUpdated()
+            }
+            if(roi.poi !== null){
+                roi.x = roi.poi.x-roi.width/2
+                roi.y = roi.poi.y-roi.width/2
             }
         }
 
@@ -652,34 +660,45 @@ Window {
         interval: 100
         onTriggered:actionList.update()
     }
-
-    Rectangle {
+    Rectangle{
+        id: infoArea
+        anchors.top: parent.top
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        height: parent.height/2
-        width: parent.width/6
-        z:100
+        width: parent.width-map.paintedWidth
+        height: parent.height
+        Rectangle {
+            id: actionTracker
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: 2*parent.height/3
+            width: parent.width
+            z:100
 
-        Component {
-            id: actionDelegate
-            Item {
-                width: 180; height: 80
-                Column {
-                    Text { text: '<b>'+name+':</b> ' + targetDisplay
-                        font.strikeout: done
+            Component {
+                id: actionDelegate
+                Item {
+                    width: actionTracker.width; height: 80
+                    Column {
+                        Text { text: '<b>'+name+':</b>' + targetDisplay
+                            width: actionTracker.width
+                            font.strikeout: done
+                            wrapMode: Text.Wrap
+                        }
                     }
                 }
             }
-        }
 
-        ListView {
-            anchors.fill: parent
-            model: actionList
+            ListView {
+                anchors.fill: parent
+                model: actionList
 
-            delegate: actionDelegate
-            focus: true
+                delegate: actionDelegate
+                focus: true
+            }
         }
     }
+
+
 
     StateGroup {
         id: globalStates
