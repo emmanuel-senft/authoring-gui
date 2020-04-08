@@ -315,6 +315,7 @@ Window {
             color: "transparent"
             border.color: "red"
             border.width: width/10
+            property var poi: null
         }
         onVisibleChanged: {
             waitPoi = true
@@ -449,6 +450,7 @@ Window {
                 for(var j =0;j<pois.children.length;j++){
                     var poi = pois.children[j]
                     if(poi.name === cmd[1]){
+                        roi.poi = poi
                         roi.x = poi.x-roi.width/2
                         roi.y = poi.y-roi.width/2
                     }
@@ -526,7 +528,6 @@ Window {
         visible: true
         property var cmd: null
         function addPoi(type,id,x,y){
-            console.log("Adding poi")
             var component = Qt.createComponent("POI.qml")
             var color = "red"
             if(type === "screw")
@@ -576,8 +577,11 @@ Window {
                     }
                 }
             }
-            if(waitGui.waitPoi)
+            if(waitGui.waitPoi){
                 roi.visible = true
+                roi.x = roi.poi.x-roi.width/2
+                roi.y = roi.poi.y-roi.width/2
+            }
             for(var i=0;i<figures.children.length;i++){
                 figures.children[i].poiUpdated()
             }
