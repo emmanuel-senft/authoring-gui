@@ -165,69 +165,55 @@ Window {
         anchors.left: parent.left
         anchors.top: parent.top
         visible: true
+    }
+    Rectangle{
+        id: displayArea
+        anchors.top: parent.top
+        anchors.left: parent.left
+        height: parent.height
+        width: map.paintedWidth
+        color: "transparent"
+
         GuiButton{
-            id: viewButton
+            id: commandButton
             z:10
-            visible: true
-            anchors.right: parent.right
-            anchors.top: parent.top
-            text: "Switch View"
-            onClicked:{
-                console.log(globalStates.state)
-                switch(globalStates.state){
-                    case "visualization":
-                        globalStates.state = "drawing"
-                        map.toLoad = map.realCamera
-                        commandPublisher.text = "init_gui"
-
-                        break
-
-                    case "drawing":
-                        globalStates.state = "visualization"
-                        map.toLoad = map.virtualCamera
-                        commandPublisher.text = "unlock"
-                        break
-
-                    case "simulation":
-                        globalStates.state = "drawing"
-                        commandPublisher.text = "stop"
-                        break
-
-                    case "execution":
-                        globalStates.state = "drawing"
-                        break
-                }
-                console.log(globalStates.state)
-            }
-        }
-        GuiButton{
-            id: lockViewButton
-            visible: false
-            z:10
-            anchors.left: viewButton.left
-            anchors.top: viewButton.bottom
-            anchors.topMargin: height/2
-            text: "Lock View"
-            onClicked:{
-                globalStates.state = "drawing"
-                commandPublisher.text = "lock"
-            }
-        }
-        GuiButton{
-            id: goToButton
-            visible: false
-            z:10
-            anchors.left: viewButton.left
-            anchors.top: lockViewButton.bottom
-            anchors.topMargin: height/2
-            text: "Go to View"
-            onClicked:{
+            anchors.bottom: displayArea.bottom
+            anchors.bottomMargin: height
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: -parent.width/4
+            text: "Execute"
+            onClicked:{actionList.sendCommand("exec");
                 globalStates.state = "execution"
-                map.toLoad = map.realCamera
-                commandPublisher.text = "go"
             }
+            visible: drawingGui.visible
+        }
+        GuiButton{
+            id: simulateButton
+            z:10
+            anchors.bottom: commandButton.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Simulate"
+            onClicked:{
+                 actionList.sendCommand("sim");
+                globalStates.state = "simulation"
+            }
+            visible: drawingGui.visible
+        }
+        GuiButton{
+            id: deleteButton
+            z:10
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: parent.width/4
+            anchors.verticalCenter: commandButton.verticalCenter
+            text: "Delete"
+            onClicked:{
+                figures.currentItem.destroy()
+                figures.currentItem = null
+            }
+            visible: drawingGui.visible
         }
     }
+
     Item{
         id:executionGui
         visible: false
@@ -331,55 +317,6 @@ Window {
         id:drawingGui
         anchors.fill: parent
         visible: false
-
-        GuiButton{
-            id: resetButton
-            z:10
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.topMargin: 2*height
-            text: "Reset Robot"
-            onClicked:{
-                globalStates.state = "execution"
-                commandPublisher.text = "reset_position"
-            }
-        }
-
-        GuiButton{
-            id: commandButton
-            z:10
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: height
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: -parent.width/4
-            text: "Execute"
-            onClicked:{actionList.sendCommand("exec");
-                globalStates.state = "execution"
-            }
-        }
-        GuiButton{
-            id: simulateButton
-            z:10
-            anchors.bottom: commandButton.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "Simulate"
-            onClicked:{
-                 actionList.sendCommand("sim");
-                globalStates.state = "simulation"
-            }
-        }
-        GuiButton{
-            id: deleteButton
-            z:10
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: parent.width/4
-            anchors.verticalCenter: commandButton.verticalCenter
-            text: "Delete"
-            onClicked:{
-                figures.currentItem.destroy()
-                figures.currentItem = null
-            }
-        }
     }
     GuiButton{
         id: gestureEditButton
@@ -666,6 +603,90 @@ Window {
         anchors.right: parent.right
         width: parent.width-map.paintedWidth
         height: parent.height
+        GuiButton{
+            id: resetButton
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width*.8
+            z:10
+            anchors.top: parent.top
+            anchors.topMargin: 2*height
+            text: "Reset Robot"
+            onClicked:{
+                globalStates.state = "execution"
+                commandPublisher.text = "reset_position"
+            }
+            visible: drawingGui.visible
+        }
+
+        GuiButton{
+            id: viewButton
+            z:10
+            visible: true
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: height/2
+            width: parent.width*.8
+            text: "Switch View"
+            onClicked:{
+                console.log(globalStates.state)
+                switch(globalStates.state){
+                    case "visualization":
+                        globalStates.state = "drawing"
+                        map.toLoad = map.realCamera
+                        commandPublisher.text = "init_gui"
+                        break
+
+                    case "drawing":
+                        globalStates.state = "visualization"
+                        map.toLoad = map.virtualCamera
+                        commandPublisher.text = "unlock"
+                        break
+
+                    case "simulation":
+                        globalStates.state = "drawing"
+                        commandPublisher.text = "stop"
+                        break
+
+                    case "execution":
+                        globalStates.state = "drawing"
+                        break
+                }
+                console.log(globalStates.state)
+            }
+        }
+        GuiButton{
+            id: lockViewButton
+            visible: false
+            z:10
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width*.8
+
+            anchors.top: viewButton.bottom
+            anchors.topMargin: height/2
+            text: "Lock View"
+            onClicked:{
+                globalStates.state = "drawing"
+                commandPublisher.text = "lock"
+            }
+        }
+        GuiButton{
+            id: goToButton
+            visible: false
+            z:10
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width*.8
+
+            anchors.top: lockViewButton.bottom
+            anchors.topMargin: height/2
+            text: "Go to View"
+            onClicked:{
+                globalStates.state = "execution"
+                map.toLoad = map.realCamera
+                commandPublisher.text = "go"
+            }
+        }
+
         Rectangle {
             id: actionTracker
             anchors.right: parent.right
@@ -679,10 +700,14 @@ Window {
                 Item {
                     width: actionTracker.width; height: 80
                     Column {
-                        Text { text: '<b>'+name+':</b>' + targetDisplay
+                        Text { text: ' '+name+':'
                             width: actionTracker.width
                             font.strikeout: done
-                            wrapMode: Text.Wrap
+                            font.bold: true
+                        }
+                        Text { text: ' ' + targetDisplay
+                            width: actionTracker.width
+                            font.strikeout: done
                         }
                     }
                 }
