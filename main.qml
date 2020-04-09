@@ -11,11 +11,9 @@ Window {
     id: window
 
     visible: true
-    visibility: Window.FullScreen
-    //width: Screen.width
-    //height: Screen.height
-    width:3020
-    height: 1880
+    //visibility: Window.FullScreen
+    width: 2736
+    height: 1824
 
     property int prevWidth:800
     property int prevHeight:600
@@ -41,11 +39,14 @@ Window {
         anchors.fill: parent
         Image {
             id: map
-            fillMode: Image.PreserveAspectFit
-            anchors.fill: parent
+            fillMode: Image.PreserveAspectCrop
+            anchors.top: parent.top
+            width: parent.width
+            height: parent.height
             property string toLoad: realCamera
+            property string realCamera: "res/default.jpg"
             //property string realCamera: "image://rosimage/rgb/image_raw"
-            property string realCamera: virtualCamera
+            //property string realCamera: virtualCamera
             property string virtualCamera: "image://rosimage/virtual_camera/image"
             property bool useRealImage: true
             source: toLoad
@@ -182,7 +183,7 @@ Window {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: -parent.width/4
             text: "Execute"
-            onClicked:{actionList.sendCommand("exec");
+            onClicked:{gamePlan.sendCommand("exec");
                 globalStates.state = "execution"
             }
             visible: drawingGui.visible
@@ -194,7 +195,7 @@ Window {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Simulate"
             onClicked:{
-                 actionList.sendCommand("sim");
+                gamePlan.sendCommand("sim");
                 globalStates.state = "simulation"
             }
             visible: drawingGui.visible
@@ -371,7 +372,7 @@ Window {
                 if(globalStates.state === 'simulation'){
                     for (var i = 0; i<figures.children.length;i++)
                             figures.children[i].done = false
-                    actionList.update()
+                    gamePlan.update()
                 }
                 globalStates.state = "drawing"
                 return
@@ -383,7 +384,7 @@ Window {
                 var target = cmd[1]
                 for (var i = 0; i<figures.children.length;i++){
                     if(figures.children[i].testDone(name, target)){
-                        actionList.update()
+                        gamePlan.update()
                         break
                     }
                 }
@@ -548,55 +549,6 @@ Window {
         PaletteElement{index:3}
     }
 
-    ListModel {
-        id: actionList
-        function update(){
-            var actions = []
-            actions.length = 0
-            for(var i=0;i<figures.children.length;i++){
-                var action = figures.children[i].getAction()
-                console.log(action)
-                actions = actions.concat(action)
-            }
-            //if(actions.length !== figures.children.length)
-            //    return
-            //actions.sort(compare)
-            actionList.clear()
-            for(var i=0;i<actions.length;i++){
-                actionList.append(actions[i])
-            }
-
-            if(globalStates.state === "drawing"){
-                sendCommand("viz")
-            }
-        }
-        function compare(a, b) {
-            if(a.order<b.order)
-                return -1
-            if(a.order>b.order)
-                return 1
-            var order = ["Move","Pick","Screw","Place","Wipe","Inspect"]
-            if(order.indexOf(a.name)<order.indexOf(b.name))
-                return -1
-            return 1
-        }
-        function sendCommand(type,actionToInsert=""){
-            var str=type
-            if(actionToInsert !== "")
-                str+=';'+actionToInsert
-            for (var i=0;i<actionList.count;i++) {
-                if(!actionList.get(i).done)
-                    str+=";"+actionList.get(i).name+":"+actionList.get(i).target
-            }
-            str+=";Reset"
-            commandPublisher.text=str
-        }
-    }
-    Timer{
-        id: timerUpdateActions
-        interval: 100
-        onTriggered:actionList.update()
-    }
     Rectangle{
         id: infoArea
         anchors.top: parent.top
@@ -686,44 +638,16 @@ Window {
                 commandPublisher.text = "go"
             }
         }
-
-        Rectangle {
-            id: actionTracker
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            height: 2*parent.height/3
-            width: parent.width
-            z:100
-
-            Component {
-                id: actionDelegate
-                Item {
-                    width: actionTracker.width; height: 80
-                    Column {
-                        Text { text: ' '+name+':'
-                            width: actionTracker.width
-                            font.strikeout: done
-                            font.bold: true
-                        }
-                        Text { text: ' ' + targetDisplay
-                            width: actionTracker.width
-                            font.strikeout: done
-                        }
-                    }
-                }
-            }
-
-            ListView {
-                anchors.fill: parent
-                model: actionList
-
-                delegate: actionDelegate
-                focus: true
-            }
-        }
+    }
+    GamePlan{
+        id: gamePlan
     }
 
-
+    Timer{
+        id: timerUpdateActions
+        interval: 100
+        onTriggered:gamePlan.update()
+    }
 
     StateGroup {
         id: globalStates

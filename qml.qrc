@@ -21,5 +21,18 @@
         <file>SnapPoint.qml</file>
         <file>res/default.jpg</file>
         <file>GuiRadioButton.qml</file>
+        <file>res/plan.png</file>
+        <file>GamePlan.qml</file>
+        <file>res/hole.png</file>
+        <file>res/Inspect.png</file>
+        <file>res/Move.png</file>
+        <file>res/pusher.png</file>
+        <file>res/screw.png</file>
+        <file>res/Wipe.png</file>
+        <file>res/none.png</file>
+        <file>res/Blue.png</file>
+        <file>res/Green.png</file>
+        <file>res/Orange.png</file>
+        <file>res/Yellow.png</file>
     </qresource>
 </RCC>

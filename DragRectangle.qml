@@ -329,6 +329,8 @@ Item {
             a.order = rect.index
             a.color = rect.objColor
             a.done = rect.done
+            a.orig = "none_ "
+            a.dest = figures.colorNames[index]
             return [a]
         }
         var actions = []
