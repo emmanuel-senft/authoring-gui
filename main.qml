@@ -44,9 +44,9 @@ Window {
             width: parent.width
             height: parent.height
             property string toLoad: realCamera
-            property string realCamera: "res/default.jpg"
+            //property string realCamera: "res/default.jpg"
             //property string realCamera: "image://rosimage/rgb/image_raw"
-            //property string realCamera: virtualCamera
+            property string realCamera: virtualCamera
             property string virtualCamera: "image://rosimage/virtual_camera/image"
             property bool useRealImage: true
             source: toLoad
@@ -178,11 +178,12 @@ Window {
         GuiButton{
             id: commandButton
             z:10
-            anchors.bottom: displayArea.bottom
-            anchors.bottomMargin: height
-            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width/15
+            anchors.right: displayArea.right
+            anchors.rightMargin: width/2
+            anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenterOffset: -parent.width/4
-            text: "Execute"
+            name: "send"
             onClicked:{gamePlan.sendCommand("exec");
                 globalStates.state = "execution"
             }
@@ -191,9 +192,11 @@ Window {
         GuiButton{
             id: simulateButton
             z:10
-            anchors.bottom: commandButton.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "Simulate"
+            anchors.bottom: commandButton.top
+            anchors.bottomMargin: height/2
+            anchors.horizontalCenter: commandButton.horizontalCenter
+            name: "sim"
+            color: "#ffc27a"
             onClicked:{
                 gamePlan.sendCommand("sim");
                 globalStates.state = "simulation"
@@ -201,39 +204,147 @@ Window {
             visible: drawingGui.visible
         }
         GuiButton{
+            id: resetButton
+            anchors.horizontalCenter: commandButton.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: width/2
+            z:10
+            name: "reset"
+            onClicked:{
+                globalStates.state = "execution"
+                commandPublisher.text = "reset_position"
+            }
+            visible: drawingGui.visible
+        }
+        GuiButton{
             id: deleteButton
             z:10
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: parent.width/4
-            anchors.verticalCenter: commandButton.verticalCenter
-            text: "Delete"
+
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: width/2
+            anchors.left: parent.left
+            anchors.leftMargin: width/2
+            name: "del"
+            color: "red"
             onClicked:{
                 figures.currentItem.destroy()
                 figures.currentItem = null
             }
             visible: drawingGui.visible
         }
-    }
+        GuiButton{
+            id: viewButton
+            z:10
+            visible: true
+            anchors.horizontalCenter: commandButton.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: height/2
+            name: "switch"
+            color: "#ffc27a"
+            onClicked:{
+                console.log(globalStates.state)
+                switch(globalStates.state){
+                    case "visualization":
+                        globalStates.state = "drawing"
+                        map.toLoad = map.realCamera
+                        commandPublisher.text = "init_gui"
+                        break
 
-    Item{
-        id:executionGui
-        visible: false
-        anchors.fill: parent
+                    case "drawing":
+                        globalStates.state = "visualization"
+                        map.toLoad = map.virtualCamera
+                        commandPublisher.text = "unlock"
+                        break
+
+                    case "simulation":
+                        globalStates.state = "drawing"
+                        commandPublisher.text = "stop"
+                        break
+
+                    case "execution":
+                        globalStates.state = "drawing"
+                        break
+                }
+                console.log(globalStates.state)
+            }
+        }
+        GuiButton{
+            id: lockViewButton
+            visible: false
+            z:10
+            anchors.horizontalCenter: commandButton.horizontalCenter
+            anchors.top: viewButton.bottom
+            anchors.topMargin: height/2
+            name: "lock"
+            color: "FireBrick"
+            onClicked:{
+                globalStates.state = "drawing"
+                commandPublisher.text = "lock"
+            }
+        }
+        GuiButton{
+            id: goToButton
+            visible: false
+            z:10
+
+            anchors.horizontalCenter: commandButton.horizontalCenter
+            anchors.verticalCenter: commandButton.verticalCenter
+
+            name: "send"
+            onClicked:{
+                globalStates.state = "execution"
+                map.toLoad = map.realCamera
+                commandPublisher.text = "go"
+            }
+        }
         GuiButton{
             id: stopButton
             z:10
-            visible: true
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: -2.5*width
+            visible: executionGui.visible
+            anchors.right: parent.right
+            anchors.rightMargin: width/2
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: height
-            text: "Stop"
+            anchors.bottomMargin: height/2
+            name: "stop"
             color: "red"
             onClicked:{
                 commandPublisher.text = "stop"
                 globalStates.state = "drawing"
             }
         }
+        GuiButton{
+            id: pushButton
+            visible: roi.visible
+            z:20
+            anchors.horizontalCenter: stopButton.horizontalCenter
+            anchors.top: commandButton.bottom
+            anchors.topMargin: height/2
+            name: "push"
+            onClicked:{
+                globalStates.state = "execution"
+                eventPublisher.text = "act"
+                hideRoiTimer.start()
+            }
+        }
+        GuiButton{
+            id: nextButton
+            visible: roi.visible
+            z:30
+            anchors.horizontalCenter: stopButton.horizontalCenter
+            anchors.bottom: commandButton.top
+            anchors.bottomMargin: height/2
+            name: "next"
+            onClicked:{
+                globalStates.state = "execution"
+                eventPublisher.text = "skip"
+                hideRoiTimer.start()
+            }
+        }
+    }
+
+    Item{
+        id:executionGui
+        visible: false
     }
     Item{
         id:fdGui
@@ -259,37 +370,6 @@ Window {
         property bool waitPoi: false
         visible: false
         anchors.fill: parent
-        z:100
-        GuiButton{
-            id: pushButton
-            visible: roi.visible
-            z:20
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: 2.5*width
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: height
-            text: "Push"
-            onClicked:{
-                globalStates.state = "execution"
-                eventPublisher.text = "act"
-                hideRoiTimer.start()
-            }
-        }
-        GuiButton{
-            id: nextButton
-            visible: roi.visible
-            z:30
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: 1*width
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: height
-            text: "Next"
-            onClicked:{
-                globalStates.state = "execution"
-                eventPublisher.text = "skip"
-                hideRoiTimer.start()
-            }
-        }
         Timer{
             id: hideRoiTimer
             interval: 100
@@ -467,11 +547,13 @@ Window {
 
     }
 
+
     Item{
         id: pois
         visible: true
         property var cmd: null
         function addPoi(type,id,x,y){
+            console.log("adding"+type+id)
             var component = Qt.createComponent("POI.qml")
             var color = "red"
             if(type === "screw")
@@ -549,96 +631,6 @@ Window {
         PaletteElement{index:3}
     }
 
-    Rectangle{
-        id: infoArea
-        anchors.top: parent.top
-        anchors.right: parent.right
-        width: parent.width-map.paintedWidth
-        height: parent.height
-        GuiButton{
-            id: resetButton
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width*.8
-            z:10
-            anchors.top: parent.top
-            anchors.topMargin: 2*height
-            text: "Reset Robot"
-            onClicked:{
-                globalStates.state = "execution"
-                commandPublisher.text = "reset_position"
-            }
-            visible: drawingGui.visible
-        }
-
-        GuiButton{
-            id: viewButton
-            z:10
-            visible: true
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: height/2
-            width: parent.width*.8
-            text: "Switch View"
-            onClicked:{
-                console.log(globalStates.state)
-                switch(globalStates.state){
-                    case "visualization":
-                        globalStates.state = "drawing"
-                        map.toLoad = map.realCamera
-                        commandPublisher.text = "init_gui"
-                        break
-
-                    case "drawing":
-                        globalStates.state = "visualization"
-                        map.toLoad = map.virtualCamera
-                        commandPublisher.text = "unlock"
-                        break
-
-                    case "simulation":
-                        globalStates.state = "drawing"
-                        commandPublisher.text = "stop"
-                        break
-
-                    case "execution":
-                        globalStates.state = "drawing"
-                        break
-                }
-                console.log(globalStates.state)
-            }
-        }
-        GuiButton{
-            id: lockViewButton
-            visible: false
-            z:10
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width*.8
-
-            anchors.top: viewButton.bottom
-            anchors.topMargin: height/2
-            text: "Lock View"
-            onClicked:{
-                globalStates.state = "drawing"
-                commandPublisher.text = "lock"
-            }
-        }
-        GuiButton{
-            id: goToButton
-            visible: false
-            z:10
-
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: parent.width*.8
-
-            anchors.top: lockViewButton.bottom
-            anchors.topMargin: height/2
-            text: "Go to View"
-            onClicked:{
-                globalStates.state = "execution"
-                map.toLoad = map.realCamera
-                commandPublisher.text = "go"
-            }
-        }
-    }
     GamePlan{
         id: gamePlan
     }
@@ -660,17 +652,16 @@ Window {
             State {name: "visualization"
                 PropertyChanges { target: lockViewButton; visible: true }
                 PropertyChanges { target: goToButton; visible: true }
-                PropertyChanges { target: viewButton; text: "Return" }
                 PropertyChanges { target: pois; visible: false }
                 PropertyChanges { target: figures; visible: false}
                 PropertyChanges { target: drawingarea; enabled: false }
+                PropertyChanges { target: gamePlan; visible: false }
             },
             State {name: "simulation"
                 PropertyChanges { target: map; toLoad: virtualCamera}
                 PropertyChanges { target: pois; visible: false }
                 PropertyChanges { target: figures; visible: false}
                 PropertyChanges { target: drawingarea; enabled: false }
-                PropertyChanges { target: viewButton; text: "Exit Simulation"}
             },
             State {name: "wait"
                 PropertyChanges { target: waitGui; visible: true }
@@ -698,6 +689,7 @@ Window {
             }
     ]
         onStateChanged: {
+            console.log(globalStates.state)
             switch (globalStates.state){
                 case "gestureEdit":
                     break

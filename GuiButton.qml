@@ -9,6 +9,7 @@ Button{
     width: parent.width/20
     height: width
     property var color: "yellowgreen"
+    property var name: "plan"
     property var borderWidth: width/20
     style: ButtonStyle {
         background: Rectangle {
@@ -51,7 +52,7 @@ Button{
                id:img
                width: rectIn.width/1.41
                height: rectIn.height/1.41
-               source: "/res/plan.png"
+               source: "/res/"+name+".png"
                anchors.horizontalCenter: rect.horizontalCenter
                anchors.verticalCenter: rect.verticalCenter
 

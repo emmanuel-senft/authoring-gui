@@ -370,7 +370,7 @@ Item {
     }
 
     function poiUpdated(){
-        if(listPoints.length > 0){
+        if(listPoints.length > 0 && visible){
             var minX = width
             var maxX = 0
             var minY = height

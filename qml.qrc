@@ -34,5 +34,14 @@
         <file>res/Green.png</file>
         <file>res/Orange.png</file>
         <file>res/Yellow.png</file>
+        <file>res/del.png</file>
+        <file>res/lock.png</file>
+        <file>res/reset.png</file>
+        <file>res/send.png</file>
+        <file>res/sim.png</file>
+        <file>res/switch.png</file>
+        <file>res/next.png</file>
+        <file>res/push.png</file>
+        <file>res/stop.png</file>
     </qresource>
 </RCC>

@@ -14,7 +14,7 @@ Item {
         anchors.leftMargin: width/2
         anchors.top: parent.top
         anchors.topMargin: width/2
-        color: "orange"
+        color: "#ffc27a"
         onClicked:{
             actionTracker.visible = !actionTracker.visible
         }
@@ -25,7 +25,7 @@ Item {
         anchors.left: showPlanButton.left
         anchors.top: showPlanButton.bottom
         anchors.topMargin: showPlanButton.height/4
-        height: 200
+        height: 0
         width: parent.width / 5.5
         z:2
         color: "transparent"
@@ -34,11 +34,10 @@ Item {
         Label{
             id: title
             x:parent.width/10
-            y:x/2
-            font.bold: true
+            y:x/3
             font.pixelSize: 40
             height: map.height/30
-            text: "Game Plan"
+            text: "Game plan"
             verticalAlignment: Text.AlignVCenter
         }
         onHeightChanged: {
@@ -64,65 +63,80 @@ Item {
                     width: parent.width; height: 1*container.rowHeigth
                     Column{
                         spacing: .2*container.rowHeigth
-                        Row {
+                        Item{
                             width: parent.width; height: .7*container.rowHeigth
-                            Row {
-                                width: parent.width/2.2; height: parent.height
-                                spacing: width/20
-                                Item{
-                                    width: parent.width/4
-                                    height: parent.height
-                                    Image{
-                                       anchors.fill:parent
-                                       source: "/res/"+orig.split("_")[0]+".png"
-                                       fillMode: Image.PreserveAspectFit
-                                    }
-                                    Text{
-                                        anchors.fill: parent
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                        text: orig.split("_")[1]
-                                        color: "white"
-                                        font.bold: true
-                                        font.pixelSize: 30
-                                    }
-                                }
-                                Item{
-                                    width: parent.width/4
-                                    height: parent.height
-                                    Image{
-                                       anchors.fill:parent
-                                       source: "/res/"+name+".png"
-                                       fillMode: Image.PreserveAspectFit
-                                    }
-                                }
-                                Item{
-                                    width: parent.width/4
-                                    height: parent.height
-                                    Image{
-                                       anchors.fill:parent
-                                       source: "/res/"+dest.split("_")[0]+".png"
-                                       fillMode: Image.PreserveAspectFit
-                                    }
-                                    Text{
-                                        anchors.fill: parent
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                        text: dest.split("_")[1]
-                                        color: "white"
-                                        font.bold: true
-                                        font.pixelSize: 30
-                                    }
-                                }
+                            Rectangle{
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: parent.width
+                                height: .15*parent.height
+                                visible: done
+                                color: "white"
+                                opacity: .8
+                                z:5
                             }
-                            Text {
-                                text: name+' ' + targetDisplay
-                                width: actionTracker.width/2.2
-                                font.strikeout: done
-                                wrapMode: Text.WordWrap
+                            Row {
+                                anchors.fill: parent
+                                Row {
+                                    width: parent.width/2.2; height: parent.height
+                                    spacing: width/40
+                                    Item{
+                                        width: parent.width/3
+                                        height: parent.height
+                                        Image{
+                                           anchors.fill:parent
+                                           source: "/res/"+orig.split("_")[0]+".png"
+                                           fillMode: Image.PreserveAspectFit
+                                        }
+                                        Text{
+                                            anchors.fill: parent
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                            text: orig.split("_")[1]
+                                            color: "white"
+                                            font.bold: true
+                                            font.pixelSize: 30
+                                        }
+                                    }
+                                    Item{
+                                        width: parent.width/5
+                                        height: parent.height
+                                        Image{
+                                           anchors.fill:parent
+                                           source: "/res/"+name+".png"
+                                           fillMode: Image.PreserveAspectFit
+                                        }
+                                    }
+                                    Item{
+                                        width: parent.width/3
+                                        height: parent.height
+                                        Image{
+                                           anchors.fill:parent
+                                           source: "/res/"+dest.split("_")[0]+".png"
+                                           fillMode: Image.PreserveAspectFit
+                                        }
+                                        Text{
+                                            anchors.fill: parent
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                            text: dest.split("_")[1]
+                                            color: "white"
+                                            font.bold: true
+                                            font.pixelSize: 30
+                                        }
+                                    }
+                                }
+                                Text {
+                                    text: name+' ' + targetDisplay
+                                    width: actionTracker.width/2.2
+                                    height: parent.height
+                                    wrapMode: Text.WordWrap
+                                    font.italic: true
+                                    verticalAlignment: Text.AlignVCenter
+                                }
                             }
                         }
-                        Rectangle{
+                         Rectangle{
                             width:container.width
                             height: 2
                             color: "grey"

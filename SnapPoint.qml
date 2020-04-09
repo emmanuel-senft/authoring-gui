@@ -214,18 +214,21 @@ Item{
 
     function getAction(){
         target = snappedPoi.name
+        var a={}
+        a.orig = "none_ "
         if(action === "Move"){
             if (origin.name === snappedPoi.name)
                 return []
             target = origin.name +"-"+snappedPoi.name
+            a.orig = origin.name
         }
-        var a={}
         a.name = anchor.action
         a.target = target
         a.targetDisplay = target.replace(/_/g," ").replace('-',' to ')
         a.order = container.index
         a.color = container.objColor
         a.done = anchor.done
+        a.dest = snappedPoi.name
         console.log(a.name)
         console.log(a.targetDisplay)
         return a
