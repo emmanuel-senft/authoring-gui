@@ -363,10 +363,12 @@ Item {
     }
 
     function getAction(){
-        action = ""
+        var str = ""
+        str = ""
         if(inspect.checked)
-            action+="Inspect-"
-        action+=actionType.selected
+            str+="Inspect-"
+        str+=actionType.selected
+        action = str
 
         if (action === "Wipe"){
             var a ={}
@@ -378,7 +380,7 @@ Item {
             a.done = rect.done
             a.img1 = "none_ "
             a.img2 = a.name
-            a.img3 = figures.colorNames[index]
+            a.img3 = figures.colorNames[index]+"_ "
             return [a]
         }
         var actions = []

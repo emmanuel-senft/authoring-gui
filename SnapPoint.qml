@@ -26,7 +26,7 @@ Item{
         height: width
         radius: width/2
         color: "red"
-        border.color: "steelblue"
+        border.color: objColor
         border.width:width/3
     }
 
@@ -37,7 +37,18 @@ Item{
             type = snappedPoi.type
             updateParam()
         }
-
+    }
+    onActionChanged: {
+        console.log("----------------")
+        console.log(action)
+        if(action.includes("Move")){
+            mouseArea.enabled = true
+        }
+        else{
+            mouseArea.enabled = false
+            snapRect.visible = false
+            snappedPoi=origin
+        }
     }
 
     MouseArea {
@@ -226,7 +237,7 @@ Item{
         if(action.includes("Inspect")){
             a.img2 = "Inspect"
             if(!action.includes("Move")){
-                a.img1 = action.split("-")[1]
+                a.img1 = action.split("-")[1]+"_ "
             }
         }
         else
