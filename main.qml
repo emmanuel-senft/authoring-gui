@@ -258,7 +258,7 @@ Window {
 
                     case "simulation":
                         globalStates.state = "drawing"
-                        commandPublisher.text = "stop"
+                        commandPublisher.text = "stop_sim"
                         break
 
                     case "execution":
@@ -321,7 +321,7 @@ Window {
             anchors.topMargin: height/2
             name: "act"
             onClicked:{
-                globalStates.state = "execution"
+                waitGui.visible = false
                 eventPublisher.text = "act"
                 hideRoiTimer.start()
             }
@@ -335,7 +335,7 @@ Window {
             anchors.bottomMargin: height/2
             name: "skip"
             onClicked:{
-                globalStates.state = "execution"
+                waitGui.visible = false
                 eventPublisher.text = "skip"
                 hideRoiTimer.start()
             }
@@ -449,11 +449,6 @@ Window {
         text:""
         onTextChanged:{
             if(text === "motion_finished"){
-                if(globalStates.state === 'simulation'){
-                    for (var i = 0; i<figures.children.length;i++)
-                            figures.children[i].done = false
-                    gamePlan.update()
-                }
                 globalStates.state = "drawing"
                 return
             }
@@ -470,13 +465,15 @@ Window {
                 }
             }
             if (cmd[0] === "wait"){
-                globalStates.state = "wait"
-                for(var j =0;j<pois.children.length;j++){
-                    var poi = pois.children[j]
-                    if(poi.name === cmd[1]){
-                        roi.poi = poi
-                        roi.x = poi.x-roi.width/2
-                        roi.y = poi.y-roi.width/2
+                if(globalStates.state !== "drawing"){
+                    waitGui.visible = true
+                    for(var j =0;j<pois.children.length;j++){
+                        var poi = pois.children[j]
+                        if(poi.name === cmd[1]){
+                            roi.poi = poi
+                            roi.x = poi.x-roi.width/2
+                            roi.y = poi.y-roi.width/2
+                        }
                     }
                 }
             }
@@ -663,14 +660,6 @@ Window {
                 PropertyChanges { target: figures; visible: false}
                 PropertyChanges { target: drawingarea; enabled: false }
             },
-            State {name: "wait"
-                PropertyChanges { target: waitGui; visible: true }
-                PropertyChanges { target: executionGui; visible: true}
-                PropertyChanges { target: pois; visible: false }
-                PropertyChanges { target: figures; visible: false}
-                PropertyChanges { target: drawingarea; enabled: false }
-                PropertyChanges { target: viewButton; visible: false}
-            },
             State {name: "execution"
                 //PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
                 PropertyChanges { target: pois; visible: false }
@@ -694,6 +683,10 @@ Window {
                 case "gestureEdit":
                     break
                 case "drawing":
+                    waitGui.visible = false
+                    for (var i = 0; i<figures.children.length;i++)
+                            figures.children[i].doneSim = false
+                    gamePlan.update()
                     break
                 case "visualization":
                     break

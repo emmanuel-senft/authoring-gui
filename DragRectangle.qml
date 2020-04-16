@@ -15,6 +15,7 @@ Item {
     property var action: "undefined"
     property var target: "undefined"
     property var done: false
+    property var doneSim: false
 
     property var p0Coord: null
     property var p1Coord: null
@@ -377,7 +378,7 @@ Item {
             a.targetDisplay = rect.target
             a.order = rect.index
             a.color = rect.objColor
-            a.done = rect.done
+            a.done = done || doneSim
             a.img1 = "none_ "
             a.img2 = a.name
             a.img3 = figures.colorNames[index]+"_ "
@@ -413,10 +414,10 @@ Item {
         }
         return false
     }
-    onDoneChanged: {
-        if(!done)
+    onDoneSimChanged: {
+        if(!doneSim)
             for(var i =0; i < listPoints.length; i++)
-                listPoints[i].done = false
+                listPoints[i].doneSim = false
     }
 
     function poiUpdated(){

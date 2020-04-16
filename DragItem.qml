@@ -16,6 +16,7 @@ Item {
     property var target: "undefined"
     property var targetDisplay: "undefined"
     property bool done: false
+    property bool doneSim: false
 
     opacity: 1
     z:10
@@ -120,7 +121,7 @@ Item {
         a.targetDisplay = item.targetDisplay
         a.order = item.index
         a.color = item.objColor
-        a.done = item.done
+        a.done = done || doneSim
         a.img1 = "none_"
         a.img2 = a.name
         a.img3 = "unknown_ "
@@ -128,8 +129,10 @@ Item {
     }
     function testDone(act, t){
         if(action === act && target === t){
-            item.done = true
-            return true
+            if(globalStates.state === "simulation")
+                doneSim = true
+            else
+                done = true
         }
         return false
     }

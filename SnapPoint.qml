@@ -13,6 +13,7 @@ Item{
     property var container: null
     property var target: null
     property var done: false
+    property var doneSim: false
     property var action: container.action
     z:30
     opacity: .5
@@ -39,8 +40,6 @@ Item{
         }
     }
     onActionChanged: {
-        console.log("----------------")
-        console.log(action)
         if(action.includes("Move")){
             mouseArea.enabled = true
         }
@@ -246,7 +245,7 @@ Item{
         a.targetDisplay = target.replace(/_/g," ").replace('-',' to ')
         a.order = container.index
         a.color = container.objColor
-        a.done = anchor.done
+        a.done = done || doneSim
         a.img3 = snappedPoi.name
         console.log(a.name)
         console.log(a.targetDisplay)
@@ -255,7 +254,10 @@ Item{
 
     function testDone(act, t){
         if(action.includes(act) && target === t){
-            done = true
+            if(globalStates.state === "simulation")
+                doneSim = true
+            else
+                done = true
             return true
         }
         return false
