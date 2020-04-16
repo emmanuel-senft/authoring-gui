@@ -37,7 +37,6 @@ Item {
                 objects.visible = ! objects.visible
             }
         }
-
     }
 
     Canvas {
@@ -104,8 +103,49 @@ Item {
         id: actionType
         buttons: actions.children
         property var selected: ""
-        onSelectedChanged: action = selected
+        onSelectedChanged: updateAction()
     }
+    CheckBox {
+        id: inspect
+        anchors.top: p3.bottom
+        anchors.left:p3.right
+        checked: false
+        visible:objects.visible
+        indicator: Rectangle {
+            implicitWidth: 26
+            implicitHeight: 26
+            x: inspect.leftPadding
+            y: parent.height / 2 - height / 2
+            radius: 3
+            border.color: inspect.down ? "#696969" : "black"
+
+            Rectangle {
+                width: 14
+                height: 14
+                x: 6
+                y: 6
+                radius: 2
+                color: inspect.down ? "#696969" : "black"
+                visible: inspect.checked
+            }
+        }
+        contentItem: Text {
+            text: "Inspect"
+            font.family: "Helvetica"
+            font.pointSize: 15
+            font.bold: true
+            style: Text.Outline
+            styleColor: "black"
+            color: "white"
+            verticalAlignment: Text.AlignVCenter
+            leftPadding: inspect.indicator.width + inspect.spacing
+        }
+        onCheckedChanged: updateAction()
+    }
+    function updateAction(){
+        timerUpdateActions.restart()
+    }
+
     Column {
         id: actions
         visible:objects.visible
@@ -123,7 +163,7 @@ Item {
                 name:text
             }
             GuiRadioButton {
-                text: "Inspect"
+                text: "Push"
                 group: actionType
                 name:text
             }
@@ -196,18 +236,20 @@ Item {
         if(text === "screw")
             action = "Move"
         if(text === "pusher")
-            action = "Inspect"
+            action = "Inspect-Push"
         if(text === ""){
             action = "Wipe"
             target = figures.colorNames[index]+" Area"
         }
         for(var i =0; i<actions.children[0].children.length;i++){
             console.log(actions.children[0].children[i].name)
-            if(actions.children[0].children[i].name === action){
+            if(action.includes(actions.children[0].children[i].name)){
                 actions.children[0].children[i].checked = true
                 break
             }
         }
+        if(action.includes("Inspect"))
+            inspect.checked = true
         objColor = figures.colors[index]
         currentItem = true
 
@@ -321,6 +363,11 @@ Item {
     }
 
     function getAction(){
+        action = ""
+        if(inspect.checked)
+            action+="Inspect-"
+        action+=actionType.selected
+
         if (action === "Wipe"){
             var a ={}
             a.name = rect.action
@@ -329,8 +376,9 @@ Item {
             a.order = rect.index
             a.color = rect.objColor
             a.done = rect.done
-            a.orig = "none_ "
-            a.dest = figures.colorNames[index]
+            a.img1 = "none_ "
+            a.img2 = a.name
+            a.img3 = figures.colorNames[index]
             return [a]
         }
         var actions = []
@@ -382,10 +430,10 @@ Item {
                     allInHull = false
                 }
                 listPoints[i].poiUpdated()
-                minX = Math.min(minX,listPoints[i].origin.x-width/40)
-                maxX = Math.max(maxX,listPoints[i].origin.x+width/40)
-                minY = Math.min(minY,listPoints[i].origin.y-height/40)
-                maxY = Math.max(maxY,listPoints[i].origin.y+height/40)
+                minX = Math.min(minX,listPoints[i].origin.x-width/100)
+                maxX = Math.max(maxX,listPoints[i].origin.x+width/100)
+                minY = Math.min(minY,listPoints[i].origin.y-height/100)
+                maxY = Math.max(maxY,listPoints[i].origin.y+height/100)
             }
             if (!allInHull){
                 p0.x = minX
@@ -398,6 +446,5 @@ Item {
                 p3.y = maxY
             }
         }
-
     }
 }

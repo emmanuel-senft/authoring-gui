@@ -26,7 +26,7 @@ Item {
         anchors.top: showPlanButton.bottom
         anchors.topMargin: showPlanButton.height/4
         height: 0
-        width: parent.width / 5.5
+        width: parent.width / 5
         z:2
         color: "transparent"
         border.color: "transparent"
@@ -69,10 +69,10 @@ Item {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: parent.width
-                                height: .15*parent.height
+                                height: container.rowHeigth + list.spacing
                                 visible: done
                                 color: "white"
-                                opacity: .8
+                                opacity: .7
                                 z:5
                             }
                             Row {
@@ -81,45 +81,45 @@ Item {
                                     width: parent.width/2.2; height: parent.height
                                     spacing: width/40
                                     Item{
-                                        width: parent.width/3
+                                        width: parent.width/3.2
                                         height: parent.height
                                         Image{
                                            anchors.fill:parent
-                                           source: "/res/"+orig.split("_")[0]+".png"
+                                           source: "/res/"+img1.split("_")[0]+".png"
                                            fillMode: Image.PreserveAspectFit
                                         }
                                         Text{
                                             anchors.fill: parent
                                             horizontalAlignment: Text.AlignHCenter
                                             verticalAlignment: Text.AlignVCenter
-                                            text: orig.split("_")[1]
+                                            text: img1.split("_")[1]
                                             color: "white"
                                             font.bold: true
                                             font.pixelSize: 30
                                         }
                                     }
                                     Item{
-                                        width: parent.width/5
+                                        width: parent.width/3.2
                                         height: parent.height
                                         Image{
                                            anchors.fill:parent
-                                           source: "/res/"+name+".png"
+                                           source: "/res/"+img2+".png"
                                            fillMode: Image.PreserveAspectFit
                                         }
                                     }
                                     Item{
-                                        width: parent.width/3
+                                        width: parent.width/3.2
                                         height: parent.height
                                         Image{
                                            anchors.fill:parent
-                                           source: "/res/"+dest.split("_")[0]+".png"
+                                           source: "/res/"+img3.split("_")[0]+".png"
                                            fillMode: Image.PreserveAspectFit
                                         }
                                         Text{
                                             anchors.fill: parent
                                             horizontalAlignment: Text.AlignHCenter
                                             verticalAlignment: Text.AlignVCenter
-                                            text: dest.split("_")[1]
+                                            text: img3.split("_")[1]
                                             color: "white"
                                             font.bold: true
                                             font.pixelSize: 30
@@ -137,6 +137,7 @@ Item {
                             }
                         }
                          Rectangle{
+                            id: separator
                             width:container.width
                             height: 2
                             color: "grey"
@@ -147,6 +148,7 @@ Item {
             }
 
             ListView {
+                id:list
                 anchors.fill: parent
                 model: actionList
                 spacing: .1*container.rowHeigth
@@ -249,8 +251,15 @@ Item {
         if(actionToInsert !== "")
             str+=';'+actionToInsert
         for (var i=0;i<actionList.count;i++) {
-            if(!actionList.get(i).done)
-                str+=";"+actionList.get(i).name+":"+actionList.get(i).target
+            var a = actionList.get(i)
+            if(!a.done){
+                if(a.name.includes("-")){
+                    str+=";"+a.name.split("-")[0]+":"+actionList.get(i).target
+                    str+=";"+a.name.split("-")[1]+":"+actionList.get(i).target
+                }
+                else
+                    str+=";"+actionList.get(i).name+":"+actionList.get(i).target
+            }
         }
         str+=";Reset"
         commandPublisher.text=str

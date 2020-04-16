@@ -215,27 +215,35 @@ Item{
     function getAction(){
         target = snappedPoi.name
         var a={}
-        a.orig = "none_ "
-        if(action === "Move"){
+        a.img1 = "none_ "
+        a.name = action
+        if(action.includes("Move")){
             if (origin.name === snappedPoi.name)
                 return []
             target = origin.name +"-"+snappedPoi.name
-            a.orig = origin.name
+            a.img1 = origin.name
         }
-        a.name = anchor.action
+        if(action.includes("Inspect")){
+            a.img2 = "Inspect"
+            if(!action.includes("Move")){
+                a.img1 = action.split("-")[1]
+            }
+        }
+        else
+            a.img2 = action
         a.target = target
         a.targetDisplay = target.replace(/_/g," ").replace('-',' to ')
         a.order = container.index
         a.color = container.objColor
         a.done = anchor.done
-        a.dest = snappedPoi.name
+        a.img3 = snappedPoi.name
         console.log(a.name)
         console.log(a.targetDisplay)
         return a
     }
 
     function testDone(act, t){
-        if(action === act && target === t){
+        if(action.includes(act) && target === t){
             done = true
             return true
         }

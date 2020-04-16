@@ -97,7 +97,7 @@ Item {
             targetDisplay = figures.colorNames[index]+" Area"
         else
             targetDisplay = target.replace("_"," ")
-        actionList.update()
+        gamePlan.update()
     }
 
     onCurrentItemChanged: {
@@ -121,6 +121,9 @@ Item {
         a.order = item.index
         a.color = item.objColor
         a.done = item.done
+        a.img1 = "none_"
+        a.img2 = a.name
+        a.img3 = "unknown_ "
         return [a]
     }
     function testDone(act, t){

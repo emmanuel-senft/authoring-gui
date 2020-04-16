@@ -313,13 +313,13 @@ Window {
             }
         }
         GuiButton{
-            id: pushButton
+            id: actButton
             visible: roi.visible
             z:20
             anchors.horizontalCenter: stopButton.horizontalCenter
             anchors.top: commandButton.bottom
             anchors.topMargin: height/2
-            name: "push"
+            name: "act"
             onClicked:{
                 globalStates.state = "execution"
                 eventPublisher.text = "act"
@@ -333,7 +333,7 @@ Window {
             anchors.horizontalCenter: stopButton.horizontalCenter
             anchors.bottom: commandButton.top
             anchors.bottomMargin: height/2
-            name: "next"
+            name: "skip"
             onClicked:{
                 globalStates.state = "execution"
                 eventPublisher.text = "skip"

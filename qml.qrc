@@ -41,7 +41,11 @@
         <file>res/sim.png</file>
         <file>res/switch.png</file>
         <file>res/next.png</file>
-        <file>res/push.png</file>
         <file>res/stop.png</file>
+        <file>res/Pick.png</file>
+        <file>res/unknown.png</file>
+        <file>res/act.png</file>
+        <file>res/Push.png</file>
+        <file>res/skip.png</file>
     </qresource>
 </RCC>
