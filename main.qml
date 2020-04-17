@@ -203,6 +203,12 @@ Window {
             }
             visible: drawingGui.visible
         }
+
+        VirtualMouse{
+            id: virtualMouse
+            visible: drawingGui.visible
+            anchors.horizontalCenter: commandButton.horizontalCenter
+        }
         GuiButton{
             id: resetButton
             anchors.horizontalCenter: commandButton.horizontalCenter
@@ -507,41 +513,6 @@ Window {
 
     Recognizer{
         id: recognizer
-    }
-
-
-    Item{
-        id: virtualMouseCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: parent.height/2.
-        anchors.right: parent.right
-        anchors.rightMargin: parent.width/2.
-    }
-    Rectangle{
-        id:virtualMouse
-        visible: false
-        x:virtualMouseCenter.x
-        y:virtualMouseCenter.y
-        width: parent.width/5
-        height: width
-        color: "red"
-        radius: height/2
-        PinchHandler {
-            id: handler
-            onActiveChanged: {
-                if(!active){
-                    virtualMouse.x=virtualMouseCenter.x
-                    virtualMouse.y=virtualMouseCenter.y
-                    virtualMouse.scale = 1
-                    virtualMouse.rotation = 0
-                    commandPublisher.text = "mouse;0:0:0:0:0"
-                }
-            }
-        }
-        onXChanged: {
-            commandPublisher.text = "mouse;"+parseInt(handler.translation.y)+":"+parseInt(handler.translation.x)+":"+parseInt(100*(handler.scale-1))+":"+parseInt(handler.rotation)
-        }
-
     }
 
 

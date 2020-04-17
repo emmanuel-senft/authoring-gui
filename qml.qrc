@@ -47,5 +47,7 @@
         <file>res/act.png</file>
         <file>res/Push.png</file>
         <file>res/skip.png</file>
+        <file>VirtualMouse.qml</file>
+        <file>res/drag.png</file>
     </qresource>
 </RCC>
