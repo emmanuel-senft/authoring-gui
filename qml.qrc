@@ -49,6 +49,8 @@
         <file>res/skip.png</file>
         <file>VirtualMouse.qml</file>
         <file>res/drag.png</file>
+        <file>res/zoom_in.png</file>
+        <file>res/zoom_out.png</file>
         <file>res/Loosen.png</file>
         <file>res/Tighten.png</file>
     </qresource>

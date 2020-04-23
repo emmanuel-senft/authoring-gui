@@ -204,11 +204,45 @@ Window {
             }
             visible: drawingGui.visible
         }
+        GuiButton{
+            id: zoomInButton
+            z:10
+            width: parent.width/25
+            anchors.bottom: virtualMouse.top
+            anchors.bottomMargin: 1.5*height
+            anchors.horizontalCenter: commandButton.horizontalCenter
+            anchors.horizontalCenterOffset: width/1.5
+            name: "zoom_in"
+            color: "steelblue"
+            onClicked:{
+                moving = true
+                commandPublisher.text = "zoom_in"
+            }
+            visible: drawingGui.visible
+        }
+        GuiButton{
+            id: zoomOutButton
+            z:10
+            width: zoomInButton.width
+            anchors.verticalCenter: zoomInButton.verticalCenter
+            anchors.horizontalCenter: commandButton.horizontalCenter
+            anchors.horizontalCenterOffset: -width/1.5
+            name: "zoom_out"
+            color: "steelblue"
+            onClicked:{
+                moving = true
+                commandPublisher.text = "zoom_out"
+            }
+            visible: drawingGui.visible
+        }
 
         VirtualMouse{
             id: virtualMouse
+            z:11
             visible: drawingGui.visible
             anchors.horizontalCenter: commandButton.horizontalCenter
+            anchors.bottom: resetButton.top
+            anchors.bottomMargin: 1.*resetButton.height
         }
         GuiButton{
             id: resetButton
