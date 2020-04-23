@@ -520,6 +520,37 @@ Window {
         id: recognizer
     }
 
+    Item{
+        id: movedPois
+        z:100
+
+        function updatePoi(type,id,x,y,objColor){
+            var found = false
+            for(var i=0;i<movedPois.children.length;i++){
+                var poi = movedPois.children[i]
+
+                if(poi.type === type && poi.index === id && poi.color == objColor){
+                    poi.x = x
+                    poi.y = y
+                    found = true
+                    break
+                }
+            }
+            if(!found){
+                console.log("adding"+type+id)
+                var component = Qt.createComponent("POI.qml")
+                var poi = component.createObject(movedPois, {type:type,index:id,color:objColor,x:x,y:y})
+            }
+        }
+        function removePoi(type, index,objColor){
+            for(var i =0;i<movedPois.children.length;i++){
+                var poi = movedPois.children[i]
+                if (poi.type === type && poi.index === index && poi.color == objColor){
+                    movedPois.children[i].destroy()
+                }
+            }
+        }
+    }
 
     Item{
         id: pois

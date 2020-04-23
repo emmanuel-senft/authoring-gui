@@ -303,6 +303,14 @@ Item {
                 listPoints.push(anchor)
             }
         }
+        for(var i=0; i<movedPois.children.length; i++){
+            var poi = movedPois.children[i]
+            if (inHull(poi) && poi.type === type && ! currentPois.includes(poi.name)){
+                var component = Qt.createComponent("SnapPoint.qml");
+                var anchor = component.createObject(rect, {container:rect,snappedPoi:poi,type:poi.type,index:poi.index,x:poi.x,y:poi.y,objColor:figures.colors[rect.index],opacity:1,origin:poi});
+                listPoints.push(anchor)
+            }
+        }
         timerUpdateActions.start()
     }
 

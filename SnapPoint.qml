@@ -47,7 +47,11 @@ Item{
             mouseArea.enabled = false
             snapRect.visible = false
             snappedPoi=origin
+            movedPois.removePoi(origin.type, origin.index, objColor)
         }
+    }
+    Component.onDestruction: {
+        movedPois.removePoi(origin.type, origin.index, objColor)
     }
 
     MouseArea {
@@ -198,6 +202,10 @@ Item{
         if(dMin === rMax*rMax){
             snapRect.visible = false
             snappedPoi=null
+            movedPois.removePoi(origin.type, origin.index,objColor)
+        }
+        else{
+            movedPois.updatePoi(origin.type, origin.index,snappedPoi.x,snappedPoi.y,objColor)
         }
     }
     function doSnap(){
