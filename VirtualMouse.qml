@@ -61,10 +61,12 @@ Item{
                 onReleased: {
                     dragPoint.x=0
                     dragPoint.y=0
+                    moving = true
                     commandPublisher.text = "mouse;"+parseInt(dragPoint.x)+":"+parseInt(dragPoint.y)
                 }
             }
             onXChanged: {
+                moving = true
                 commandPublisher.text = "mouse;"+parseInt(dragPoint.x)+":"+parseInt(dragPoint.y)
             }
 

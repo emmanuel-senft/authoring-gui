@@ -19,6 +19,7 @@ Window {
     property int prevHeight:600
     property var initTime: 0
     property bool autonomous: false
+    property bool moving: false
    onWidthChanged: {
         prevWidth=width;
         pois.updatePois()
@@ -454,7 +455,11 @@ Window {
         topic: "/event"
         text:""
         onTextChanged:{
+            if(text === "start_exec"){
+                moving = true
+            }
             if(text === "motion_finished"){
+                    moving = false
                 globalStates.state = "drawing"
                 return
             }

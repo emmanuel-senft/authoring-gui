@@ -228,7 +228,7 @@ Item {
                 actionTracker.height = 0
             }
 
-            if(globalStates.state === "drawing"){
+            if(globalStates.state === "drawing" && !moving){
                 sendCommand("viz")
             }
         }
