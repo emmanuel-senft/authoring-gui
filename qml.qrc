@@ -49,5 +49,7 @@
         <file>res/skip.png</file>
         <file>VirtualMouse.qml</file>
         <file>res/drag.png</file>
+        <file>res/Loosen.png</file>
+        <file>res/Tighten.png</file>
     </qresource>
 </RCC>

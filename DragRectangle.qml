@@ -159,7 +159,12 @@ Item {
                 name:text
             }
             GuiRadioButton {
-                text: "Screw"
+                text: "Tighten"
+                group: actionType
+                name:text
+            }
+            GuiRadioButton {
+                text: "Loosen"
                 group: actionType
                 name:text
             }
