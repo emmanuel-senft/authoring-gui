@@ -46,8 +46,8 @@ Window {
             height: parent.height
             property string toLoad: realCamera
             //property string realCamera: "res/default.jpg"
-            //property string realCamera: "image://rosimage/rgb/image_raw"
-            property string realCamera: virtualCamera
+            property string realCamera: "image://rosimage/rgb/image_raw"
+            //property string realCamera: virtualCamera
             property string virtualCamera: "image://rosimage/virtual_camera/image"
             property bool useRealImage: true
             source: toLoad
@@ -581,7 +581,7 @@ Window {
                 var poi = component.createObject(movedPois, {type:type,index:id,color:objColor,x:x,y:y})
             }
         }
-        function removePoi(type, index,objColor){
+        function removePoi(type, index, objColor){
             for(var i =0;i<movedPois.children.length;i++){
                 var poi = movedPois.children[i]
                 if (poi.type === type && poi.index === index && poi.color == objColor){
@@ -657,8 +657,6 @@ Window {
                 roi.y = roi.poi.y-roi.width/2
             }
         }
-
-
     }
     Column{
         id: palette
