@@ -427,6 +427,16 @@ Item {
         }
         return false
     }
+
+    function testDelete(){
+        for(var i =0; i < listPoints.length; i++){
+            if(listPoints[i].testDelete()){
+                return true
+            }
+        }
+        return false
+    }
+
     onDoneSimChanged: {
         if(!doneSim)
             for(var i =0; i < listPoints.length; i++)

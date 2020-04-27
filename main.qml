@@ -270,6 +270,11 @@ Window {
             onClicked:{
                 figures.currentItem.destroy()
                 figures.currentItem = null
+                for(var i =0; i < figures.children.length; i++){
+                    if(figures.children[i].testDelete()){
+                        figures.children[i].destroy()
+                    }
+                }
             }
             visible: drawingGui.visible
         }

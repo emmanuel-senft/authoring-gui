@@ -136,6 +136,10 @@ Item {
         }
         return false
     }
+    function testDelete(){
+        return !done
+    }
+
     function poiUpdated(){
 
     }

@@ -275,4 +275,12 @@ Item{
         y = snappedPoi.y
         paint()
     }
+    function testDelete(){
+        if(action.includes("Move"))
+            if (origin.name === snappedPoi.name)
+                return true
+        if(done)
+            return true
+        return false
+    }
 }
