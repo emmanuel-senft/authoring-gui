@@ -556,7 +556,7 @@ Window {
 
     Item{
         id: movedPois
-        z:100
+        visible: false
 
         function updatePoi(type,id,x,y,objColor){
             var found = false
