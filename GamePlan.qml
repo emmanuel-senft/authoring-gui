@@ -33,6 +33,7 @@ Item {
         border.width: showPlanButton.borderWidth
         Label{
             id: title
+            visible: false
             x:parent.width/10
             y:x/3
             font.pixelSize: 40

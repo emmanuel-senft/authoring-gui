@@ -71,6 +71,15 @@ Item {
         }
         opacity: .5
     }
+    Rectangle {
+        id:boundingArea
+        x:0
+        y:0
+        width: 100
+        height: 100
+        visible: false
+    }
+
     ButtonGroup {
         id: objectType
         buttons: objects.children
@@ -84,7 +93,7 @@ Item {
         id: objects
         visible:false
         anchors.top: p1.top
-        anchors.left:p1.right
+        anchors.left:boundingArea.right
         ColumnLayout {
             GuiRadioButton {
                 text: "Screws"
@@ -108,7 +117,7 @@ Item {
     }
     CheckBox {
         id: inspect
-        anchors.top: p3.bottom
+        anchors.top: boundingArea.bottom
         anchors.left:p3.right
         checked: false
         visible:objects.visible
@@ -151,7 +160,7 @@ Item {
         id: actions
         visible:objects.visible
         anchors.top: p0.top
-        anchors.right:p0.left
+        anchors.right:boundingArea.left
         ColumnLayout {
             GuiRadioButton {
                 text: "Move"
@@ -181,9 +190,18 @@ Item {
         }
     }
     function paint(){
+        updateArea()
         timerPois.start()
         canvas.requestPaint()
     }
+    function updateArea(){
+        boundingArea.x=Math.min(p0.x,p3.x)
+        boundingArea.width=Math.max(p1.x,p2.x)-boundingArea.x
+        boundingArea.y=Math.min(p0.y,p1.y)
+        boundingArea.height=Math.max(Math.max(p2.y,p3.y)-boundingArea.y,objects.height)
+
+    }
+
     Label{
         z:50
         id: actionDisplay
