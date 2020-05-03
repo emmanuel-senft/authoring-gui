@@ -25,13 +25,13 @@ TouchPoint {
     onPressedChanged: {
 
         if (pressed) {
-            console.log("pressed")
+            //console.log("pressed")
             var obj = figures.childAt(x, y);
             if (drawingarea.drawEnabled) {
                 currentStroke = [];
                 color = drawingarea.fgColor;
                 drawing = true;
-                console.log("new stroke")
+                //console.log("new stroke")
                 drawingarea.newStroke()
                 currentStroke.push(Qt.point(x,y));
                 recognizer.addPoint(x, y)
@@ -40,7 +40,7 @@ TouchPoint {
 
         }
         else { // released
-            console.log("release")
+            //console.log("release")
             if(drawing) {
                 drawing = false;
                 if (drawingarea.drawEnabled) {

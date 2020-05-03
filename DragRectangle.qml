@@ -266,7 +266,7 @@ Item {
             target = figures.colorNames[index]+" Area"
         }
         for(var i =0; i<actions.children[0].children.length;i++){
-            console.log(actions.children[0].children[i].name)
+            //console.log(actions.children[0].children[i].name)
             if(action.includes(actions.children[0].children[i].name)){
                 actions.children[0].children[i].checked = true
                 break
@@ -274,6 +274,7 @@ Item {
         }
         if(action.includes("Inspect"))
             inspect.checked = true
+
         objColor = figures.colors[index]
         currentItem = true
 
@@ -379,8 +380,8 @@ Item {
         indexes = val
     }
     function selected(val){
-        console.log("selected")
-        console.log(val)
+        //console.log("selected")
+        //console.log(val)
         currentItem = val
     }
     function setIndex(val){
@@ -427,8 +428,8 @@ Item {
 
     function compare(a, b) {
 
-        console.log(a.target)
-        console.log(a.target.split("_")[1])
+        //console.log(a.target)
+        //console.log(a.target.split("_")[1])
         if(parseInt(a.target.split("_")[1])<parseInt(b.target.split("_")[1]))
             return -1
         if(a.order>b.order)
@@ -436,7 +437,7 @@ Item {
     }
 
     function testDone(act, t){
-        console.log(listPoints.length)
+        //console.log(listPoints.length)
         for(var i =0; i < listPoints.length; i++){
             if(listPoints[i].testDone(act, t)){
                 done = true
@@ -470,7 +471,7 @@ Item {
             var allInHull = true
             for(var i =0; i < listPoints.length; i++){
                 if (! inHull(listPoints[i].origin)){
-                    console.log("not in hull")
+                    //console.log("not in hull")
                     allInHull = false
                 }
                 listPoints[i].poiUpdated()

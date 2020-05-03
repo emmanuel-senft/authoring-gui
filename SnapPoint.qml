@@ -186,7 +186,7 @@ Item{
             if(snappedPoi === null || parent.listPoints[i].name !== name)
                 parentPois.push(parent.listPoints[i].name)
         }
-        console.log(parentPois)
+        //console.log(parentPois)
         for (var i=0;i<pois.children.length;i++){
             if(parentPois.includes(pois.children[i].name))
                 continue
@@ -209,7 +209,7 @@ Item{
         }
     }
     function doSnap(){
-        console.log("snapping")
+        //console.log("snapping")
         var targetx = x + snapPoint.x
         var targety = y + snapPoint.y
         snapRect.visible = false
@@ -255,8 +255,8 @@ Item{
         a.color = container.objColor
         a.done = done || doneSim
         a.img3 = snappedPoi.name
-        console.log(a.name)
-        console.log(a.targetDisplay)
+        //console.log(a.name)
+        //console.log(a.targetDisplay)
         return a
     }
 

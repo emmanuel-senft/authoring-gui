@@ -12,7 +12,7 @@ DragItem {
     Canvas {
         id: canvas
         anchors.fill: parent
-         antialiasing: true
+        antialiasing: true
         z:20
         property var path: []
         onPaint: {

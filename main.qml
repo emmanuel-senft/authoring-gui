@@ -288,7 +288,7 @@ Window {
             name: "switch"
             color: "#ffc27a"
             onClicked:{
-                console.log(globalStates.state)
+                //console.log(globalStates.state)
                 switch(globalStates.state){
                     case "visualization":
                         globalStates.state = "drawing"
@@ -311,7 +311,7 @@ Window {
                         globalStates.state = "drawing"
                         break
                 }
-                console.log(globalStates.state)
+                //console.log(globalStates.state)
             }
         }
         GuiButton{
@@ -548,7 +548,7 @@ Window {
             }
             var cmd = text.split(";")
             if(cmd[0] === "poi"){
-                console.log(cmd)
+                //console.log(cmd)
                 pois.cmd = cmd
             }
 
@@ -576,7 +576,7 @@ Window {
                 }
             }
             if(!found){
-                console.log("adding"+type+id)
+                //console.log("adding"+type+id)
                 var component = Qt.createComponent("POI.qml")
                 var poi = component.createObject(movedPois, {type:type,index:id,color:objColor,x:x,y:y})
             }
@@ -596,7 +596,7 @@ Window {
         visible: true
         property var cmd: null
         function addPoi(type,id,x,y){
-            console.log("adding"+type+id)
+            //console.log("adding"+type+id)
             var component = Qt.createComponent("POI.qml")
             var color = "red"
             if(type === "screw")
@@ -722,7 +722,7 @@ Window {
             }
     ]
         onStateChanged: {
-            console.log(globalStates.state)
+            //console.log(globalStates.state)
             switch (globalStates.state){
                 case "gestureEdit":
                     break
