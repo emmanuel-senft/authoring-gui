@@ -675,6 +675,9 @@ Window {
     GamePlan{
         id: gamePlan
     }
+    TemplateLoader{
+        id: templateLoader
+    }
 
     Timer{
         id: timerUpdateActions

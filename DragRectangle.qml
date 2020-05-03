@@ -282,31 +282,34 @@ Item {
         opacity: canvas.opacity
     }
 
+
     Component.onCompleted: {
-        var types =getPoiType()
-        var maxN = 0
-        var text = ""
-        for(var key in types){
-            if (types[key]>maxN){
-                maxN = types[key]
-                text = key
+        if(action === "undefined"){
+            var types = getPoiType()
+            var maxN = 0
+            var text = ""
+            for(var key in types){
+                if (types[key]>maxN){
+                    maxN = types[key]
+                    text = key
+                }
             }
-        }
-        objectType.selected = text
-        for(var i =0; i<objects.children[0].children.length;i++){
-            console.log(objects.children[0].children[i].name)
-            if(objects.children[0].children[i].name === text){
-                objects.children[0].children[i].checked = true
-                break
+            objectType.selected = text
+            for(var i =0; i<objects.children[0].children.length;i++){
+                //console.log(objects.children[0].children[i].name)
+                if(objects.children[0].children[i].name === text){
+                    objects.children[0].children[i].checked = true
+                    break
+                }
             }
-        }
-        if(text === "screw")
-            action = "Move"
-        if(text === "pusher")
-            action = "Inspect-Push"
-        if(text === ""){
-            action = "Wipe"
-            target = figures.colorNames[index]+" Area"
+            if(text === "screw")
+                action = "Move"
+            if(text === "pusher")
+                action = "Push"
+            if(text === ""){
+                action = "Wipe"
+                target = figures.colorNames[index]+" Area"
+            }
         }
         for(var i =0; i<actions.children[0].children.length;i++){
             //console.log(actions.children[0].children[i].name)
@@ -439,6 +442,15 @@ Item {
         indexes.splice(indexes.indexOf(index), 1);
         timerUpdateActions.restart()
     }
+    function getTemplate(){
+        var template ={}
+        template["type"] = actionType.selected
+        template["targets"] = []
+        for(var i=0;i<listPoints.length;i++){
+            template["targets"].push(listPoints[i].origin.name)
+        }
+        return template
+    }
 
     function getAction(){
         var str = ""
@@ -536,5 +548,33 @@ Item {
                 p3.y = maxY
             }
         }
+    }
+    function init(names){
+        var i = listPoints.length
+        while(i--){
+            listPoints[i].destroy()
+            listPoints.splice(i,1)
+        }
+        var type =""
+        for(var i=0; i<pois.children.length; i++){
+            var poi = pois.children[i]
+            if (names.indexOf(poi.name) >= 0){
+                //console.log('Adding')
+                var component = Qt.createComponent("SnapPoint.qml");
+                var anchor = component.createObject(rect, {container:rect,snappedPoi:poi,type:poi.type,index:poi.index,x:poi.x,y:poi.y,objColor:figures.colors[rect.index],opacity:1,origin:poi});
+                listPoints.push(anchor)
+                type = poi.type
+            }
+        }
+        poiUpdated()
+        objectType.selected = type
+        for(var i =0; i<objects.children[0].children.length;i++){
+            //console.log(objects.children[0].children[i].name)
+            if(objects.children[0].children[i].name === type){
+                objects.children[0].children[i].checked = true
+                break
+            }
+        }
+        updateAction()
     }
 }

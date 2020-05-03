@@ -53,5 +53,11 @@
         <file>res/zoom_out.png</file>
         <file>res/Loosen.png</file>
         <file>res/Tighten.png</file>
+        <file>res/template.png</file>
+        <file>TemplateLoader.qml</file>
+        <file>res/Disassembly.png</file>
+        <file>res/Place.png</file>
+        <file>res/save.png</file>
+        <file>res/New template.png</file>
     </qresource>
 </RCC>
