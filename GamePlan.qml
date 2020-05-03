@@ -232,6 +232,8 @@ Item {
             if(globalStates.state === "drawing" && !moving){
                 sendCommand("viz")
             }
+            if(globalStates.state === "edit")
+                sendCommand("edit")
         }
         function compare(a, b) {
             if(a.order<b.order)

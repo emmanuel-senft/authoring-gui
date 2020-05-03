@@ -59,5 +59,7 @@
         <file>res/Place.png</file>
         <file>res/save.png</file>
         <file>res/New template.png</file>
+        <file>res/edit.png</file>
+        <file>res/stop_edit.png</file>
     </qresource>
 </RCC>

@@ -359,6 +359,36 @@ Window {
             }
         }
         GuiButton{
+            id: editButton
+            z:10
+            visible: executionGui.visible
+            anchors.right: parent.right
+            anchors.rightMargin: width/2
+            anchors.top: parent.top
+            anchors.topMargin: height/2
+            name: "edit"
+            color: "#ffc27a"
+            onClicked:{
+                eventPublisher.text = 'start_edit'
+                globalStates.state = "edit"
+            }
+        }
+        GuiButton{
+            id: stopEditButton
+            z:10
+            visible: false
+            anchors.right: parent.right
+            anchors.rightMargin: width/2
+            anchors.top: parent.top
+            anchors.topMargin: height/2
+            name: "stop_edit"
+            color: "#ffc27a"
+            onClicked:{
+                eventPublisher.text = 'stop_edit'
+                globalStates.state = "execution"
+            }
+        }
+        GuiButton{
             id: actButton
             visible: roi.visible
             z:20
@@ -714,6 +744,15 @@ Window {
                 PropertyChanges { target: drawingarea; enabled: false }
                 PropertyChanges { target: viewButton; visible: false}
                 PropertyChanges { target: executionGui; visible: true}
+            },
+            State {name: "edit"
+                PropertyChanges { target: map; toLoad: virtualCamera}
+                PropertyChanges { target: pois; visible: true }
+                PropertyChanges { target: figures; visible: true}
+                PropertyChanges { target: drawingarea; enabled: true }
+                PropertyChanges { target: viewButton; visible: false}
+                PropertyChanges { target: executionGui; visible: false}
+                PropertyChanges { target: stopEditButton; visible: true}
             },
             State {name: "force_dimension"
                 //PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
