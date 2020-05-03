@@ -87,6 +87,40 @@ Item {
         onSelectedChanged: {
             selectedPois()
             target = selected+"s"
+            if(target === "screws"){
+                move.visible = true
+                loosen.visible = true
+                tighten.visible = true
+                push.visible = false
+                wipe.visible = false
+                if(actionType.selected !== "Loosen" && actionType.selected !== "Tighten")
+                actionType.selected = "Move"
+            }
+            if(target === "pushers"){
+                move.visible = false
+                loosen.visible = false
+                tighten.visible = false
+                push.visible = true
+                wipe.visible = false
+                actionType.selected = "Push"
+            }
+            if(target === "nons"){
+                move.visible = false
+                loosen.visible = false
+                tighten.visible = false
+                push.visible = false
+                wipe.visible = true
+                actionType.selected = "Wipe"
+                target = figures.colorNames[index]+" Area"
+            }
+            for(var i =0; i<actions.children[0].children.length;i++){
+                if(actionType.selected.includes(actions.children[0].children[i].name)){
+                    actions.children[0].children[i].checked = true
+                }
+                else{
+                    actions.children[0].children[i].checked = false
+                }
+            }
         }
     }
     Column {
@@ -105,6 +139,10 @@ Item {
             }
             GuiRadioButton {
                 text: "Pushers"
+                group: objectType
+            }
+            GuiRadioButton {
+                text: "None"
                 group: objectType
             }
         }
@@ -163,26 +201,31 @@ Item {
         anchors.right:boundingArea.left
         ColumnLayout {
             GuiRadioButton {
+                id: move
                 text: "Move"
                 group: actionType
                 name:text
             }
             GuiRadioButton {
+                id: tighten
                 text: "Tighten"
                 group: actionType
                 name:text
             }
             GuiRadioButton {
+                id: loosen
                 text: "Loosen"
                 group: actionType
                 name:text
             }
             GuiRadioButton {
+                id: push
                 text: "Push"
                 group: actionType
                 name:text
             }
             GuiRadioButton {
+                id: wipe
                 text: "Wipe"
                 group: actionType
                 name:text
@@ -290,6 +333,8 @@ Item {
         var objectTypes={}
         for(var i=0; i<pois.children.length; i++){
             var poi = pois.children[i]
+            if(poi.type === "hole")
+                continue
             if (inHull(poi)){
                 if(objectTypes[poi.type])
                     objectTypes[poi.type]+=1
