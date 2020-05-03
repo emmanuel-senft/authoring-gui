@@ -41,6 +41,6 @@ Item {
 
     Component.onDestruction: {
         var string = recognizer._r.GetUserGestures()
-        fileio.write("/src/authoring-interface/res/gestures2.json",string)
+        fileio.write("/src/authoring-gui/res/gestures2.json",string)
     }
 }

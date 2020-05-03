@@ -63,9 +63,8 @@ Item{
             figure = component.createObject(figures, {name:name,index:getIndex(name),centerCoord:center,rMax:width/2});
         }
         if (name === "cross"){
-            return
             component = Qt.createComponent("DragCross.qml");
-            figure = component.createObject(figures, {name:name,index:getIndex(name),objX:x,objY:y,objWidth:width,objHeight:width,z:10});
+            figure = component.createObject(figures, {name:name,index:getIndex(name),centerCoord:center,radius:width/2});
         }
         if (name === "arrow"){
             var origin=Qt.point(points[0].X,points[0].Y)

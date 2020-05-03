@@ -4,14 +4,15 @@ import QtQuick.Controls 1.4
 DragItem {
 
     id: cross
+    property var radius: 100
+    property var centerCoord: null
 
+    name: "cross"
+    action: "Place"
     
     Canvas {
         id: canvas
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: objWidth
-        height: objHeight
+        anchors.fill: parent
         antialiasing: true
         z:20
         property var path: []
@@ -30,42 +31,57 @@ DragItem {
 
             ctx.beginPath();
 
-            ctx.moveTo(0, 0);
-            ctx.lineTo(width, height);
+            ctx.moveTo(center.x-radius, center.y-radius);
+            ctx.lineTo(center.x+radius, center.y+radius);
             ctx.stroke();
-            ctx.moveTo(width, 0);
-            ctx.lineTo(0, height);
+            ctx.moveTo(center.x-radius, center.y+radius);
+            ctx.lineTo(center.x+radius, center.y-radius);
             ctx.stroke();
 
         }
     }
     function paint(){
+        checkSnap()
         canvas.requestPaint()
     }
-    Rectangle{
-        id: origin
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: 10
-        height: width
-        radius: width/2
-        z:30
-        color: "red"
+    DragAnchor{
+        id: center
+        center:centerCoord
+
+        onXChanged: {
+            paint();
+        }
+        onReleasedChanged: {
+            doSnap()
+        }
     }
-    Rectangle{
-        id: end
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: 10
-        height: width
-        radius: width/2
-        z:30
-        color: "red"
+    function getPoints(){
+        return center.getCoord()//+'_'+end.getCoord()
     }
-    Component.onDestruction: {
-        indexCross.splice(indexCross.indexOf(index), 1);
-    }
+
     Component.onCompleted: {
-        objColor = figures.colors[index]
+        paint()
+        doSnap()
+        doSnap()
+    }
+    function checkSnap(){
+        var dMin=radius*radius
+        for (var i=0;i<pois.children.length;i++){
+            var d = Math.pow(pois.children[i].x-center.x,2)+Math.pow(pois.children[i].y-center.y,2)
+            if(d < dMin){
+                dMin=d
+                snapTo(pois.children[i].x,pois.children[i].y)
+                snappedPoi = pois.children[i]
+            }
+        }
+        if(dMin === radius*radius){
+            snapTo(center.x,center.y)
+            snappedPoi=null
+        }
+    }
+    function doSnap(){
+        center.x = snap.x
+        center.y = snap.y
+        paint()
     }
 }
