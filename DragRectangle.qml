@@ -21,6 +21,7 @@ Item {
     property var p1Coord: null
     property var p2Coord: null
     property var p3Coord: null
+    property bool c: false
     property var listPoints: []
 
 
@@ -28,15 +29,31 @@ Item {
         id: mouseArea
         anchors.fill: parent
         onPressed: {
-            if(!inHull(Qt.point(mouseX,mouseY)))
-               mouse.accepted = false;
-        }
-        onDoubleClicked: {
-            if(!inHull(Qt.point(mouseX,mouseY)))
-                mouse.accepted = false;
-            else{
-                objects.visible = ! objects.visible
+            if(inHull(Qt.point(mouseX,mouseY))){
+                if (c === true){
+                    console.log("double")
+                    objects.visible = ! objects.visible
+                    c = false
+                }
+                else{
+                    c = true
+                    resetClick.start()
+                    mouse.accepted = false;
+                }
             }
+            else
+                mouse.accepted = false;
+        }
+    }
+    onCChanged: {
+        console.log(c)
+    }
+
+    Timer{
+        id: resetClick
+        interval: 300
+        onTriggered: {
+            c = false
         }
     }
 

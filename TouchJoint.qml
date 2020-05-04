@@ -28,6 +28,10 @@ TouchPoint {
             //console.log("pressed")
             var obj = figures.childAt(x, y);
             if (drawingarea.drawEnabled) {
+                for(var i = 0;i<figures.children.length;i++){
+                    if(figures.children[i].name === "rect" && figures.children[i].inHull(Qt.point(x,y)))
+                        return
+                }
                 currentStroke = [];
                 color = drawingarea.fgColor;
                 drawing = true;
