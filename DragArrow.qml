@@ -8,7 +8,7 @@ DragItem {
     property var originCoord: null
     property var endCoord: null
     name: "arrow"
-    action: "Place"
+    action: "Fold"
 
     Canvas {
         id: canvas
@@ -93,7 +93,7 @@ DragItem {
     function checkSnap(){
         var dMin=Math.pow(end.x-origin.x,2)+Math.pow(end.y-origin.y,2)
         for (var i=0;i<pois.children.length;i++){
-            var d = Math.pow(pois.children[i].x-end.x,2)+Math.pow(pois.children[i].y-end.y,2)
+            var d = Math.pow(pois.children[i].x-origin.x,2)+Math.pow(pois.children[i].y-origin.y,2)
             if(d < dMin){
                 dMin=d
                 snapTo(pois.children[i].x,pois.children[i].y)
@@ -101,13 +101,17 @@ DragItem {
             }
         }
         if(dMin === Math.pow(end.x-origin.x,2)+Math.pow(end.y-origin.y,2)){
-            snapTo(end.x,end.y)
+            snapTo(origin.x,origin.y)
             snappedPoi=null
         }
     }
     function doSnap(){
-        end.x = snap.x
-        end.y = snap.y
+        var d_x = snap.x-origin.x
+        var d_y = snap.y - origin.y
+        origin.x = snap.x
+        origin.y = snap.y
+        end.x += d_x
+        end.y += d_y
     }
     function selected(val){
         currentItem = val

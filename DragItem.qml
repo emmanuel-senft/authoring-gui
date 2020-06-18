@@ -124,7 +124,12 @@ Item {
         a.done = done || doneSim
         a.img1 = "none_"
         a.img2 = a.name
-        a.img3 = "unknown_ "
+        if(a.target.includes(','))
+            a.img3 = "unknown_ "
+        else
+            a.img3 = a.target
+        console.log(a.target
+                    )
         return [a]
     }
     function testDone(act, t){
@@ -137,7 +142,7 @@ Item {
         return false
     }
     function testDelete(){
-        return !done
+        return done || currentItem
     }
 
     function poiUpdated(){

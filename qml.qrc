@@ -62,5 +62,8 @@
         <file>res/edit.png</file>
         <file>res/stop_edit.png</file>
         <file>res/Reassembly.png</file>
+        <file>res/add.png</file>
+        <file>res/edge.png</file>
+        <file>res/Fold.png</file>
     </qresource>
 </RCC>
