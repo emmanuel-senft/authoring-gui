@@ -94,86 +94,93 @@ Item {
         y:0
         width: 100
         height: 100
-        visible: false
-    }
+        visible: true
+        color: "white"
+        property var displayAngle: -displayView.rotation
+        rotation:displayAngle
+        onDisplayAngleChanged: {
+            updateArea()
+        }
 
-    ButtonGroup {
-        id: objectType
-        buttons: objects.children
-        property var selected: ""
-        onSelectedChanged: {
-            selectedPois()
-            target = selected+"s"
-            if(target === "screws"){
-                move.visible = true
-                loosen.visible = true
-                tighten.visible = true
-                push.visible = false
-                wipe.visible = false
-                if(actionType.selected !== "Loosen" && actionType.selected !== "Tighten")
-                actionType.selected = "Move"
-            }
-            if(target === "pushers"){
-                move.visible = false
-                loosen.visible = false
-                tighten.visible = false
-                push.visible = true
-                wipe.visible = false
-                actionType.selected = "Push"
-            }
-            if(target === "nons"){
-                move.visible = false
-                loosen.visible = false
-                tighten.visible = false
-                push.visible = false
-                wipe.visible = true
-                actionType.selected = "Wipe"
-                target = figures.colorNames[index]+" Area"
-            }
-            for(var i =0; i<actions.children[0].children.length;i++){
-                if(actionType.selected.includes(actions.children[0].children[i].name)){
-                    actions.children[0].children[i].checked = true
+        ButtonGroup {
+            id: objectType
+            buttons: objects.children
+            property var selected: ""
+            onSelectedChanged: {
+                selectedPois()
+                target = selected+"s"
+                if(target === "screws"){
+                    move.visible = true
+                    loosen.visible = true
+                    tighten.visible = true
+                    push.visible = false
+                    wipe.visible = false
+                    if(actionType.selected !== "Loosen" && actionType.selected !== "Tighten")
+                    actionType.selected = "Move"
                 }
-                else{
-                    actions.children[0].children[i].checked = false
+                if(target === "pushers"){
+                    move.visible = false
+                    loosen.visible = false
+                    tighten.visible = false
+                    push.visible = true
+                    wipe.visible = false
+                    actionType.selected = "Push"
+                }
+                if(target === "nons"){
+                    move.visible = false
+                    loosen.visible = false
+                    tighten.visible = false
+                    push.visible = false
+                    wipe.visible = true
+                    actionType.selected = "Wipe"
+                    target = figures.colorNames[index]+" Area"
+                }
+                for(var i =0; i<actions.children[0].children.length;i++){
+                    if(actionType.selected.includes(actions.children[0].children[i].name)){
+                        actions.children[0].children[i].checked = true
+                    }
+                    else{
+                        actions.children[0].children[i].checked = false
+                    }
                 }
             }
         }
-    }
-    Column {
-        id: objects
-        visible:false
-        anchors.top: p1.top
-        anchors.left:boundingArea.right
-        ColumnLayout {
-            GuiRadioButton {
-                text: "Screws"
-                group: objectType
-            }
-            GuiRadioButton {
-                text: "Holes"
-                group: objectType
-            }
-            GuiRadioButton {
-                text: "Pushers"
-                group: objectType
-            }
-            GuiRadioButton {
-                text: "None"
-                group: objectType
+        Column {
+            id: objects
+            visible:false
+            anchors.top: boundingArea.top
+            anchors.left:boundingArea.right
+            anchors.leftMargin: 25
+            ColumnLayout {
+                GuiRadioButton {
+                    text: "Screws"
+                    group: objectType
+                }
+                GuiRadioButton {
+                    text: "Holes"
+                    group: objectType
+                }
+                GuiRadioButton {
+                    text: "Pushers"
+                    group: objectType
+                }
+                GuiRadioButton {
+                    text: "None"
+                    group: objectType
+                }
             }
         }
-    }
-    ButtonGroup {
-        id: actionType
-        buttons: actions.children
-        property var selected: ""
-        onSelectedChanged: updateAction()
-    }
-    CheckBox {
+        ButtonGroup {
+            id: actionType
+            buttons: actions.children
+            property var selected: ""
+            onSelectedChanged: updateAction()
+        }
+        CheckBox {
         id: inspect
         anchors.top: boundingArea.bottom
-        anchors.left:p3.right
+        anchors.topMargin: 25
+        anchors.left:boundingArea.left
         checked: false
         visible:objects.visible
         indicator: Rectangle {
@@ -195,6 +202,7 @@ Item {
             }
         }
         contentItem: Text {
+
             text: "Inspect"
             font.family: "Helvetica"
             font.pointSize: 15
@@ -207,72 +215,80 @@ Item {
         }
         onCheckedChanged: updateAction()
     }
+        Column {
+            id: actions
+            visible:objects.visible
+            anchors.top: boundingArea.top
+            anchors.right:boundingArea.left
+            anchors.rightMargin: 25
+            ColumnLayout {
+                GuiRadioButton {
+                    id: move
+                    text: "Move"
+                    group: actionType
+                    name:text
+                }
+                GuiRadioButton {
+                    id: tighten
+                    text: "Tighten"
+                    group: actionType
+                    name:text
+                }
+                GuiRadioButton {
+                    id: loosen
+                    text: "Loosen"
+                    group: actionType
+                    name:text
+                }
+                GuiRadioButton {
+                    id: push
+                    text: "Push"
+                    group: actionType
+                    name:text
+                }
+                GuiRadioButton {
+                    id: wipe
+                    text: "Wipe"
+                    group: actionType
+                    name:text
+                }
+            }
+        }
+        Label{
+            z:50
+            id: actionDisplay
+            text:action+" "+target
+            anchors.bottom: boundingArea.top
+            anchors.bottomMargin: 25
+            anchors.left: boundingArea.left
+            font.bold: true
+            font.pixelSize: 40
+            style: Text.Outline
+            styleColor: "black"
+            color: "white"
+        }
+    }
     function updateAction(){
         timerUpdateActions.restart()
     }
 
-    Column {
-        id: actions
-        visible:objects.visible
-        anchors.top: p0.top
-        anchors.right:boundingArea.left
-        ColumnLayout {
-            GuiRadioButton {
-                id: move
-                text: "Move"
-                group: actionType
-                name:text
-            }
-            GuiRadioButton {
-                id: tighten
-                text: "Tighten"
-                group: actionType
-                name:text
-            }
-            GuiRadioButton {
-                id: loosen
-                text: "Loosen"
-                group: actionType
-                name:text
-            }
-            GuiRadioButton {
-                id: push
-                text: "Push"
-                group: actionType
-                name:text
-            }
-            GuiRadioButton {
-                id: wipe
-                text: "Wipe"
-                group: actionType
-                name:text
-            }
-        }
-    }
+
     function paint(){
         updateArea()
         timerPois.start()
         canvas.requestPaint()
     }
     function updateArea(){
-        boundingArea.x=Math.min(p0.x,p3.x)
-        boundingArea.width=Math.max(p1.x,p2.x)-boundingArea.x
-        boundingArea.y=Math.min(p0.y,p1.y)
-        boundingArea.height=Math.max(Math.max(p2.y,p3.y)-boundingArea.y,objects.height)
-
-    }
-
-    Label{
-        z:50
-        id: actionDisplay
-        text:action+" "+target
-        x:p0.x
-        y:p0.y-50
-        font.bold: true
-        font.pixelSize: 40
-        style: Text.Outline
-        styleColor: "black"
-        color: "white"
+        var x=Math.min(p0.x,p3.x)
+        var width=Math.max(p1.x,p2.x)-x
+        var y=Math.min(p0.y,p1.y)
+        var height=Math.max(p2.y,p3.y)-y
+        boundingArea.width=Math.abs(width*Math.cos(alpha))+Math.abs(height*Math.sin(alpha))
+        boundingArea.height=Math.max(Math.abs(width*Math.sin(alpha))+Math.abs(height*Math.cos(alpha)),objects.height)
+        //var d_diag = Math.sqrt(boundingArea.width**2+boundingArea.height**2)
+        boundingArea.x=x-Math.abs(width/2*Math.cos(alpha))-Math.abs(height/2*Math.sin(alpha))+width/2
+        boundingArea.width=Math.abs(width*Math.cos(alpha))+Math.abs(height*Math.sin(alpha))
+        boundingArea.y=y-Math.abs(height/2*Math.cos(alpha))-Math.abs(width/2*Math.sin(alpha))+height/2
     }
     DragAnchor{
         id:p0
