@@ -61,7 +61,7 @@ Item {
                 id: actionDelegate
 
                 Item {
-                    width: parent.width; height: 1*container.rowHeigth
+                    width: container.width; height: 1*container.rowHeigth
                     Column{
                         spacing: .2*container.rowHeigth
                         Item{
