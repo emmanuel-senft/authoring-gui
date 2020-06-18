@@ -241,8 +241,18 @@ Window {
             z:11
             visible: drawingGui.visible
             anchors.horizontalCenter: commandButton.horizontalCenter
+            anchors.horizontalCenterOffset: width
             anchors.bottom: resetButton.top
             anchors.bottomMargin: 1.*resetButton.height
+        }
+        VirtualMouse{
+            id: virtualMouseAngle
+            z:11
+            visible: drawingGui.visible
+            anchors.right: virtualMouse.left
+            anchors.bottom: resetButton.top
+            anchors.bottomMargin: 1.*resetButton.height
+            angle:true
         }
         GuiButton{
             id: resetButton

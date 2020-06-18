@@ -5,16 +5,20 @@ import QtGraphicalEffects 1.12
 
 Item{
     id: virtualMouse
+    property bool angle: false
+    width: map.width/15
+
     Item{
         x:-dragPoint2.width/2
         y:-dragPoint2.width/2
+        width: parent.width
         opacity: 1
         Rectangle{
             id:dragPoint2
             visible: true
             x:0
             y:0
-            width: map.width/15
+            width: parent.width
             height: width
             border.width: width/20
             border.color: "steelblue"
@@ -60,6 +64,8 @@ Item{
         Rectangle{
             id:dragPoint
             visible: true
+            property double relativeX: x*Math.cos(displayView.rotation*Math.PI/180.)+y*Math.sin(displayView.rotation*Math.PI/180.)
+            property double relativeY: y*Math.cos(displayView.rotation*Math.PI/180.)-x*Math.sin(displayView.rotation*Math.PI/180.)
             x:0
             y:0
             width: map.width/15
@@ -105,15 +111,30 @@ Item{
                 drag.target: dragPoint
                 drag.axis: Drag.XAndYAxis
                 onReleased: {
+                    timerUpdate.stop()
                     dragPoint.x=0
                     dragPoint.y=0
                     moving = true
-                    commandPublisher.text = "mouse;"+parseInt(dragPoint.x)+":"+parseInt(dragPoint.y)
+                    if(!angle)
+                        commandPublisher.text = "mouse;"+parseInt(dragPoint.relativeX)+":"+parseInt(dragPoint.relativeY)+":0:0"
+                    else
+                        commandPublisher.text = "mouse;0:0:"+parseInt(dragPoint.relativeX)+":"+parseInt(dragPoint.relativeY)
                 }
-            }
-            onXChanged: {
-                moving = true
-                commandPublisher.text = "mouse;"+parseInt(dragPoint.x)+":"+parseInt(dragPoint.y)
+                onPressed: {
+                    timerUpdate.restart()
+                }
+                Timer{
+                    id: timerUpdate
+                    interval: 10
+                    running: false
+                    repeat: true
+                    onTriggered: {
+                        if(!angle)
+                            commandPublisher.text = "mouse;"+parseInt(dragPoint.relativeX)+":"+parseInt(dragPoint.relativeY)+":0:0"
+                        else
+                            commandPublisher.text = "mouse;0:0:"+parseInt(dragPoint.relativeX)+":"+parseInt(dragPoint.relativeY)
+                    }
+                }
             }
 
         }
