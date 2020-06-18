@@ -23,8 +23,6 @@ Item {
 
     property var touchs
 
-    property bool bgHasChanged: true
-
     property bool addGesture: false
 
     Canvas {
@@ -37,11 +35,6 @@ Item {
         property var bgCanvasData
 
         anchors.fill: parent
-
-        function storeCurrentDrawing() {
-            var ctx = canvas.getContext('2d');
-            lastCanvasData = ctx.getImageData(0,0,width, height);
-        }
 
         onPaint: {
 
@@ -128,7 +121,6 @@ Item {
         var ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         canvas.requestPaint();
-        bgHasChanged = true; //will trigger publishing of background on ROS
     }
 
     function update() {
@@ -141,8 +133,6 @@ Item {
     }
 
     function finishStroke(stroke) {
-        bgHasChanged = true; //will trigger publishing of background on ROS
-        canvas.storeCurrentDrawing();
         stroke = [];
         timerGesture.restart()
     }
