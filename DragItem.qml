@@ -39,17 +39,23 @@ Item {
             timerTarget.start()
         }
     }
-    Label{
+    Rectangle{
+        x:snapPoint.x-width/2
+        y:snapPoint.y-height/2
         z:30
-        id: actionDisplay
-        text:action+" "+targetDisplay
-        x:snapPoint.x-snapRect.width
-        y:snapPoint.y-3*snapRect.height
-        font.bold: true
-        font.pixelSize: 40
-        style: Text.Outline
-        styleColor: "black"
-        color: "white"
+        width: 8*snapRect.width
+        height: 8*snapRect.height
+        color: "transparent"
+        rotation: -displayView.rotation
+        Label{
+            id: actionDisplay
+            text:action+" "+targetDisplay
+            font.bold: true
+            font.pixelSize: 40
+            style: Text.Outline
+            styleColor: "black"
+            color: "white"
+        }
     }
 
     Timer{

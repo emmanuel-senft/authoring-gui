@@ -56,6 +56,7 @@ Item {
             c = false
         }
     }
+    onActionChanged: paint()
 
     Canvas {
         id: canvas
@@ -95,7 +96,7 @@ Item {
         width: 100
         height: 100
         visible: true
-        color: "white"
+        color: "transparent"
         property var displayAngle: -displayView.rotation
         rotation:displayAngle
         onDisplayAngleChanged: {
@@ -279,16 +280,30 @@ Item {
         canvas.requestPaint()
     }
     function updateArea(){
-        var x=Math.min(p0.x,p3.x)
-        var width=Math.max(p1.x,p2.x)-x
-        var y=Math.min(p0.y,p1.y)
-        var height=Math.max(p2.y,p3.y)-y
-        boundingArea.width=Math.abs(width*Math.cos(alpha))+Math.abs(height*Math.sin(alpha))
-        boundingArea.height=Math.max(Math.abs(width*Math.sin(alpha))+Math.abs(height*Math.cos(alpha)),objects.height)
+        var alpha = boundingArea.displayAngle/180*Math.PI
+        var xs = [p0.x,p1.x,p2.x,p3.x]
+        var ys = [p0.y,p1.y,p2.y,p3.y]
+        var nxs = [0,0,0,0]
+        var nys = [0,0,0,0]
+        for(var i = 0; i<4;i++){
+            nxs[i] = xs[i]*Math.cos(-alpha)-ys[i]*Math.sin(-alpha)
+            nys[i] = xs[i]*Math.sin(-alpha)+ys[i]*Math.cos(-alpha)
+        }
+        console.log(nxs)
+        var width_ini = Math.max.apply(Math,xs) - Math.min.apply(Math,xs)
+        var height_ini = Math.max.apply(Math,ys) - Math.min.apply(Math,ys)
+        var x=Math.min.apply(Math,xs)
+        var width=Math.max.apply(Math,nxs)-Math.min.apply(Math,nxs)
+        var y=Math.min.apply(Math,ys)
+        console.log(x)
+        var height=Math.max.apply(Math,nys)-Math.min.apply(Math,nys)
+        boundingArea.width=width
+        boundingArea.height=height
         //var d_diag = Math.sqrt(boundingArea.width**2+boundingArea.height**2)
-        boundingArea.x=x-Math.abs(width/2*Math.cos(alpha))-Math.abs(height/2*Math.sin(alpha))+width/2
-        boundingArea.width=Math.abs(width*Math.cos(alpha))+Math.abs(height*Math.sin(alpha))
-        boundingArea.y=y-Math.abs(height/2*Math.cos(alpha))-Math.abs(width/2*Math.sin(alpha))+height/2
+        boundingArea.x=x-width/2+width_ini/2
+        boundingArea.y=y-height/2+height_ini/2//+Math.min(height_ini/2,height/2)
+        //boundingArea.x=x//*Math.cos(-alpha)-y*Math.sin(-alpha)//-Math.abs(width_ini/2*Math.cos(alpha))//-Math.abs(height_ini/2*Math.sin(alpha))+width_ini/2
+        //boundingArea.y=y//*Math.cos(-alpha)+x*Math.sin(-alpha)//-Math.abs(height_ini/2*Math.cos(alpha))//-Math.abs(width_ini/2*Math.sin(alpha))+height_ini/2
     }
     DragAnchor{
         id:p0

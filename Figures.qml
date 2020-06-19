@@ -19,24 +19,42 @@ Item{
     anchors.fill:parent
 
     function createFigure(name, points){
-        var x=window.width
-        var y= window.height
+        var x= 0
+        var y= 0
         var max_x=0
         var max_y= 0
-        var data=[]
+        var nx = 0
+        var ny = 0
+        var alpha = displayView.rotation/180*Math.PI
         for (var i=0;i<points.length;i++){
-            x=Math.min(x,points[i].X)
-            max_x=Math.max(max_x,points[i].X)
-            y=Math.min(y,points[i].Y)
-            max_y=Math.max(max_y,points[i].Y)
-            data.push([points[i].X,points[i].Y])
-        }
+            nx = points[i].X*Math.cos(alpha)-points[i].Y*Math.sin(alpha)
+            ny = points[i].X*Math.sin(alpha)+points[i].Y*Math.cos(alpha)
+            if(i===0){
+                max_x=nx
+                max_y=ny
+                x=nx
+                y=ny
+            }
 
+            x=Math.min(x,nx)
+            max_x=Math.max(max_x,nx)
+            y=Math.min(y,ny)
+            max_y=Math.max(max_y,ny)
+            console.log(ny)
+        }
+        var width = (max_x-x)
+        console.log("width")
+        console.log(width)
+        var height = (max_y-y)
+        nx = x*Math.cos(-alpha)-y*Math.sin(-alpha)// + (-Math.sin(-alpha)-1+Math.cos(-alpha))*width/2
+        ny = x*Math.sin(-alpha)+y*Math.cos(-alpha)// + (Math.sin(-alpha)-1+Math.cos(-alpha))*height/2
+        x=nx
+        y=ny
+        //if (name === "arrow")
+        //    name = "rect"
         var component = null
         var figure = null
-        var width = (max_x-x)
-        var height = (max_y-y)
-        var center=Qt.point(x+width/2,y+width/2)
+        var center=Qt.point(x+width/2 + (-Math.sin(-alpha)-1+Math.cos(-alpha))*width/2 ,y+width/2 + (Math.sin(-alpha)-1+Math.cos(-alpha))*height/2)
         if (name === "circle"){
             component = Qt.createComponent("DragCircle.qml");
             width = Math.max(width,height)
@@ -45,9 +63,9 @@ Item{
         if (name === "rect"){
             component = Qt.createComponent("DragRectangle.qml");
             var p0=Qt.point(x,y)
-            var p1=Qt.point(x+width,y)
-            var p2=Qt.point(x+width,y+height)
-            var p3=Qt.point(x,y+height)
+            var p1=Qt.point(x+width*Math.cos(alpha),y-width*Math.sin(alpha))
+            var p2=Qt.point(x+width*Math.cos(alpha)+height*Math.sin(alpha),y+height*Math.cos(alpha)-width*Math.sin(alpha))
+            var p3=Qt.point(x+height*Math.sin(alpha),y+height*Math.cos(alpha))
             figure = component.createObject(figures, {name:name,index:getIndex(name),p0Coord:p0,p1Coord:p1,p2Coord:p2,p3Coord:p3});
         }
         if (name === "surface"){
