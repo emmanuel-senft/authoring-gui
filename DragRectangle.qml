@@ -393,6 +393,11 @@ Item {
     }
 
     function selectedPois(){
+        if(globalStates.state === "execution" || globalStates.state === "simulation" ){
+            timerUpdateActions.start()
+            return
+        }
+
         var type = objectType.selected
         var currentPois = []
         var i = listPoints.length
@@ -564,7 +569,7 @@ Item {
     }
 
     function poiUpdated(){
-        if(listPoints.length > 0 && visible){
+        if(listPoints.length > 0){
             var minX = width
             var maxX = 0
             var minY = height
