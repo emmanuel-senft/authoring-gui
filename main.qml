@@ -689,7 +689,14 @@ Window {
                 moving = true
             }
             if(text === "motion_finished"){
-                    moving = false
+                moving = false
+                if(globalStates.state === "execution"){
+                    for(var i =0; i < figures.children.length; i++){
+                        if(figures.children[i].testDelete()){
+                            figures.children[i].destroy()
+                        }
+                    }
+                }
                 globalStates.state = "drawing"
                 return
             }
