@@ -31,7 +31,6 @@ Item {
         onPressed: {
             if(inHull(Qt.point(mouseX,mouseY))){
                 if (c === true){
-                    console.log("double")
                     objects.visible = ! objects.visible
                     c = false
                 }
@@ -46,7 +45,7 @@ Item {
         }
     }
     onCChanged: {
-        console.log(c)
+        //console.log(c)
     }
 
     Timer{
@@ -273,7 +272,6 @@ Item {
         timerUpdateActions.restart()
     }
 
-
     function paint(){
         updateArea()
         timerPois.start()
@@ -289,13 +287,11 @@ Item {
             nxs[i] = xs[i]*Math.cos(-alpha)-ys[i]*Math.sin(-alpha)
             nys[i] = xs[i]*Math.sin(-alpha)+ys[i]*Math.cos(-alpha)
         }
-        console.log(nxs)
         var width_ini = Math.max.apply(Math,xs) - Math.min.apply(Math,xs)
         var height_ini = Math.max.apply(Math,ys) - Math.min.apply(Math,ys)
         var x=Math.min.apply(Math,xs)
         var width=Math.max.apply(Math,nxs)-Math.min.apply(Math,nxs)
         var y=Math.min.apply(Math,ys)
-        console.log(x)
         var height=Math.max.apply(Math,nys)-Math.min.apply(Math,nys)
         boundingArea.width=width
         boundingArea.height=height

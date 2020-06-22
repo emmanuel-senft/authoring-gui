@@ -210,7 +210,6 @@ Item {
             actions.length = 0
             for(var i=0;i<figures.children.length;i++){
                 var action = figures.children[i].getAction()
-                //console.log(action)
                 actions = actions.concat(action)
             }
             //if(actions.length !== figures.children.length)

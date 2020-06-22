@@ -40,11 +40,8 @@ Item{
             max_x=Math.max(max_x,nx)
             y=Math.min(y,ny)
             max_y=Math.max(max_y,ny)
-            console.log(ny)
         }
         var width = (max_x-x)
-        console.log("width")
-        console.log(width)
         var height = (max_y-y)
         nx = x*Math.cos(-alpha)-y*Math.sin(-alpha)// + (-Math.sin(-alpha)-1+Math.cos(-alpha))*width/2
         ny = x*Math.sin(-alpha)+y*Math.cos(-alpha)// + (Math.sin(-alpha)-1+Math.cos(-alpha))*height/2

@@ -144,7 +144,6 @@ Item{
             ctx.beginPath();
 
             if(startPoint.x*startPoint.y<0){
-                console.log("reverse")
                 start.x = width
                 end.x =0
             }

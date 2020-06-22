@@ -74,10 +74,6 @@ Window {
                 dial.x=rotationSlider.width/2*(1+Math.cos(theta))-dial.width/2
                 dial.y=rotationSlider.height/2*(1+Math.sin(theta))-dial.height/2
                 rotationSlider.theta_h=displayView.rotation - rotationSlider.theta_r
-                console.log('r')
-                console.log(rotationSlider.theta_r)
-                console.log(displayView.rotation)
-                console.log(rotationSlider.theta_h)
             }
 
         }
@@ -730,11 +726,9 @@ Window {
                 var theta = -parseFloat(cmd[1])
                 rotationSlider.theta_r = theta*180/Math.PI
                 theta += rotationSlider.theta_h/180.*Math.PI
-                console.log(rotationSlider.theta_h)
                 dial.x=rotationSlider.width/2*(1+Math.sin(theta))-dial.width/2
                 dial.y=rotationSlider.height/2*(1-Math.cos(theta))-dial.height/2
                 displayView.rotation = theta/Math.PI*180
-                console.log(displayView.rotation)
                 return
                 var theta=Math.atan2(dialCenter.y-rotationSlider.width/2,dialCenter.x-rotationSlider.width/2)
                 theta += parseFloat(cmd[1])/25.
@@ -761,7 +755,6 @@ Window {
                 //console.log(cmd)
                 pois.cmd = cmd
             }
-
         }
     }
 
