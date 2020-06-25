@@ -12,7 +12,7 @@ Item {
     property int index: 0
     property bool currentItem: false
     property var indexes: null
-    property var action: "undefined"
+    property var action: []
     property var target: "undefined"
     property var done: false
     property var doneSim: false
@@ -116,7 +116,7 @@ Item {
                     push.visible = false
                     wipe.visible = false
                     if(actionType.selected !== "Loosen" && actionType.selected !== "Tighten")
-                    actionType.selected = "Move"
+                    actionType.selected = ["Move"]
                 }
                 if(target === "pushers"){
                     move.visible = false
@@ -124,7 +124,7 @@ Item {
                     tighten.visible = false
                     push.visible = true
                     wipe.visible = false
-                    actionType.selected = "Push"
+                    actionType.selected = ["Push"]
                 }
                 if(target === "nons"){
                     move.visible = false
@@ -132,7 +132,7 @@ Item {
                     tighten.visible = false
                     push.visible = false
                     wipe.visible = true
-                    actionType.selected = "Wipe"
+                    actionType.selected = ["Wipe"]
                     target = figures.colorNames[index]+" Area"
                 }
                 for(var i =0; i<actions.children[0].children.length;i++){
@@ -173,8 +173,24 @@ Item {
         ButtonGroup {
             id: actionType
             buttons: actions.children
-            property var selected: ""
-            onSelectedChanged: updateAction()
+            property var selected: []
+            onSelectedChanged: {
+                update()
+            }
+            function update(){
+                for(var i=0; i<actions.children[0].children.length;i++){
+                    var item = actions.children[0].children[i]
+                    var index = selected.indexOf(item.name)+1
+                    if(index === 0)
+                        item.checked = false
+                    else{
+                        item.checked = true
+                        item.order = index.toString()
+                    }
+                }
+
+                updateAction()
+            }
         }
         CheckBox {
         id: inspect
@@ -222,31 +238,31 @@ Item {
             anchors.right:boundingArea.left
             anchors.rightMargin: 25
             ColumnLayout {
-                GuiRadioButton {
+                GuiCheckBox {
                     id: move
                     text: "Move"
                     group: actionType
                     name:text
                 }
-                GuiRadioButton {
+                GuiCheckBox {
                     id: tighten
                     text: "Tighten"
                     group: actionType
                     name:text
                 }
-                GuiRadioButton {
+                GuiCheckBox {
                     id: loosen
                     text: "Loosen"
                     group: actionType
                     name:text
                 }
-                GuiRadioButton {
+                GuiCheckBox {
                     id: push
                     text: "Push"
                     group: actionType
                     name:text
                 }
-                GuiRadioButton {
+                GuiCheckBox {
                     id: wipe
                     text: "Wipe"
                     group: actionType
@@ -328,7 +344,7 @@ Item {
 
 
     Component.onCompleted: {
-        if(action === "undefined"){
+        if(action.length === 0){
             var types = getPoiType()
             var maxN = 0
             var text = ""
@@ -347,11 +363,11 @@ Item {
                 }
             }
             if(text === "screw")
-                action = "Move"
+                action = ["Move"]
             if(text === "pusher")
-                action = "Push"
+                action = ["Push"]
             if(text === ""){
-                action = "Wipe"
+                action = ["Wipe"]
                 target = figures.colorNames[index]+" Area"
             }
         }
@@ -502,14 +518,12 @@ Item {
     }
 
     function getAction(){
-        var str = ""
-        str = ""
+        var act = actionType.selected
         if(inspect.checked)
-            str+="Inspect-"
-        str+=actionType.selected
-        action = str
+            act[0]="Inspect-"+act[0]
+        action = act
 
-        if (action === "Wipe"){
+        if (action === ["Wipe"]){
             var a ={}
             a.name = rect.action
             a.target = p0.getCoord()+'_'+p1.getCoord()+'_'+p2.getCoord()+'_'+p3.getCoord()
@@ -527,7 +541,7 @@ Item {
             actions = actions.concat(listPoints[i].getAction())
         }
 
-        actions.sort(compare)
+        //actions.sort(compare)
 
         return actions
     }
@@ -565,7 +579,7 @@ Item {
     onDoneSimChanged: {
         if(!doneSim)
             for(var i =0; i < listPoints.length; i++)
-                listPoints[i].doneSim = false
+                listPoints[i].doneSim = []
     }
 
     function poiUpdated(){

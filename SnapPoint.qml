@@ -12,8 +12,8 @@ Item{
     property var origin: null
     property var container: null
     property var target: null
-    property var done: false
-    property var doneSim: false
+    property var done: []
+    property var doneSim: []
     property var action: container.action
     z:30
     opacity: .5
@@ -61,7 +61,7 @@ Item{
         drag.axis: Drag.XAndYAxis
         onPressed: {
             container.selected(true)
-            snappedPoi = null
+            snappedPoi = origin
         }
         onReleased: {
             doSnap()
@@ -230,41 +230,49 @@ Item{
     onOriginChanged:updateParam()
 
     function getAction(){
+        var actions=[]
         target = snappedPoi.name
-        var a={}
-        a.img1 = "none_ "
-        a.name = action
-        if(action.includes("Move")){
-            if (origin.name === snappedPoi.name)
-                return []
-            target = origin.name +"-"+snappedPoi.name
-            a.img1 = origin.name
-        }
-        if(action.includes("Inspect")){
-            a.img2 = "Inspect"
-            if(!action.includes("Move")){
-                a.img1 = action.split("-")[1]+"_ "
+        for(var i=0;i<action.length;i++){
+            var a={}
+            a.img1 = "none_ "
+            a.name = action[i]
+            if(a.name.includes("Move")){
+                if (origin.name === snappedPoi.name)
+                    return []
+                target = origin.name +"-"+snappedPoi.name
+                a.img1 = origin.name
             }
+            else
+                target = origin.name
+            if(a.name.includes("Inspect")){
+                a.img2 = "Inspect"
+                if(!a.name.includes("Move")){
+                    a.img1 = a.name.split("-")[1]+"_ "
+                }
+            }
+            else
+                a.img2 = a.name
+            a.target = target
+            a.targetDisplay = target.replace(/_/g," ").replace('-',' to ')
+            a.order = container.index
+            a.color = container.objColor
+            a.done = false
+            if(done.includes(a.name) || doneSim.includes(a.name))
+                a.done = true
+            a.img3 = snappedPoi.name
+            //console.log(a.name)
+            //console.log(a.targetDisplay)
+            actions.push(a)
         }
-        else
-            a.img2 = action
-        a.target = target
-        a.targetDisplay = target.replace(/_/g," ").replace('-',' to ')
-        a.order = container.index
-        a.color = container.objColor
-        a.done = done || doneSim
-        a.img3 = snappedPoi.name
-        //console.log(a.name)
-        //console.log(a.targetDisplay)
-        return a
+        return actions
     }
 
     function testDone(act, t){
-        if(action.includes(act) && target === t){
+        if(action.includes(act) && target.split("-").includes(t.split("-")[0])){
             if(globalStates.state === "simulation")
-                doneSim = true
+                doneSim.push(act)
             else
-                done = true
+                done.push(act)
             return true
         }
         return false
@@ -278,7 +286,7 @@ Item{
         if(action.includes("Move"))
             if (origin.name === snappedPoi.name)
                 return true
-        if(done)
+        if(done.length>0)
             return true
         return false
     }
