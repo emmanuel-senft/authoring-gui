@@ -525,6 +525,26 @@ Window {
             }
         }
         GuiButton{
+            id: pauseButton
+            z:10
+            visible: executionGui.visible
+            anchors.horizontalCenter: stopButton.horizontalCenter
+            anchors.verticalCenter: commandButton.verticalCenter
+            name: "pause"
+            color: "orange"
+            onClicked:{
+                commandPublisher.text = name
+                if(name === "pause"){
+                    name = "play"
+                    color = "green"
+                }
+                else{
+                    name = "pause"
+                    color = "orange"
+                }
+            }
+        }
+        GuiButton{
             id: editButton
             z:10
             visible: executionGui.visible
@@ -536,6 +556,9 @@ Window {
             color: "#ffc27a"
             onClicked:{
                 eventPublisher.text = 'start_edit'
+                pauseButton.name = "play"
+                pauseButton.color = "green"
+                commandPublisher.text = "pause"
                 globalStates.state = "edit"
             }
         }
@@ -834,6 +857,7 @@ Window {
                 PropertyChanges { target: viewButton; visible: false}
                 PropertyChanges { target: executionGui; visible: false}
                 PropertyChanges { target: stopEditButton; visible: true}
+                PropertyChanges { target: pauseButton; visible: true}
             },
             State {name: "force_dimension"
                 //PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
@@ -847,6 +871,9 @@ Window {
         onStateChanged: {
             //console.log(globalStates.state)
             switch (globalStates.state){
+            case "execution":
+                pauseButton.name = "pause"
+                break
                 case "gestureEdit":
                     break
                 case "drawing":

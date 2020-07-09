@@ -66,5 +66,7 @@
         <file>res/edge.png</file>
         <file>res/Fold.png</file>
         <file>GuiCheckBox.qml</file>
+        <file>res/pause.png</file>
+        <file>res/play.png</file>
     </qresource>
 </RCC>
