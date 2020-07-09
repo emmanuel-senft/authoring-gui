@@ -15,6 +15,7 @@ Item{
     property var done: []
     property var doneSim: []
     property var action: container.action
+    property var time: null
     z:30
     opacity: .5
 
@@ -60,6 +61,12 @@ Item{
         drag.target: parent
         drag.axis: Drag.XAndYAxis
         onPressed: {
+            if(time === null || time === -1){
+                var d = new Date();
+                time = d.getTime();
+                console.log("New time")
+            }
+
             container.selected(true)
             snappedPoi = origin
         }
@@ -237,8 +244,10 @@ Item{
             a.img1 = "none_ "
             a.name = action[i]
             if(a.name.includes("Move")){
-                if (origin.name === snappedPoi.name)
+                if (origin.name === snappedPoi.name){
+                    time = -1
                     return []
+                }
                 target = origin.name +"-"+snappedPoi.name
                 a.img1 = origin.name
             }
@@ -254,12 +263,18 @@ Item{
                 a.img2 = a.name
             a.target = target
             a.targetDisplay = target.replace(/_/g," ").replace('-',' to ')
-            a.order = container.index
+            a.order = i
             a.color = container.objColor
             a.done = false
             if(done.includes(a.name) || doneSim.includes(a.name))
                 a.done = true
             a.img3 = snappedPoi.name
+            if (time === -1 || time === null){
+                var d = new Date()
+                time = d.getTime()
+            }
+
+            a.time = time
             //console.log(a.name)
             //console.log(a.targetDisplay)
             actions.push(a)

@@ -534,26 +534,34 @@ Item {
             a.img1 = "none_ "
             a.img2 = a.name
             a.img3 = figures.colorNames[index]+"_ "
+            a.time = 0
             return [a]
         }
         var actions = []
         for(var i =0; i < listPoints.length; i++){
             actions = actions.concat(listPoints[i].getAction())
         }
+        for(var i =0; i < actions.length; i++){
+            console.log("New")
+            console.log(actions[i].time)
+            console.log(actions[i].name)
+            console.log(actions[i].order)
 
-        //actions.sort(compare)
+        }
+        actions.sort(compare)
 
         return actions
     }
 
     function compare(a, b) {
-
-        //console.log(a.target)
-        //console.log(a.target.split("_")[1])
-        if(parseInt(a.target.split("_")[1])<parseInt(b.target.split("_")[1]))
+        if(a.time>b.time){
+            return 1
+        }
+        if(a.time<b.time)
             return -1
         if(a.order>b.order)
             return 1
+        return -1
     }
 
     function testDone(act, t){
