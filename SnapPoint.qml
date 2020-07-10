@@ -54,6 +54,9 @@ Item{
     Component.onDestruction: {
         movedPois.removePoi(origin.type, origin.index, objColor)
     }
+    Component.onCompleted: {
+        snappedPoi = origin
+    }
 
     MouseArea {
         id:mouseArea
@@ -66,9 +69,7 @@ Item{
                 time = d.getTime();
                 console.log("New time")
             }
-
             container.selected(true)
-            snappedPoi = origin
         }
         onReleased: {
             doSnap()
