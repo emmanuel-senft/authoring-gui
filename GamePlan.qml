@@ -26,7 +26,7 @@ Item {
         anchors.top: showPlanButton.bottom
         anchors.topMargin: showPlanButton.height/4
         height: 0
-        width: parent.width / 5
+        width: parent.width / 4.5
         z:2
         color: "transparent"
         border.color: "transparent"
@@ -60,91 +60,94 @@ Item {
             Component {
                 id: actionDelegate
 
-                Item {
+                Rectangle {
+                    id: dragRect
                     width: container.width; height: 1*container.rowHeigth
-                    Column{
-                        spacing: .2*container.rowHeigth
-                        Item{
-                            width: parent.width; height: .7*container.rowHeigth
-                            Rectangle{
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: parent.width
-                                height: container.rowHeigth + list.spacing
-                                visible: done
-                                color: "white"
-                                opacity: .7
-                                z:5
-                            }
-                            Row {
-                                anchors.fill: parent
-                                Row {
-                                    width: parent.width/2.2; height: parent.height
-                                    spacing: width/40
-                                    Item{
-                                        width: parent.width/3.2
-                                        height: parent.height
-                                        Image{
-                                           anchors.fill:parent
-                                           source: "/res/"+img1.split("_")[0]+".png"
-                                           fillMode: Image.PreserveAspectFit
-                                        }
-                                        Text{
-                                            anchors.fill: parent
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
-                                            text: img1.split("_")[1]
-                                            color: "white"
-                                            font.bold: true
-                                            font.pixelSize: 30
-                                        }
-                                    }
-                                    Item{
-                                        width: parent.width/3.2
-                                        height: parent.height
-                                        Image{
-                                           anchors.fill:parent
-                                           source: "/res/"+img2+".png"
-                                           fillMode: Image.PreserveAspectFit
-                                        }
-                                    }
-                                    Item{
-                                        width: parent.width/3.2
-                                        height: parent.height
-                                        Image{
-                                           anchors.fill:parent
-                                           source: "/res/"+img3.split("_")[0]+".png"
-                                           fillMode: Image.PreserveAspectFit
-                                        }
-                                        Text{
-                                            anchors.fill: parent
-                                            horizontalAlignment: Text.AlignHCenter
-                                            verticalAlignment: Text.AlignVCenter
-                                            text: img3.split("_")[1]
-                                            color: "white"
-                                            font.bold: true
-                                            font.pixelSize: 30
-                                        }
-                                    }
+                    color: done ? "white" : "transparent"
+                    opacity: done ? .7 : 1
+                    //MouseArea{
+                    //    id: dragArea
+                    //    anchors.fill: parent
+                    //    property bool held: false
+                    //    drag.axis: Drag.YAxis
+                    //    onPressed: {
+                    //        dragArea.drag.target = dragRect
+                    //        dragRect.opacity = 0.5
+                    //        held = true
+                    //    }
+                    //}
+                    Row {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width
+                        height: .9 * container.rowHeigth
+                        Row {
+                            id: imageRow
+                            width: parent.width/2.2; height: parent.height
+                            spacing: width/40
+                            Item{
+                                width: parent.width/3.2
+                                height: parent.height
+                                Image{
+                                   anchors.fill:parent
+                                   source: "/res/"+img1.split("_")[0]+".png"
+                                   fillMode: Image.PreserveAspectFit
                                 }
-                                Text {
-                                    text: name+' ' + targetDisplay
-                                    width: actionTracker.width/2.2
-                                    height: parent.height
-                                    wrapMode: Text.WordWrap
-                                    font.italic: true
+                                Text{
+                                    anchors.fill: parent
+                                    horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
+                                    text: img1.split("_")[1]
+                                    color: "white"
+                                    font.bold: true
+                                    font.pixelSize: 30
+                                }
+                            }
+                            Item{
+                                width: parent.width/3.2
+                                height: parent.height
+                                Image{
+                                   anchors.fill:parent
+                                   source: "/res/"+img2+".png"
+                                   fillMode: Image.PreserveAspectFit
+                                }
+                            }
+                            Item{
+                                width: parent.width/3.2
+                                height: parent.height
+                                Image{
+                                   anchors.fill:parent
+                                   source: "/res/"+img3.split("_")[0]+".png"
+                                   fillMode: Image.PreserveAspectFit
+                                }
+                                Text{
+                                    anchors.fill: parent
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    text: img3.split("_")[1]
+                                    color: "white"
+                                    font.bold: true
+                                    font.pixelSize: 30
                                 }
                             }
                         }
-                         Rectangle{
-                            id: separator
-                            width:container.width
-                            height: 2
-                            color: "grey"
+                        Text {
+                            text: name+' ' + targetDisplay
+                            width: actionTracker.width/2.2
+                            height: parent.height
+                            wrapMode: Text.WordWrap
+                            font.italic: true
+                            verticalAlignment: Text.AlignVCenter
                         }
-
                     }
+                    Rectangle{
+                       id: separator
+                       width:container.width
+                       anchors.bottom: parent.bottom
+                       height: 2
+                       color: "grey"
+                   }
+
                 }
             }
 
@@ -152,9 +155,10 @@ Item {
                 id:list
                 anchors.fill: parent
                 model: actionList
-                spacing: .1*container.rowHeigth
+                spacing: 0
                 delegate: actionDelegate
                 focus: true
+                interactive: false
             }
         }
     }
@@ -212,15 +216,12 @@ Item {
                 var action = figures.children[i].getAction()
                 actions = actions.concat(action)
             }
-            //if(actions.length !== figures.children.length)
-            //    return
-            //actions.sort(compare)
             actionList.clear()
             for(var i=0;i<actions.length;i++){
                 actionList.append(actions[i])
             }
             if (actions.length > 0){
-                container.height = 1.1*container.rowHeigth*actions.length
+                container.height = 1*container.rowHeigth*actions.length
                 actionTracker.height = container.height+title.height*1.5+container.rowHeigth*.25
             }
             else{
