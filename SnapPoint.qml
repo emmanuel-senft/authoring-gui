@@ -67,7 +67,6 @@ Item{
             if(time === null || time === -1){
                 var d = new Date();
                 time = d.getTime();
-                console.log("New time")
             }
             container.selected(true)
         }
@@ -193,7 +192,7 @@ Item{
             if(snappedPoi === null || parent.listPoints[i].name !== name)
                 parentPois.push(parent.listPoints[i].name)
         }
-        //console.log(parentPois)
+        var tempSnap = null
         for (var i=0;i<pois.children.length;i++){
             if(parentPois.includes(pois.children[i].name))
                 continue
@@ -203,7 +202,7 @@ Item{
                 snapRect.visible = true
                 snapPoint.x = pois.children[i].x-x
                 snapPoint.y = pois.children[i].y-y
-                snappedPoi = pois.children[i]
+                tempSnap = pois.children[i]
             }
         }
         if(dMin === rMax*rMax){
@@ -212,11 +211,13 @@ Item{
             movedPois.removePoi(origin.type, origin.index,objColor)
         }
         else{
+            if(tempSnap !== snappedPoi){
+                snappedPoi = tempSnap
+            }
             movedPois.updatePoi(origin.type, origin.index,snappedPoi.x,snappedPoi.y,objColor)
         }
     }
     function doSnap(){
-        //console.log("snapping")
         var targetx = x + snapPoint.x
         var targety = y + snapPoint.y
         snapRect.visible = false
@@ -235,7 +236,8 @@ Item{
             param = snappedPoi.name*/
     }
 
-    onOriginChanged:updateParam()
+    onOriginChanged:{
+        updateParam()}
 
     function getAction(){
         var actions=[]
@@ -251,9 +253,12 @@ Item{
                 }
                 target = origin.name +"-"+snappedPoi.name
                 a.img1 = origin.name
+                a.img3 = snappedPoi.name
             }
-            else
+            else{
                 target = origin.name
+                a.img3 = target
+            }
             if(a.name.includes("Inspect")){
                 a.img2 = "Inspect"
                 if(!a.name.includes("Move")){
@@ -269,15 +274,13 @@ Item{
             a.done = false
             if(done.includes(a.name) || doneSim.includes(a.name))
                 a.done = true
-            a.img3 = snappedPoi.name
+
             if (time === -1 || time === null){
                 var d = new Date()
                 time = d.getTime()
             }
 
             a.time = time
-            //console.log(a.name)
-            //console.log(a.targetDisplay)
             actions.push(a)
         }
         return actions

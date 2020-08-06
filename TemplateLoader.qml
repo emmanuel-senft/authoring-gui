@@ -116,8 +116,6 @@ Item {
                             MouseArea{
                                 anchors.fill: parent
                                 onClicked: {
-                                    console.log(name)
-                                    console.log(n)
                                     loadTemplate(n)
                                 }
                             }

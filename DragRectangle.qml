@@ -31,7 +31,7 @@ Item {
         onPressed: {
             if(inHull(Qt.point(mouseX,mouseY))){
                 if (c === true){
-                    objects.visible = ! objects.visible
+                    overlay.additionalVisible = ! overlay.additionalVisible
                     c = false
                 }
                 else{
@@ -45,7 +45,6 @@ Item {
         }
     }
     onCChanged: {
-        //console.log(c)
     }
 
     Timer{
@@ -55,7 +54,9 @@ Item {
             c = false
         }
     }
-    onActionChanged: paint()
+    onActionChanged: {
+        paint()
+    }
 
     Canvas {
         id: canvas
@@ -101,188 +102,13 @@ Item {
         onDisplayAngleChanged: {
             updateArea()
         }
+        RectangleOverlay{
+            id: overlay
+            anchors.fill:parent
+            action: rect.action
+            target: rect.target
+        }
 
-        ButtonGroup {
-            id: objectType
-            buttons: objects.children
-            property var selected: ""
-            onSelectedChanged: {
-                selectedPois()
-                target = selected+"s"
-                if(target === "screws"){
-                    move.visible = true
-                    loosen.visible = true
-                    tighten.visible = true
-                    push.visible = false
-                    wipe.visible = false
-                    if(actionType.selected !== "Loosen" && actionType.selected !== "Tighten")
-                    actionType.selected = ["Move"]
-                }
-                if(target === "pushers"){
-                    move.visible = false
-                    loosen.visible = false
-                    tighten.visible = false
-                    push.visible = true
-                    wipe.visible = false
-                    actionType.selected = ["Push"]
-                }
-                if(target === "nons"){
-                    move.visible = false
-                    loosen.visible = false
-                    tighten.visible = false
-                    push.visible = false
-                    wipe.visible = true
-                    actionType.selected = ["Wipe"]
-                    target = figures.colorNames[index]+" Area"
-                }
-                for(var i =0; i<actions.children[0].children.length;i++){
-                    if(actionType.selected.includes(actions.children[0].children[i].name)){
-                        actions.children[0].children[i].checked = true
-                    }
-                    else{
-                        actions.children[0].children[i].checked = false
-                    }
-                }
-            }
-        }
-        Column {
-            id: objects
-            visible:false
-            anchors.top: boundingArea.top
-            anchors.left:boundingArea.right
-            anchors.leftMargin: 25
-            ColumnLayout {
-                GuiRadioButton {
-                    text: "Screws"
-                    group: objectType
-                }
-                GuiRadioButton {
-                    text: "Holes"
-                    group: objectType
-                }
-                GuiRadioButton {
-                    text: "Pushers"
-                    group: objectType
-                }
-                GuiRadioButton {
-                    text: "None"
-                    group: objectType
-                }
-            }
-        }
-        ButtonGroup {
-            id: actionType
-            buttons: actions.children
-            property var selected: []
-            onSelectedChanged: {
-                update()
-            }
-            function update(){
-                for(var i=0; i<actions.children[0].children.length;i++){
-                    var item = actions.children[0].children[i]
-                    var index = selected.indexOf(item.name)+1
-                    if(index === 0)
-                        item.checked = false
-                    else{
-                        item.checked = true
-                        item.order = index.toString()
-                    }
-                }
-
-                updateAction()
-            }
-        }
-        CheckBox {
-        id: inspect
-        anchors.top: boundingArea.bottom
-        anchors.topMargin: 25
-        anchors.left:boundingArea.left
-        checked: false
-        visible:objects.visible
-        indicator: Rectangle {
-            implicitWidth: 26
-            implicitHeight: 26
-            x: inspect.leftPadding
-            y: parent.height / 2 - height / 2
-            radius: 3
-            border.color: inspect.down ? "#696969" : "black"
-
-            Rectangle {
-                width: 14
-                height: 14
-                x: 6
-                y: 6
-                radius: 2
-                color: inspect.down ? "#696969" : "black"
-                visible: inspect.checked
-            }
-        }
-        contentItem: Text {
-
-            text: "Inspect"
-            font.family: "Helvetica"
-            font.pointSize: 15
-            font.bold: true
-            style: Text.Outline
-            styleColor: "black"
-            color: "white"
-            verticalAlignment: Text.AlignVCenter
-            leftPadding: inspect.indicator.width + inspect.spacing
-        }
-        onCheckedChanged: updateAction()
-    }
-        Column {
-            id: actions
-            visible:objects.visible
-            anchors.top: boundingArea.top
-            anchors.right:boundingArea.left
-            anchors.rightMargin: 25
-            ColumnLayout {
-                GuiCheckBox {
-                    id: move
-                    text: "Move"
-                    group: actionType
-                    name:text
-                }
-                GuiCheckBox {
-                    id: tighten
-                    text: "Tighten"
-                    group: actionType
-                    name:text
-                }
-                GuiCheckBox {
-                    id: loosen
-                    text: "Loosen"
-                    group: actionType
-                    name:text
-                }
-                GuiCheckBox {
-                    id: push
-                    text: "Push"
-                    group: actionType
-                    name:text
-                }
-                GuiCheckBox {
-                    id: wipe
-                    text: "Wipe"
-                    group: actionType
-                    name:text
-                }
-            }
-        }
-        Label{
-            z:50
-            id: actionDisplay
-            text:action+" "+target
-            anchors.bottom: boundingArea.top
-            anchors.bottomMargin: 25
-            anchors.left: boundingArea.left
-            font.bold: true
-            font.pixelSize: 40
-            style: Text.Outline
-            styleColor: "black"
-            color: "white"
-        }
     }
     function updateAction(){
         timerUpdateActions.restart()
@@ -354,9 +180,9 @@ Item {
                     text = key
                 }
             }
-            objectType.selected = text
+            overlay.setObjectSelected(text)
+            var objects = overlay.getObjects()
             for(var i =0; i<objects.children[0].children.length;i++){
-                //console.log(objects.children[0].children[i].name)
                 if(objects.children[0].children[i].name === text){
                     objects.children[0].children[i].checked = true
                     break
@@ -371,21 +197,21 @@ Item {
                 target = figures.colorNames[index]+" Area"
             }
         }
-        for(var i =0; i<actions.children[0].children.length;i++){
-            //console.log(actions.children[0].children[i].name)
-            if(action.includes(actions.children[0].children[i].name)){
-                actions.children[0].children[i].checked = true
+        var actions = overlay.getActions()
+        for(var i =0; i<actions.children.length;i++){
+            if(action.includes(actions.children[i].name)){
+                actions.children[i].checked = true
                 break
             }
         }
         if(action.includes("Inspect"))
-            inspect.checked = true
+            overlay.setInspect(true)
 
         objColor = figures.colors[index]
         currentItem = true
 
         paint()
-        timerUpdateActions.restart()
+        updateAction()
     }
 
     function getPoints(){
@@ -410,11 +236,11 @@ Item {
 
     function selectedPois(){
         if(globalStates.state === "execution" || globalStates.state === "simulation" ){
-            timerUpdateActions.start()
+            updateAction()
             return
         }
 
-        var type = objectType.selected
+        var type = overlay.getObjectSelected()
         var currentPois = []
         var i = listPoints.length
         while(i--){
@@ -443,7 +269,7 @@ Item {
                 listPoints.push(anchor)
             }
         }
-        timerUpdateActions.start()
+        //timerUpdateActions.start()
     }
 
     function inHull(poi){
@@ -485,7 +311,7 @@ Item {
         }
         else{
             canvas.opacity=.2
-            objects.visible = false
+            overlay.additionalVisible = false
             paint()
         }
     }
@@ -493,23 +319,21 @@ Item {
         indexes = val
     }
     function selected(val){
-        //console.log("selected")
-        //console.log(val)
         currentItem = val
     }
     function setIndex(val){
         index = val
         currentItem = false
         currentItem = true
-        timerUpdateActions.restart()
+        updateAction()
     }
     Component.onDestruction: {
         indexes.splice(indexes.indexOf(index), 1);
-        timerUpdateActions.restart()
+        updateAction()
     }
     function getTemplate(){
         var template ={}
-        template["type"] = actionType.selected
+        template["type"] = overlay.actionType.selected
         template["targets"] = []
         for(var i=0;i<listPoints.length;i++){
             template["targets"].push(listPoints[i].origin.name)
@@ -518,10 +342,11 @@ Item {
     }
 
     function getAction(){
-        var act = actionType.selected
-        if(inspect.checked)
+        var act = overlay.getActionsSelected()
+        if(overlay.getInspect())
             act[0]="Inspect-"+act[0]
-        action = act
+        if(action !== act)
+            action = act
 
         if (action === ["Wipe"]){
             var a ={}
@@ -541,31 +366,29 @@ Item {
         for(var i =0; i < listPoints.length; i++){
             actions = actions.concat(listPoints[i].getAction())
         }
-        for(var i =0; i < actions.length; i++){
-            console.log("New")
-            console.log(actions[i].time)
-            console.log(actions[i].name)
-            console.log(actions[i].order)
 
-        }
         actions.sort(compare)
 
         return actions
     }
 
     function compare(a, b) {
-        if(a.time>b.time){
+        if(a.time>b.time)
             return 1
-        }
         if(a.time<b.time)
+            return -1
+        if(parseInt(a.target.split("_")[1]) > parseInt(b.target.split("_")[1]))
+            return 1
+        if(parseInt(a.target.split("_")[1]) < parseInt(b.target.split("_")[1]))
             return -1
         if(a.order>b.order)
             return 1
-        return -1
+        if(a.order<b.order)
+            return -1
+        return 0
     }
 
     function testDone(act, t){
-        //console.log(listPoints.length)
         for(var i =0; i < listPoints.length; i++){
             if(listPoints[i].testDone(act, t)){
                 done = true
@@ -599,7 +422,6 @@ Item {
             var allInHull = true
             for(var i =0; i < listPoints.length; i++){
                 if (! inHull(listPoints[i].origin)){
-                    //console.log("not in hull")
                     allInHull = false
                 }
                 listPoints[i].poiUpdated()
@@ -630,7 +452,6 @@ Item {
         for(var i=0; i<pois.children.length; i++){
             var poi = pois.children[i]
             if (names.indexOf(poi.name) >= 0){
-                //console.log('Adding')
                 var component = Qt.createComponent("SnapPoint.qml");
                 var anchor = component.createObject(rect, {container:rect,snappedPoi:poi,type:poi.type,index:poi.index,x:poi.x,y:poi.y,objColor:figures.colors[rect.index],opacity:1,origin:poi});
                 listPoints.push(anchor)
@@ -638,9 +459,8 @@ Item {
             }
         }
         poiUpdated()
-        objectType.selected = type
+        overlay.objectType.selected = type
         for(var i =0; i<objects.children[0].children.length;i++){
-            //console.log(objects.children[0].children[i].name)
             if(objects.children[0].children[i].name === type){
                 objects.children[0].children[i].checked = true
                 break

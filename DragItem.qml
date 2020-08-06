@@ -134,7 +134,6 @@ Item {
             a.img3 = "unknown_ "
         else
             a.img3 = a.target
-        //console.log(a.target)
         return [a]
     }
     function testDone(act, t){

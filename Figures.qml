@@ -47,8 +47,8 @@ Item{
         ny = x*Math.sin(-alpha)+y*Math.cos(-alpha)// + (Math.sin(-alpha)-1+Math.cos(-alpha))*height/2
         x=nx
         y=ny
-        //if (name === "arrow")
-        //    name = "rect"
+        if (name === "arrow")
+            name = "rect"
         var component = null
         var figure = null
         var center=Qt.point(x+width/2 + (-Math.sin(-alpha)-1+Math.cos(-alpha))*width/2 ,y+width/2 + (Math.sin(-alpha)-1+Math.cos(-alpha))*height/2)

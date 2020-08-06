@@ -34,6 +34,7 @@ Window {
         id:rotationSlider
         width: parent.height/1.1
         height: width
+        visible: false
         property var theta_h: 0
         property var theta_r: 0
         z:200
@@ -98,7 +99,7 @@ Window {
             //property string realCamera: "res/default.jpg"
             //property string realCamera: "image://rosimage/rgb/image_raw"
             property string realCamera: virtualCamera
-            property string virtualCamera: "image://rosimage/virtual_camera/image"
+            property string virtualCamera: "image://rosimage/virtual_camera/image_repub"
             property bool useRealImage: true
             source: toLoad
             cache: false
@@ -138,7 +139,6 @@ Window {
                 visible: true
                 property var cmd: null
                 function addPoi(type,id,x,y){
-                    //console.log("adding"+type+id)
                     var component = Qt.createComponent("POI.qml")
                     var color = "red"
                     if(type === "screw")
@@ -178,17 +178,19 @@ Window {
                             x = (parseInt(coord.split(",")[0])/map.sourceSize.width) * map.paintedWidth
                             y = (parseInt(coord.split(",")[1])/map.sourceSize.height) * map.paintedHeight
                         }
-                        if(pois.children.length<cmd.length-1)
-                            pois.addPoi(type, id, x, y)
-                        else{
-                            for(var j =0;j<pois.children.length;j++){
-                                var poi = pois.children[j]
-                                if(poi.type === type && poi.index === id){
-                                    poi.x = x
-                                    poi.y = y
-                                }
+                        var new_poi = true
+
+                        for(var j =0;j<pois.children.length;j++){
+                            var poi = pois.children[j]
+                            if(poi.type === type && poi.index === id){
+                                poi.x = x
+                                poi.y = y
+                                new_poi = false
+                                break
                             }
                         }
+                        if(new_poi)
+                            pois.addPoi(type, id, x, y)
                     }
                     if(waitGui.waitPoi){
                         roi.visible = true
@@ -262,7 +264,6 @@ Window {
                     }
                 }
                 if(!found){
-                    //console.log("adding"+type+id)
                     var component = Qt.createComponent("POI.qml")
                     var poi = component.createObject(movedPois, {type:type,index:id,color:objColor,x:x,y:y})
                 }
@@ -454,7 +455,6 @@ Window {
             name: "switch"
             color: "#ffc27a"
             onClicked:{
-                //console.log(globalStates.state)
                 switch(globalStates.state){
                     case "visualization":
                         globalStates.state = "drawing"
@@ -477,7 +477,6 @@ Window {
                         globalStates.state = "drawing"
                         break
                 }
-                //console.log(globalStates.state)
             }
         }
         GuiButton{
@@ -708,6 +707,7 @@ Window {
         topic: "/event"
         text:""
         onTextChanged:{
+            console.log("event")
             if(text === "start_exec"){
                 moving = true
             }
@@ -730,7 +730,7 @@ Window {
                 var target = cmd[1]
                 for (var i = 0; i<figures.children.length;i++){
                     if(figures.children[i].testDone(name, target)){
-                        gamePlan.update()
+                        //gamePlan.update()
                         break
                     }
                 }
@@ -762,7 +762,6 @@ Window {
                 return
                 var theta=Math.atan2(dialCenter.y-rotationSlider.width/2,dialCenter.x-rotationSlider.width/2)
                 theta += parseFloat(cmd[1])/25.
-                console.log(displayView.rotation)
             }
 
         }
@@ -782,7 +781,6 @@ Window {
             }
             var cmd = text.split(";")
             if(cmd[0] === "poi"){
-                //console.log(cmd)
                 pois.cmd = cmd
             }
         }
@@ -816,7 +814,9 @@ Window {
     Timer{
         id: timerUpdateActions
         interval: 100
-        onTriggered:gamePlan.update()
+        onTriggered:{
+            gamePlan.update()
+        }
     }
 
     StateGroup {
@@ -869,7 +869,6 @@ Window {
             }
     ]
         onStateChanged: {
-            //console.log(globalStates.state)
             switch (globalStates.state){
             case "execution":
                 pauseButton.name = "pause"

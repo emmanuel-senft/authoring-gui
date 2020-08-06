@@ -5,7 +5,13 @@ CheckBox {
     id: control
     property var group: null
     property var name: text.toLowerCase().slice(0,-1)
-    property var order: ""
+    property var order: null
+    property var index: 0
+    property int position: index
+    anchors.left: parent.left
+    width: parent.width
+    y:position*1.1*height
+    visible: true
 
     text: qsTr("CheckBox")
     checked: false
@@ -26,7 +32,7 @@ CheckBox {
         }
 */
         Text {
-            text: order
+            text: order === null ? "" : order.toString()
             visible: control.checked
             color: "black"
             verticalAlignment: Text.AlignVCenter
@@ -55,24 +61,65 @@ CheckBox {
     }
 
     onCheckedChanged: {
+        if(!checked)
+            order=null
         if(group !== null){
             if (checked){
                 if(group.selected.indexOf(name) === -1){
-                    console.log("Adding "+name)
                     group.selected.push(name)
                 }
-                else
-                    console.log("Already there")
                 group.update()
             }
-            else
-                for( var i = 0; i < group.selected.length; i++)
+            else{
+                for( var i = 0; i < group.selected.length; i++){
                     if ( group.selected[i] === name) {
                         group.selected.splice(i, 1)
                         group.update()
                         break
                     }
+                }
+            }
+            group.updateSelected()
         }
+    }
+    Behavior on y { PropertyAnimation { properties: "y"; easing.type: Easing.InOutQuad } }
+    MouseArea{
+        anchors.right: parent.right
+        width: parent.width/2
+        height: parent.height
+    }
+    Rectangle{
+        id: button
+        visible: order === 1 ? false : checked
+        width: parent.width/8
+        height: width
+        radius: width/2
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+        property var borderWidth: width/20
+        border.color: "Gainsboro"
+        color: "GhostWhite"
 
+        Image{
+           id:img
+           width: button.width/1.41
+           height: button.height/1.41
+           source: "/res/up.png"
+           anchors.horizontalCenter: button.horizontalCenter
+           anchors.verticalCenter: button.verticalCenter
+
+           fillMode: Image.PreserveAspectFit
+        }
+        MouseArea{
+            anchors.fill: parent
+            onPressed:{
+                if(order === 1)
+                    return
+                group.up(order-1)
+                order-=1
+                group.updateSelected()
+                group.updateOrder()
+            }
+        }
     }
 }

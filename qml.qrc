@@ -68,5 +68,7 @@
         <file>GuiCheckBox.qml</file>
         <file>res/pause.png</file>
         <file>res/play.png</file>
+        <file>RectangleOverlay.qml</file>
+        <file>res/up.png</file>
     </qresource>
 </RCC>
