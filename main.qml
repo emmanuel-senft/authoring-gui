@@ -361,61 +361,89 @@ Window {
             }
             visible: drawingGui.visible
         }
-        GuiButton{
-            id: zoomInButton
-            z:10
-            width: parent.width/25
-            anchors.bottom: virtualMouse.top
-            anchors.bottomMargin: 1.5*height
-            anchors.horizontalCenter: commandButton.horizontalCenter
-            anchors.horizontalCenterOffset: width/1.5
-            name: "zoom_in"
-            color: "steelblue"
-            onClicked:{
-                moving = true
-                commandPublisher.text = "zoom_in"
-            }
-            visible: drawingGui.visible
-        }
-        GuiButton{
-            id: zoomOutButton
-            z:10
-            width: zoomInButton.width
-            anchors.verticalCenter: zoomInButton.verticalCenter
-            anchors.horizontalCenter: commandButton.horizontalCenter
-            anchors.horizontalCenterOffset: -width/1.5
-            name: "zoom_out"
-            color: "steelblue"
-            onClicked:{
-                moving = true
-                commandPublisher.text = "zoom_out"
-            }
-            visible: drawingGui.visible
-        }
 
-        VirtualMouse{
+        ArrowPad{
             id: virtualMouse
             z:11
             visible: drawingGui.visible
-            anchors.horizontalCenter: commandButton.horizontalCenter
-            anchors.horizontalCenterOffset: width
-            anchors.bottom: resetButton.top
-            anchors.bottomMargin: 1.*resetButton.height
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: parent.width / 15 + width/2
+            anchors.verticalCenter: resetButton.verticalCenter
         }
-        VirtualMouse{
+        ArrowPad{
+            id: other
+            z:11
+            type: "other"
+            width: map.width/14
+            visible: drawingGui.visible
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: resetButton.verticalCenter
+        }
+        ArrowPad{
             id: virtualMouseAngle
             z:11
             visible: drawingGui.visible
-            anchors.right: virtualMouse.left
-            anchors.bottom: resetButton.top
-            anchors.bottomMargin: 1.*resetButton.height
-            angle:true
+            type: "rotation"
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: -parent.width / 15 - width/2
+            anchors.verticalCenter: resetButton.verticalCenter
         }
+        GuiButton{
+            id: bookButton
+            anchors.verticalCenter: resetButton.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: -parent.width / 5 - width/2
+            z:10
+            property int counter: 0
+            color: figures.colors[counter]
+            name: "bookview"
+            onClicked:{
+                viewButtons.children[counter].visible = true
+                commandPublisher.text = "save_view;"+counter.toString()
+                counter = (counter+1)%2
+            }
+            visible: drawingGui.visible
+        }
+        Item{
+            id:viewButtons
+            anchors.verticalCenter: resetButton.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: + parent.width / 5
+            visible: drawingGui.visible
+            GuiButton{
+                property int number: 0
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.horizontalCenterOffset: number * 3/2 * width
+                color: figures.colors[number]
+                z:10
+                name: "view"
+                onClicked:{
+                    commandPublisher.text = "load_view;"+number.toString()
+                }
+                visible: false
+            }
+            GuiButton{
+                property int number: 1
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.horizontalCenterOffset: number * 3/2 * width
+                color: figures.colors[number]
+                z:10
+                name: "view"
+                onClicked:{
+                    commandPublisher.text = "load_view;"+number.toString()
+                }
+                visible: false
+            }
+        }
+
+
         GuiButton{
             id: resetButton
             anchors.horizontalCenter: commandButton.horizontalCenter
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: width/2
+            anchors.bottomMargin: width
             z:10
             name: "reset"
             onClicked:{
