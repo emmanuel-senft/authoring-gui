@@ -7,6 +7,7 @@ Item{
     property int index: 0
     property var name: type+"_"+index
     property color color: "red"
+    property bool updated: true
     width: 20
     Rectangle{
         x:-width/2

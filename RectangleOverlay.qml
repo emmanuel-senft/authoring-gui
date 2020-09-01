@@ -14,7 +14,7 @@ Item{
         property var selected: ""
         onSelectedChanged: {
             selectedPois()
-            target = selected+"s"
+            target = selected
             if(target === "screws"){
                 move.visible = true
                 loosen.visible = true
@@ -22,7 +22,7 @@ Item{
                 push.visible = false
                 wipe.visible = false
                 if(actionType.selected !== "Loosen" && actionType.selected !== "Tighten")
-                actionType.selected = ["Move"]
+                    actionType.selected = ["Move"]
             }
             if(target === "pushers"){
                 move.visible = false

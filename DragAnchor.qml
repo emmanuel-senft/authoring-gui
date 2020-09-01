@@ -11,6 +11,7 @@ Item{
     y: center.y
     z:30
     property var rectWidth: 30
+    signal updated()
 
     Rectangle{
         id: target
@@ -30,10 +31,13 @@ Item{
         drag.target: parent
         drag.axis: Drag.XAndYAxis
         onPressed: {
-            anchor.parent.selected(true)
+            rect.selected(true)
         }
         onReleased: {
             anchor.released = true
+        }
+        onPositionChanged: {
+            updated()
         }
     }
     onXChanged: {

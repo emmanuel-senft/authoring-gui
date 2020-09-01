@@ -4,7 +4,9 @@ import QtQuick.Controls 2.12
 RadioButton {
     id: control
     property var group: null
-    property var name: text.toLowerCase().slice(0,-1)
+    property var name: text.toLowerCase()
+    property bool lastVisible: false
+    visible: true
 
     text: qsTr("RadioButton")
     checked: false
@@ -44,5 +46,14 @@ RadioButton {
     onCheckedChanged: {
         if (checked && group !== null)
             group.selected = name
+    }
+    onVisibleChanged: {
+        //if(lastVisible !== visible){
+        //    if (visible)
+        //        parent.objectLength+=1
+        //    else
+        //        parent.objectLength-=1
+        //}
+        //lastVisible = visible
     }
 }

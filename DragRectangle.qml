@@ -24,19 +24,17 @@ Item {
     property bool c: false
     property var listPoints: []
 
-
     MouseArea{
         id: mouseArea
         anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         onPressed: {
+            cleanSnappedPois()
             if(inHull(Qt.point(mouseX,mouseY))){
-                if (c === true){
+                if (mouse.button & Qt.RightButton){
                     overlay.additionalVisible = ! overlay.additionalVisible
-                    c = false
                 }
                 else{
-                    c = true
-                    resetClick.start()
                     mouse.accepted = false;
                 }
             }
@@ -181,11 +179,12 @@ Item {
             var maxN = 0
             var text = ""
             for(var key in types){
-                if (types[key]>maxN){
+                if (key !== "holes" && types[key]>maxN){
                     maxN = types[key]
                     text = key
                 }
             }
+
             overlay.setObjectSelected(text)
             var objects = overlay.getObjects()
             for(var i =0; i<objects.children[0].children.length;i++){
@@ -194,11 +193,11 @@ Item {
                     break
                 }
             }
-            if(text === "screw")
+            if(text === "screws")
                 action = ["Move"]
-            if(text === "pusher")
+            if(text === "pushers")
                 action = ["Push"]
-            if(text === ""){
+            if(text === "s"){
                 action = ["Wipe"]
                 target = figures.colorNames[index]+" Area"
             }
@@ -215,9 +214,17 @@ Item {
 
         objColor = figures.colors[index]
         currentItem = true
-
+        updateObjects()
         paint()
         updateAction()
+    }
+
+    function updateObjects(){
+        var types = getPoiType()
+        var objects = overlay.getObjects()
+        for(var i =0; i<objects.children[0].children.length;i++){
+            objects.children[0].children[i].visible = objects.children[0].children[i].name in types
+        }
     }
 
     function getPoints(){
@@ -225,32 +232,32 @@ Item {
     }
 
     function getPoiType(){
+        cleanSnappedPois()
         var objectTypes={}
         for(var i=0; i<pois.children.length; i++){
             var poi = pois.children[i]
-            if(poi.type === "hole")
-                continue
             if (inHull(poi)){
-                if(objectTypes[poi.type])
-                    objectTypes[poi.type]+=1
+                if(objectTypes[poi.type+"s"])
+                    objectTypes[poi.type+"s"]+=1
                 else
-                    objectTypes[poi.type]=1
+                    objectTypes[poi.type+"s"]=1
             }
         }
         return objectTypes
     }
 
     function selectedPois(){
+        cleanSnappedPois()
         if(globalStates.state === "execution" || globalStates.state === "simulation" ){
             updateAction()
             return
         }
 
-        var type = overlay.getObjectSelected()
+        var type = overlay.getObjectSelected().slice(0,-1)
         var currentPois = []
         var i = listPoints.length
         while(i--){
-            if(! inHull(listPoints[i].origin) || listPoints[i].origin.type !== type){
+            if(typeof listPoints[i].origin === "undefined" || ! inHull(listPoints[i].origin) || listPoints[i].origin.type !== type){
                 listPoints[i].destroy()
                 listPoints.splice(i,1)
             }
@@ -354,10 +361,13 @@ Item {
         if(action !== act)
             action = act
 
-        if (action === ["Wipe"]){
+            a.time = 0
+            return [a]
+        }
+        if (action[0] === "Wipe"){
             var a ={}
-            a.name = rect.action
-            a.target = p0.getCoord()+'_'+p1.getCoord()+'_'+p2.getCoord()+'_'+p3.getCoord()
+            a.name = action[0]
+            a.target = graspPoint.getCoord()+'_'+p0.getCoord()+'_'+p1.getCoord()+'_'+p2.getCoord()+'_'+p3.getCoord()
             a.targetDisplay = rect.target
             a.order = rect.index
             a.color = rect.objColor
@@ -421,6 +431,7 @@ Item {
 
     function poiUpdated(){
         if(listPoints.length > 0){
+            cleanSnappedPois()
             var minX = width
             var maxX = 0
             var minY = height
@@ -473,5 +484,21 @@ Item {
             }
         }
         updateAction()
+    }
+
+    function cleanSnappedPois(){
+        for(var i = listPoints.length; i > 0 ; i--) {
+           if(typeof listPoints[i] === "undefined")
+               continue
+          if (typeof listPoints[i].origin === "undefined" || listPoints[i-1].origin === null){
+              try{
+                listPoints[i-1].destroy()
+              }
+              catch(err) {
+               ;
+              }
+              listPoints.splice(i-1,1)
+          }
+        }
     }
 }

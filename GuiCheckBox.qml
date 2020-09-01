@@ -8,10 +8,11 @@ CheckBox {
     property var order: null
     property var index: 0
     property int position: index
+    property bool lastVisible: false
     anchors.left: parent.left
     width: parent.width
     y:position*1.1*height
-    visible: true
+    visible: false
 
     text: qsTr("CheckBox")
     checked: false
@@ -120,5 +121,14 @@ CheckBox {
                 group.updateOrder()
             }
         }
+    }
+    onVisibleChanged: {
+        if(lastVisible !== visible){
+            if (visible)
+                parent.actionLength+=1
+            else
+                parent.actionLength-=1
+        }
+        lastVisible = visible
     }
 }
