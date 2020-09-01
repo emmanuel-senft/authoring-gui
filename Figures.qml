@@ -110,6 +110,17 @@ Item{
         }
     }
 
+    function createRect(x,y,width,height){
+        var component = Qt.createComponent("DragRectangle.qml");
+        var p0=Qt.point(x,y)
+        var p1=Qt.point(x+width,y)
+        var p2=Qt.point(x+width,y+height)
+        var p3=Qt.point(x,y+height)
+        var figure = component.createObject(figures, {name:"rect",index:getIndex("rect"),p0Coord:p0,p1Coord:p1,p2Coord:p2,p3Coord:p3});
+        figure.setIndexes(getIndexes("rect"))
+    }
+
+
     function getImagePosition(x,y){
         var imx = x/map.paintedWidth * map.sourceSize.width;
         var imy = y/map.paintedHeight * map.sourceSize.height;

@@ -205,6 +205,7 @@ Window {
                 }
             }
 
+/*
             DrawingArea {
                 id: drawingarea
 
@@ -232,12 +233,49 @@ Window {
                     TouchJoint {id:touch1;name:"touch1"}
                 ]
             }
+*/
+            Rectangle{
+                id: selectionArea
+                opacity: .2
+                color: "white"
+                property var startPoint: null
+                visible: false
+
+            }
 
             MouseArea{
                 anchors.fill: parent
-                acceptedButtons: Qt.RightButton
-                onClicked: {
-                    commandPublisher.text=str
+                property bool active: false
+                onPressed: {
+                    for(var i = 0;i<figures.children.length;i++){
+                        if(figures.children[i].name === "rect" && figures.children[i].inHull(Qt.point(mouseX,mouseY))){
+                            active = false
+                            return
+                        }
+                    }
+                    active = true
+                    selectionArea.startPoint = Qt.point(mouseX,mouseY)
+                    selectionArea.x = mouseX
+                    selectionArea.y = mouseY
+                    selectionArea.width = 0
+                    selectionArea.height = 0
+                    selectionArea.visible = true
+                }
+                onPositionChanged: {
+                    if(!active)
+                        return
+                    selectionArea.width = Math.abs(mouseX-selectionArea.startPoint.x)
+                    selectionArea.height = Math.abs(mouseY-selectionArea.startPoint.y)
+                    selectionArea.visible = selectionArea.width>map.width/40 || selectionArea.height > map.height/40
+                    console.log(selectionArea.visible)
+                    selectionArea.x = Math.min(mouseX,selectionArea.startPoint.x)
+                    selectionArea.y = Math.min(mouseY,selectionArea.startPoint.y)
+                }
+                onReleased: {
+                    if(!selectionArea.visible)
+                        return
+                    selectionArea.visible = false
+                    figures.createRect(selectionArea.x,selectionArea.y,selectionArea.width,selectionArea.height)
                 }
             }
 
@@ -860,20 +898,20 @@ Window {
                 PropertyChanges { target: goToButton; visible: true }
                 PropertyChanges { target: pois; visible: false }
                 PropertyChanges { target: figures; visible: false}
-                PropertyChanges { target: drawingarea; enabled: false }
+                //PropertyChanges { target: drawingarea; enabled: false }
                 PropertyChanges { target: gamePlan; visible: false }
             },
             State {name: "simulation"
                 PropertyChanges { target: map; toLoad: virtualCamera}
                 PropertyChanges { target: pois; visible: false }
                 PropertyChanges { target: figures; visible: false}
-                PropertyChanges { target: drawingarea; enabled: false }
+                //PropertyChanges { target: drawingarea; enabled: false }
             },
             State {name: "execution"
                 //PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
                 PropertyChanges { target: pois; visible: false }
                 PropertyChanges { target: figures; visible: false}
-                PropertyChanges { target: drawingarea; enabled: false }
+                //PropertyChanges { target: drawingarea; enabled: false }
                 PropertyChanges { target: viewButton; visible: false}
                 PropertyChanges { target: executionGui; visible: true}
             },
@@ -881,7 +919,7 @@ Window {
                 PropertyChanges { target: map; toLoad: virtualCamera}
                 PropertyChanges { target: pois; visible: true }
                 PropertyChanges { target: figures; visible: true}
-                PropertyChanges { target: drawingarea; enabled: true }
+                //PropertyChanges { target: drawingarea; enabled: true }
                 PropertyChanges { target: viewButton; visible: false}
                 PropertyChanges { target: executionGui; visible: false}
                 PropertyChanges { target: stopEditButton; visible: true}
@@ -891,7 +929,7 @@ Window {
                 //PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
                 PropertyChanges { target: pois; visible: false }
                 PropertyChanges { target: figures; visible: false}
-                PropertyChanges { target: drawingarea; enabled: false }
+                //PropertyChanges { target: drawingarea; enabled: false }
                 PropertyChanges { target: viewButton; visible: false}
                 PropertyChanges { target: fdGui; visible: true}
             }
