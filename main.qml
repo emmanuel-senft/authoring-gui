@@ -136,13 +136,15 @@ Window {
             }
             Item{
                 id: pois
-                visible: true
+                visible: false
                 property var cmd: null
                 function addPoi(type,id,x,y){
                     var component = Qt.createComponent("POI.qml")
                     var color = "red"
                     if(type === "screw")
                         color = "yellow"
+                    if(type === "box")
+                        color = "grey"
                     if(type === "hole")
                         color = "white"
                     if(type === "pusher")
@@ -164,9 +166,13 @@ Window {
                     onTriggered: {pois.updatePois()}
                 }
                 function updatePois(){
-                    //clearPoi()
                     if(map.paintedWidth < 1000)
                         return
+
+                    for(var i =0;i<pois.children.length;i++){
+                        pois.children[i].updated = false
+                    }
+
                     for(var i=0;i<cmd.length-1;i++){
                         var info = cmd[i+1].split(":")
                         var type = info[0]
@@ -186,11 +192,18 @@ Window {
                                 poi.x = x
                                 poi.y = y
                                 new_poi = false
+                                poi.updated = true
                                 break
                             }
                         }
                         if(new_poi)
                             pois.addPoi(type, id, x, y)
+                    }
+
+                    for(var i = pois.children.length; i > 0 ; i--) {
+                      if (pois.children[i-1].updated === false){
+                          pois.children[i-1].destroy()
+                      }
                     }
                     if(waitGui.waitPoi){
                         roi.visible = true
@@ -794,7 +807,7 @@ Window {
                 var target = cmd[1]
                 for (var i = 0; i<figures.children.length;i++){
                     if(figures.children[i].testDone(name, target)){
-                        //gamePlan.update()
+                        gamePlan.update()
                         break
                     }
                 }

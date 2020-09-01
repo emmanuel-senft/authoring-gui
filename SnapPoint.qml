@@ -53,7 +53,8 @@ Item{
         }
     }
     Component.onDestruction: {
-        movedPois.removePoi(origin.type, origin.index, objColor)
+        if(origin !== null)
+            movedPois.removePoi(origin.type, origin.index, objColor)
     }
     Component.onCompleted: {
         snappedPoi = origin
@@ -159,8 +160,9 @@ Item{
         var dMin=rMax*rMax
         var parentPois = []
         for(var i=0;i<parent.listPoints.length;i++){
-            if(snappedPoi === null || parent.listPoints[i].name !== name)
+            if(snappedPoi === null){
                 parentPois.push(parent.listPoints[i].name)
+            }
         }
         var tempSnap = null
         for (var i=0;i<pois.children.length;i++){
@@ -206,7 +208,13 @@ Item{
     }
 
     onOriginChanged:{
-        updateParam()}
+        updateParam()
+        if(origin === null){
+            movedPois.removePoi(type, index, objColor)
+            anchor.destroy()
+           return
+        }
+    }
 
     function getAction(){
         var actions=[]
@@ -266,9 +274,10 @@ Item{
         return false
     }
     function poiUpdated(){
-        x = snappedPoi.x
-        y = snappedPoi.y
-        paint()
+        if(!mouseArea.pressed){
+            x = snappedPoi.x
+            y = snappedPoi.y
+        }
     }
     function testDelete(){
         if(action.includes("Move"))
