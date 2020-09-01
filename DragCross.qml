@@ -48,7 +48,7 @@ DragItem {
         id: center
         center:centerCoord
 
-        onXChanged: {
+        onUpdated: {
             paint();
         }
         onReleasedChanged: {

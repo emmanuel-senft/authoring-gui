@@ -25,7 +25,7 @@ Item{
         id: dragPoint
         x:-width/2
         y:-height/2
-        width: 40
+        width: map.width/100
         height: width
         radius: width/2
         color: "red"

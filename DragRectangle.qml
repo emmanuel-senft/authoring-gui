@@ -127,6 +127,7 @@ Item {
         width: 100
         height: 100
         visible: true
+        z:250
         color: "transparent"
         property var displayAngle: -displayView.rotation
         rotation:displayAngle
@@ -139,7 +140,6 @@ Item {
             action: rect.action
             target: rect.target
         }
-
     }
     function updateAction(){
         timerUpdateActions.restart()
@@ -309,14 +309,14 @@ Item {
     }
     onCurrentItemChanged: {
         if(currentItem){
-            canvas.opacity=.5
+            drawings.opacity=.5
             if(figures.currentItem !== null && figures.currentItem !== rect)
                 figures.currentItem.selected(false)
             figures.currentItem = rect
             paint()
         }
         else{
-            canvas.opacity=.2
+            drawings.opacity=.2
             overlay.additionalVisible = false
             paint()
         }

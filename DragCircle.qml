@@ -51,7 +51,7 @@ DragItem {
         id: center
         center:centerCoord
 
-        onXChanged: {
+        onUpdated: {
             end.x=x+rMax
             paint();
         }
@@ -64,7 +64,7 @@ DragItem {
         x:center.x+rMax
         y:center.y
         objColor:"transparent"
-        onXChanged: {
+        onUpdated: {
                 rMax = x-center.x
                 y=center.y
                 paint();

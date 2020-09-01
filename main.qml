@@ -374,7 +374,7 @@ Window {
         GuiButton{
             id: commandButton
             z:10
-            width: parent.width/15
+            width: parent.width/20
             anchors.right: displayArea.right
             anchors.rightMargin: width/2
             anchors.verticalCenter: parent.verticalCenter
@@ -494,8 +494,7 @@ Window {
             id: deleteButton
             z:10
 
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: width/2
+            anchors.verticalCenter: resetButton.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: width/2
             name: "del"
@@ -578,10 +577,8 @@ Window {
             id: stopButton
             z:10
             visible: executionGui.visible
-            anchors.right: parent.right
-            anchors.rightMargin: width/2
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: height/2
+            anchors.horizontalCenter: resetButton.horizontalCenter
+            anchors.verticalCenter: resetButton.verticalCenter
             name: "stop"
             color: "red"
             onClicked:{
@@ -612,7 +609,8 @@ Window {
         GuiButton{
             id: editButton
             z:10
-            visible: executionGui.visible
+            //visible: executionGui.visible
+            visible: false//executionGui.visible
             anchors.right: parent.right
             anchors.rightMargin: width/2
             anchors.top: parent.top
@@ -874,6 +872,7 @@ Window {
         id: gamePlan
     }
     TemplateLoader{
+        visible: false
         id: templateLoader
     }
 

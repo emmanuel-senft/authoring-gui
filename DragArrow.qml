@@ -71,12 +71,12 @@ DragItem {
         id: origin
         objColor:"transparent"
         center: originCoord
-        onXChanged: paint();
+        onUpdated: paint();
     }
     DragAnchor{
         id: end
         center:endCoord
-        onXChanged: {
+        onUpdated: {
             paint()
         }
         onReleasedChanged: {

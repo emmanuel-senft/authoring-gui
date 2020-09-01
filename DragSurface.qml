@@ -47,7 +47,7 @@ DragItem {
     DragAnchor{
         id:p0
         center: p0Coord
-        onXChanged: {
+        onUpdated: {
             paint();
             snapTo(p0.x,p0.y)
         }
@@ -55,17 +55,17 @@ DragItem {
     DragAnchor{
         id:p1
         center: p1Coord
-        onXChanged: paint();
+        onUpdated: paint();
     }
     DragAnchor{
         id:p2
         center: p2Coord
-        onXChanged: paint();
+        onUpdated: paint();
     }
     DragAnchor{
         id:p3
         center: p3Coord
-        onXChanged: paint();
+        onUpdated: paint();
     }
 
     function getPoints(){

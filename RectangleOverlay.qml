@@ -57,6 +57,7 @@ Item{
         anchors.top: overlay.top
         anchors.left:overlay.right
         anchors.leftMargin: 25
+        z:240
         ColumnLayout {
             GuiRadioButton {
                 text: "Screws"
@@ -200,7 +201,7 @@ Item{
         anchors.bottomMargin: 25
         anchors.left: overlay.left
         font.bold: true
-        font.pixelSize: 40
+        font.pixelSize: 30
         style: Text.Outline
         styleColor: "black"
         color: "white"
@@ -210,7 +211,9 @@ Item{
         visible:objects.visible
         anchors.top: overlay.top
         anchors.right:overlay.left
+        anchors.rightMargin: width/10
         width: 240
+        z:3
         GuiCheckBox {
             id: move
             text: "Move"
@@ -247,6 +250,35 @@ Item{
             index: 4
         }
     }
+
+    Rectangle {
+        id: backActions
+        anchors.top: overlay.top
+        anchors.right:actions.right
+        anchors.rightMargin: -10
+        anchors.left: actions.left
+        anchors.leftMargin: -10
+        height: loosen.height * 1.1 * actions.actionLength
+        color: "grey"
+        z:2
+        opacity: .5
+        radius: map.width/130
+    }
+    Rectangle {
+        id: backObjects
+        anchors.top: overlay.top
+        anchors.right:objects.right
+        anchors.rightMargin: -10
+        anchors.left: objects.left
+        anchors.leftMargin: -10
+        height: loosen.height * 1.1 * objects.objectLength
+        color: "grey"
+        z:2
+        opacity: .5
+        radius: map.width/130
+        visible: additionalVisible
+    }
+
     function setObjectSelected(sel){
         objectType.selected = sel
     }

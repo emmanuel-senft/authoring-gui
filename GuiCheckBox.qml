@@ -17,8 +17,8 @@ CheckBox {
     checked: false
 
     indicator: Rectangle {
-        implicitWidth: 30
-        implicitHeight: 30
+        implicitWidth: 26
+        implicitHeight: 26
         x: control.leftPadding
         y: parent.height / 2 - height / 2
 /*
@@ -34,15 +34,15 @@ CheckBox {
         Text {
             text: order === null ? "" : order.toString()
             visible: control.checked
-            color: "black"
+            color: "#696969"
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             anchors.fill: parent
             font.family: "Helvetica"
             font.pointSize: 12
-            font.bold: true
+            font.bold: false
             style: Text.Outline
-            styleColor: "black"
+            styleColor: color
         }
     }
 
@@ -54,9 +54,8 @@ CheckBox {
         leftPadding: control.indicator.width + control.spacing
 
         font.family: "Helvetica"
-        font.pointSize: 15
+        font.pointSize: 17
         font.bold: true
-        style: Text.Outline
         styleColor: "black"
     }
 

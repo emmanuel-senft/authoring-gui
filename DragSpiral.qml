@@ -53,7 +53,7 @@ DragItem {
         id: center
         center:centerCoord
 
-        onXChanged: {
+        onUpdated: {
             end.x=x+rMax
             paint();
         }

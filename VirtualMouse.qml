@@ -7,6 +7,7 @@ Item{
     id: virtualMouse
     property bool angle: false
     width: map.width/15
+    height: width
 
     Item{
         x:-dragPoint2.width/2
@@ -48,7 +49,7 @@ Item{
                id:img2
                width: rectIn.width
                height: rectIn.height
-               source: "/res/drag.png"
+               source: angle ? "/res/switch.png" : "/res/drag.png"
                anchors.horizontalCenter: dragPoint2.horizontalCenter
                anchors.verticalCenter: dragPoint2.verticalCenter
                rotation: 45
@@ -98,7 +99,7 @@ Item{
                id:img
                width: rectIn.width
                height: rectIn.height
-               source: "/res/drag.png"
+               source: angle ? "/res/switch.png" : "/res/drag.png"
                anchors.horizontalCenter: dragPoint.horizontalCenter
                anchors.verticalCenter: dragPoint.verticalCenter
                rotation: 45

@@ -5,21 +5,22 @@ Item{
     id: anchor
     property bool released: false
     property var objColor: "red"
+    property var borderColor: "steelblue"
     property var center: null
     x: center.x
     y: center.y
     z:30
-    opacity: .5
+    property var rectWidth: 30
 
     Rectangle{
         id: target
         x:-width/2
         y:-height/2
-        width: 50
+        width: rectWidth
         height: width
         radius: width/2
         color: objColor
-        border.color: "steelblue"
+        border.color: borderColor
         border.width:width/3
     }
 
