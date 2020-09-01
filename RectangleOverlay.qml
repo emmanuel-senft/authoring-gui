@@ -32,15 +32,27 @@ Item{
                 wipe.visible = false
                 actionType.selected = ["Push"]
             }
-            if(target === "nons"){
+            if(target === "surface"){
+                console.log("in surface")
                 move.visible = false
                 loosen.visible = false
                 tighten.visible = false
                 push.visible = false
                 wipe.visible = true
                 actionType.selected = ["Wipe"]
+                wipe.checked = true
+                console.log(actionType.selected)
                 target = figures.colorNames[index]+" Area"
             }
+            if(target === "unknown"){
+                move.visible = true
+                loosen.visible = false
+                tighten.visible = false
+                push.visible = false
+                wipe.visible = false
+                actionType.selected = ["Move"]
+            }
+            console.log(actionType.selected)
             for(var i =0; i<actions.children.length;i++){
                 if(actionType.selected.includes(actions.children[i].name)){
                     actions.children[i].checked = true
@@ -57,6 +69,7 @@ Item{
         anchors.top: overlay.top
         anchors.left:overlay.right
         anchors.leftMargin: 25
+        property int objectLength: 5
         z:240
         ColumnLayout {
             GuiRadioButton {
@@ -72,7 +85,11 @@ Item{
                 group: objectType
             }
             GuiRadioButton {
-                text: "None"
+                text: "Unknown"
+                group: objectType
+            }
+            GuiRadioButton {
+                text: "Surface"
                 group: objectType
             }
         }
@@ -206,6 +223,7 @@ Item{
         styleColor: "black"
         color: "white"
     }
+
     Item {
         id: actions
         visible:objects.visible
@@ -213,6 +231,7 @@ Item{
         anchors.right:overlay.left
         anchors.rightMargin: width/10
         width: 240
+        property int actionLength: 0
         z:3
         GuiCheckBox {
             id: move

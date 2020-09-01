@@ -117,6 +117,21 @@ Item {
                 normalise(p0,p1,p2)
             }
         }
+
+        FreePoint{
+            id: movePoint
+            visible: overlay.target === "unknown"
+            Component.onCompleted: {
+                //radius = (p2Coord.x-p0Coord.x)/4
+                center= Qt.point((p0Coord.x+p2Coord.x)/2,(p0Coord.y+p2Coord.y)/2)
+            }
+        }
+        TriPoint{
+            id: graspPoint
+            visible: action.includes("Wipe")
+            midPoint: Qt.point((p0Coord.x+p2Coord.x)/2,(p0Coord.y+p2Coord.y)/2)
+            radius: map.width/30
+        }
     }
     Rectangle {
         id:boundingArea
@@ -243,6 +258,8 @@ Item {
                     objectTypes[poi.type+"s"]=1
             }
         }
+        objectTypes["unknown"]=1
+        objectTypes["surface"]=1
         return objectTypes
     }
 
@@ -360,6 +377,17 @@ Item {
             act[0]="Inspect-"+act[0]
         if(action !== act)
             action = act
+        if (overlay.target === "unknown"){
+            var a ={}
+            a.name = rect.action[0]
+            a.target = movePoint.getTarget()
+            a.targetDisplay = "Object ("+figures.colorNames[index]+")"
+            a.order = rect.index
+            a.color = rect.objColor
+            a.done = done || doneSim
+            a.img1 = "unknown_ "
+            a.img2 = a.name
+            a.img3 = "unknown_ "
 
             a.time = 0
             return [a]
@@ -405,6 +433,21 @@ Item {
     }
 
     function testDone(act, t){
+        if(overlay.target === "unknown"){
+            if(act === "Move" && t === movePoint.getTarget()){
+                done = true
+                return true
+            }
+            return false
+        }
+        if(act === "Wipe"){
+            if( t === graspPoint.getCoord()+'_'+p0.getCoord()+'_'+p1.getCoord()+'_'+p2.getCoord()+'_'+p3.getCoord()){
+                done = true
+                return true
+            }
+            return false
+        }
+
         for(var i =0; i < listPoints.length; i++){
             if(listPoints[i].testDone(act, t)){
                 done = true
@@ -415,6 +458,9 @@ Item {
     }
 
     function testDelete(){
+        if(overlay.target === "unknown" || overlay.target === "surface"){
+                return done
+        }
         for(var i =0; i < listPoints.length; i++){
             if(listPoints[i].testDelete()){
                 return true
