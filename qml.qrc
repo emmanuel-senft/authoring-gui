@@ -70,5 +70,14 @@
         <file>res/play.png</file>
         <file>RectangleOverlay.qml</file>
         <file>res/up.png</file>
+        <file>ActionDelegate.qml</file>
+        <file>ArrowPad.qml</file>
+        <file>res/arrow.png</file>
+        <file>res/rotArrow.png</file>
+        <file>res/bookview.png</file>
+        <file>res/view.png</file>
+        <file>FreePoint.qml</file>
+        <file>TriPoint.qml</file>
+        <file>res/box.png</file>
     </qresource>
 </RCC>
