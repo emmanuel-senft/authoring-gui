@@ -44,50 +44,81 @@ Item {
                 mouse.accepted = false;
         }
     }
-    onCChanged: {
-    }
 
-    Timer{
-        id: resetClick
-        interval: 300
-        onTriggered: {
-            c = false
-        }
-    }
     onActionChanged: {
         paint()
     }
-
-    Canvas {
-        id: canvas
+    Item{
+        id: drawings
         anchors.fill: parent
-         antialiasing: true
-        z:20
-        property var path: []
-        onPaint: {
-            var ctx = canvas.getContext('2d');
-            ctx.reset();
-            ctx.lineJoin = "round"
-            ctx.lineCap="round";
-
-            ctx.lineWidth = 10;
-
-            ctx.strokeStyle = rect.objColor;
-            ctx.fillStyle = rect.objColor;
-
-            ctx.beginPath();
-
-            ctx.moveTo(p0.x+p0.width/2, p0.y+p0.width/2);
-            ctx.lineTo(p1.x+p0.width/2, p1.y+p0.width/2);
-            ctx.lineTo(p2.x+p0.width/2, p2.y+p0.width/2);
-            ctx.lineTo(p3.x+p0.width/2, p3.y+p0.width/2);
-            ctx.lineTo(p0.x+p0.width/2, p0.y+p0.width/2);
-
-            ctx.stroke();
-            if(action === "Wipe")
-                ctx.fill();
-        }
         opacity: .5
+        Canvas {
+            id: canvas
+            anchors.fill: parent
+            antialiasing: true
+            z:-1
+            property var path: []
+            onPaint: {
+                var ctx = canvas.getContext('2d');
+                ctx.reset();
+                ctx.lineJoin = "round"
+                ctx.lineCap="round";
+
+                ctx.lineWidth = 5;
+
+                ctx.strokeStyle = rect.objColor;
+                ctx.fillStyle = "white"
+                ctx.beginPath();
+
+                ctx.moveTo(p0.x+p0.width/2, p0.y+p0.width/2);
+                ctx.lineTo(p1.x+p0.width/2, p1.y+p0.width/2);
+                ctx.lineTo(p2.x+p0.width/2, p2.y+p0.width/2);
+                ctx.lineTo(p3.x+p0.width/2, p3.y+p0.width/2);
+                ctx.lineTo(p0.x+p0.width/2, p0.y+p0.width/2);
+
+                ctx.stroke();
+                ctx.fill();
+                if(action === "Wipe")
+                    ctx.fill();
+            }
+        }
+
+        DragAnchor{
+            id:p0
+            center: p0Coord
+            onUpdated: {
+                updateAction()
+                paint()
+                normalise(p1,p2,p3)
+            }
+        }
+        DragAnchor{
+            id:p1
+            center: p1Coord
+            onUpdated: {
+                updateAction()
+                paint()
+                normalise(p2,p3,p0)
+            }
+        }
+        DragAnchor{
+            id:p2
+            center: p2Coord
+            onUpdated: {
+                updateAction()
+                paint()
+                normalise(p3,p0,p1)
+            }
+        }
+        DragAnchor{
+            id:p3
+            center: p3Coord
+            onUpdated: {
+                updateAction()
+                paint()
+                normalise(p0,p1,p2)
+            }
+        }
     }
     Rectangle {
         id:boundingArea
@@ -143,31 +174,6 @@ Item {
         //boundingArea.x=x//*Math.cos(-alpha)-y*Math.sin(-alpha)//-Math.abs(width_ini/2*Math.cos(alpha))//-Math.abs(height_ini/2*Math.sin(alpha))+width_ini/2
         //boundingArea.y=y//*Math.cos(-alpha)+x*Math.sin(-alpha)//-Math.abs(height_ini/2*Math.cos(alpha))//-Math.abs(width_ini/2*Math.sin(alpha))+height_ini/2
     }
-    DragAnchor{
-        id:p0
-        center: p0Coord
-        onXChanged: paint();
-        opacity: canvas.opacity
-    }
-    DragAnchor{
-        id:p1
-        center: p1Coord
-        onXChanged: paint();
-        opacity: canvas.opacity
-    }
-    DragAnchor{
-        id:p2
-        center: p2Coord
-        onXChanged: paint();
-        opacity: canvas.opacity
-    }
-    DragAnchor{
-        id:p3
-        center: p3Coord
-        onXChanged: paint();
-        opacity: canvas.opacity
-    }
-
 
     Component.onCompleted: {
         if(action.length === 0){
