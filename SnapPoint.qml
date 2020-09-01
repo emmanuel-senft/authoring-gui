@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 1.4
+import QtQuick.Shapes 1.15
 
 Item{
     id: anchor
@@ -125,58 +126,27 @@ Item{
         visible: true
     }
 
-    Canvas{
-        id: canvas
-        x:0
-        y:0
-        z:-2
-        width: 0
-        height: 0
-        onPaint: {
-
-            var ctx = canvas.getContext('2d');
-            var start = Qt.point(0,0)
-            var end = Qt.point(width,height)
-
-            ctx.reset();
-            ctx.lineJoin = "round"
-            ctx.lineCap="round";
-            context.setLineDash([6]);
-
-            ctx.lineWidth = 5;
-
-            ctx.strokeStyle = objColor;
-            ctx.fillStyle = "transparent";
-
-            ctx.beginPath();
-
-            if(startPoint.x*startPoint.y<0){
-                start.x = width
-                end.x =0
-            }
-            ctx.moveTo(start.x, start.y);
-            ctx.lineTo(end.x, end.y);
-            ctx.stroke();
+     Shape {
+        anchors.fill: parent
+        z: -10
+        ShapePath {
+            strokeWidth: 5
+            strokeColor: objColor
+            strokeStyle: ShapePath.DashLine
+            dashPattern: [ 1, 3 ]
+            startX: startPoint.x; startY: startPoint.y
+            PathLine { x: dragPoint.x+dragPoint.width/2; y: dragPoint.y+dragPoint.height/2}
         }
-    }
-    function paint(){
-        canvas.x = Math.min(0,startPoint.x)
-        canvas.y = Math.min(0,startPoint.y)
-        canvas.width = Math.max(0,startPoint.x)-canvas.x
-        canvas.height = Math.max(0,startPoint.y)-canvas.y
-        canvas.requestPaint()
     }
 
     onXChanged: {
         if (mouseArea.pressed){
             checkSnap()
-            paint()
         }
     }
     onYChanged: {
         if (mouseArea.pressed){
             checkSnap()
-            paint()
         }
     }
 
@@ -225,7 +195,6 @@ Item{
             x = snappedPoi.x
             y = snappedPoi.y
         }
-        paint()
     }
     function updateParam(){
         timerUpdateActions.restart()
