@@ -6,11 +6,12 @@ import QtGraphicalEffects 1.12
 
 Button{
     id: button
-    width: parent.width/20
+    width: map.width/25
     height: width
     property var color: "yellowgreen"
     property var name: "plan"
     property var borderWidth: width/20
+    property bool mirror: false
     style: ButtonStyle {
         background: Rectangle {
             border.width: button.borderWidth
@@ -55,7 +56,7 @@ Button{
                source: "/res/"+name+".png"
                anchors.horizontalCenter: rect.horizontalCenter
                anchors.verticalCenter: rect.verticalCenter
-
+               mirror: button.mirror
                fillMode: Image.PreserveAspectFit
             }
         }

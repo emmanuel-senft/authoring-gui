@@ -1,20 +1,14 @@
 import QtQuick 2.12
 import QtQuick.Controls 1.4
 
-Item{
+Rectangle{
     id: poi
     property var type: "poi"
     property int index: 0
     property var name: type+"_"+index
-    property color color: "red"
-    width: 20
-    Rectangle{
-        x:-width/2
-        y:-height/2
-        width: parent.width
-        height: width
-        radius: width/2
-        color: parent.color
-    }
+    property bool updated: true
+    width: map.width/50
+    height: width
+    radius: width/2
     opacity: .5
 }

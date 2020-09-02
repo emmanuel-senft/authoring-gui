@@ -7,99 +7,29 @@ import QtQuick.Controls 2.15
 import Ros 1.0
 
 Window {
-
     id: window
-
     visible: true
-    //visibility: Window.FullScreen
     width: 2736
     height: 1824
-
-    property int prevWidth:800
-    property int prevHeight:600
-    property var initTime: 0
-    property bool autonomous: false
-    property bool moving: false
-   onWidthChanged: {
-        prevWidth=width;
-        pois.updatePois()
-    }
-    onHeightChanged: {
-        prevHeight=height;
-    }
-
-    color: "white"
     title: qsTr("Authoring GUI")
-    Item{
-        id:rotationSlider
-        width: parent.height/1.1
-        height: width
-        visible: false
-        property var theta_h: 0
-        property var theta_r: 0
-        z:200
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        Rectangle{
-            width: parent.width
-            height: parent.height
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            radius: width/2
-            border.color: "red"
-            color: "transparent"
-        }
-        Item{
-            id:dialCenter
-            x:dial.x+dial.width/2
-            y:dial.y+dial.height/2
-        }
-
-        Rectangle{
-            id:dial
-            width:parent.width/20
-            height: width
-            x:parent.width/2-width/2
-            y:-height/2
-            radius: width/2
-        }
-        MouseArea {
-            id:mouseArea
-            anchors.fill: dial
-            drag.target: dial
-            drag.axis: Drag.XAndYAxis
-
-            onMouseXChanged: {
-                var theta=Math.atan2(dialCenter.y-rotationSlider.width/2,dialCenter.x-rotationSlider.width/2)
-                displayView.rotation = theta/Math.PI*180+90
-                dial.x=rotationSlider.width/2*(1+Math.cos(theta))-dial.width/2
-                dial.y=rotationSlider.height/2*(1+Math.sin(theta))-dial.height/2
-                rotationSlider.theta_h=displayView.rotation - rotationSlider.theta_r
-            }
-
-        }
-    }
+    property var selected: ""
+    property bool grasped: true
 
     Item {
         id: displayView
-        property int lineWidth: 50
-        property color fgColor: "steelblue"
-        property bool drawEnabled: true
-        property var touchs
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
         height: width*3/4
-        rotation: 0
         Image {
             id: map
             anchors.fill: parent
             fillMode: Image.PreserveAspectFit
             property string toLoad: realCamera
-            //property string realCamera: "res/default.jpg"
-            //property string realCamera: "image://rosimage/rgb/image_raw"
-            property string realCamera: virtualCamera
             property string virtualCamera: "image://rosimage/virtual_camera/image_repub"
+            //property string realCamera: "res/default.jpg"
+            property string realCamera: virtualCamera
+            //property string realCamera: "image://rosimage/rgb/image_raw"
             property bool useRealImage: true
             source: toLoad
             cache: false
@@ -136,15 +66,23 @@ Window {
             }
             Item{
                 id: pois
-                visible: true
+                anchors.fill:parent
+                visible: actionPanel.visible
+
+                property var scaleX: map.sourceSize.width / map.paintedWidth
+                property var scaleY:map.sourceSize.height / map.paintedHeight
                 property var cmd: null
                 function addPoi(type,id,x,y){
                     var component = Qt.createComponent("POI.qml")
                     var color = "red"
                     if(type === "screw")
                         color = "yellow"
-                    if(type === "hole")
+                    if(type === "box")
+                        color = "grey"
+                    if(type === "hole"){
+                        return
                         color = "white"
+                    }
                     if(type === "pusher")
                         color = "black"
                     if(type === "edge")
@@ -156,7 +94,6 @@ Window {
                         pois.children[i].destroy()
                     }
                 }
-
                 onCmdChanged: {timerPoi.start()}
                 Timer{
                     id: timerPoi
@@ -167,17 +104,18 @@ Window {
                     //clearPoi()
                     if(map.paintedWidth < 1000)
                         return
+
+                    for(var i =0;i<pois.children.length;i++){
+                        pois.children[i].updated = false
+                    }
+
                     for(var i=0;i<cmd.length-1;i++){
                         var info = cmd[i+1].split(":")
                         var type = info[0]
                         var id = parseInt(info[1])
                         var coord = info[2]
-                        var x = (1 - parseInt(coord.split(",")[0])/map.sourceSize.width) * map.paintedWidth
-                        var y = (1 - parseInt(coord.split(",")[1])/map.sourceSize.height) * map.paintedHeight
-                        if(map.rotation === 0){
-                            x = (parseInt(coord.split(",")[0])/map.sourceSize.width) * map.paintedWidth
-                            y = (parseInt(coord.split(",")[1])/map.sourceSize.height) * map.paintedHeight
-                        }
+                        var x = parseInt(coord.split(",")[0])/scaleX-map.width/100
+                        var y = parseInt(coord.split(",")[1])/scaleY-map.width/100
                         var new_poi = true
 
                         for(var j =0;j<pois.children.length;j++){
@@ -186,508 +124,291 @@ Window {
                                 poi.x = x
                                 poi.y = y
                                 new_poi = false
+                                poi.updated = true
                                 break
                             }
                         }
                         if(new_poi)
                             pois.addPoi(type, id, x, y)
                     }
-                    if(waitGui.waitPoi){
-                        roi.visible = true
-                    }
-                    for(var i=0;i<figures.children.length;i++){
-                        figures.children[i].poiUpdated()
-                    }
-                    if(roi.poi !== null){
-                        roi.x = roi.poi.x-roi.width/2
-                        roi.y = roi.poi.y-roi.width/2
+
+                    for(var i = pois.children.length; i > 0 ; i--) {
+                      if (pois.children[i-1].updated === false){
+                          pois.children[i-1].destroy()
+                      }
                     }
                 }
-            }
-
-            DrawingArea {
-                id: drawingarea
-
-                touchs: touchArea
-
-                Item {
-                    // this item sticks to the 'visual' origin of the map, taking into account
-                    // possible margins appearing when resizing
-                    id: mapOrigin
-                    property string name: "sandtray"
-                    rotation: parent.rotation
-                    x: parent.x // + (parent.width - parent.paintedWidth)/2
-                    y: parent.y //+ (parent.height - parent.paintedHeight)/2
-                }
-                onDrawEnabledChanged: backgrounddrawing.signal()
-            }
-
-
-            MultiPointTouchArea {
-                id: touchArea
-                enabled: drawingarea.enabled
-                anchors.fill: parent
-
-                touchPoints: [
-                    TouchJoint {id:touch1;name:"touch1"}
-                ]
             }
 
             MouseArea{
                 anchors.fill: parent
-                acceptedButtons: Qt.RightButton
-                onClicked: {
-                    commandPublisher.text=str
-                }
-            }
-
-        }
-
-        Figures {
-            id:figures
-            z:10
-        }
-        Item{
-            id: movedPois
-            visible: false
-
-            function updatePoi(type,id,x,y,objColor){
-                var found = false
-                for(var i=0;i<movedPois.children.length;i++){
-                    var poi = movedPois.children[i]
-
-                    if(poi.type === type && poi.index === id && poi.color == objColor){
-                        poi.x = x
-                        poi.y = y
-                        found = true
-                        break
+                onPressed:{
+                    target.visible = true
+                    target.x = mouseX
+                    target.y = mouseY
+                    var item = pois.childAt(mouseX,mouseY)
+                    console.log(item)
+                    if (item === null){
+                        selected = "unknown"
                     }
-                }
-                if(!found){
-                    var component = Qt.createComponent("POI.qml")
-                    var poi = component.createObject(movedPois, {type:type,index:id,color:objColor,x:x,y:y})
-                }
-            }
-            function removePoi(type, index, objColor){
-                for(var i =0;i<movedPois.children.length;i++){
-                    var poi = movedPois.children[i]
-                    if (poi.type === type && poi.index === index && poi.color == objColor){
-                        movedPois.children[i].destroy()
+                    else{
+                        selected = item
                     }
                 }
             }
-        }
-    }
-
-    Item{
-        id:gestureGui
-        anchors.fill: parent
-        visible: false
-
-        GuiButton{
-            id: addGestureButton
-            z:10
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: height
-            anchors.horizontalCenter: parent.horizontalCenter
-            name: "add"
-            onClicked:{
-                drawingarea.addGesture = true
-            }
-            TextEdit{
-                id: gestureName
-                width: addGestureButton.width
-                height: addGestureButton.height
-                anchors.top: addGestureButton.bottom
-                anchors.horizontalCenter: addGestureButton.horizontalCenter
-                text: "gestureName"
-                color: "white"
-            }
-        }
-        GuiButton{
-            id: saveButton
-            z:10
-            anchors.left: addGestureButton.right
-            anchors.leftMargin: height
-            anchors.verticalCenter: addGestureButton.verticalCenter
-            name: "save"
-            onClicked:{
-                var string = recognizer._r.GetUserGestures()
-                fileio.write("/src/authoring-gui/res/gestures.json",string)
-            }
-        }
-    }
-    Item{
-        id:visualizationGui
-        width: map.width
-        height: map.height
-        anchors.left: parent.left
-        anchors.top: parent.top
-        visible: true
-    }
-    Rectangle{
-        id: displayArea
-        anchors.top: parent.top
-        anchors.left: parent.left
-        height: parent.height
-        width: map.paintedWidth
-        color: "transparent"
-
-        GuiButton{
-            id: commandButton
-            z:10
-            width: parent.width/15
-            anchors.right: displayArea.right
-            anchors.rightMargin: width/2
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenterOffset: -parent.width/4
-            name: "send"
-            onClicked:{gamePlan.sendCommand("exec");
-                globalStates.state = "execution"
-            }
-            visible: drawingGui.visible
-        }
-        GuiButton{
-            id: simulateButton
-            z:10
-            anchors.bottom: commandButton.top
-            anchors.bottomMargin: height/2
-            anchors.horizontalCenter: commandButton.horizontalCenter
-            name: "sim"
-            color: "#ffc27a"
-            onClicked:{
-                gamePlan.sendCommand("sim");
-                globalStates.state = "simulation"
-            }
-            visible: drawingGui.visible
-        }
-        GuiButton{
-            id: zoomInButton
-            z:10
-            width: parent.width/25
-            anchors.bottom: virtualMouse.top
-            anchors.bottomMargin: 1.5*height
-            anchors.horizontalCenter: commandButton.horizontalCenter
-            anchors.horizontalCenterOffset: width/1.5
-            name: "zoom_in"
-            color: "steelblue"
-            onClicked:{
-                moving = true
-                commandPublisher.text = "zoom_in"
-            }
-            visible: drawingGui.visible
-        }
-        GuiButton{
-            id: zoomOutButton
-            z:10
-            width: zoomInButton.width
-            anchors.verticalCenter: zoomInButton.verticalCenter
-            anchors.horizontalCenter: commandButton.horizontalCenter
-            anchors.horizontalCenterOffset: -width/1.5
-            name: "zoom_out"
-            color: "steelblue"
-            onClicked:{
-                moving = true
-                commandPublisher.text = "zoom_out"
-            }
-            visible: drawingGui.visible
-        }
-
-        VirtualMouse{
-            id: virtualMouse
-            z:11
-            visible: drawingGui.visible
-            anchors.horizontalCenter: commandButton.horizontalCenter
-            anchors.horizontalCenterOffset: width
-            anchors.bottom: resetButton.top
-            anchors.bottomMargin: 1.*resetButton.height
-        }
-        VirtualMouse{
-            id: virtualMouseAngle
-            z:11
-            visible: drawingGui.visible
-            anchors.right: virtualMouse.left
-            anchors.bottom: resetButton.top
-            anchors.bottomMargin: 1.*resetButton.height
-            angle:true
-        }
-        GuiButton{
-            id: resetButton
-            anchors.horizontalCenter: commandButton.horizontalCenter
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: width/2
-            z:10
-            name: "reset"
-            onClicked:{
-                globalStates.state = "execution"
-                commandPublisher.text = "reset_position"
-            }
-            visible: drawingGui.visible
-        }
-        GuiButton{
-            id: deleteButton
-            z:10
-
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: width/2
-            anchors.left: parent.left
-            anchors.leftMargin: width/2
-            name: "del"
-            color: "red"
-            onClicked:{
-                figures.currentItem.destroy()
-                figures.currentItem = null
-                for(var i =0; i < figures.children.length; i++){
-                    if(figures.children[i].testDelete()){
-                        figures.children[i].destroy()
-                    }
+            Item{
+                id:target
+                width: parent.width/40
+                height: width
+                visible: false
+                z:2
+                Rectangle{
+                    width: parent.width
+                    height: width
+                    radius: width/2
+                    color:  "transparent"
+                    border.color: "red"
+                    border.width: width/10
+                    x:-width/2
+                    y:-height/2
                 }
-            }
-            visible: drawingGui.visible
-        }
-        GuiButton{
-            id: viewButton
-            z:10
-            visible: true
-            anchors.horizontalCenter: commandButton.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: height/2
-            name: "switch"
-            color: "#ffc27a"
-            onClicked:{
-                switch(globalStates.state){
-                    case "visualization":
-                        globalStates.state = "drawing"
-                        map.toLoad = map.realCamera
-                        commandPublisher.text = "init_gui"
-                        break
-
-                    case "drawing":
-                        globalStates.state = "visualization"
-                        map.toLoad = map.virtualCamera
-                        commandPublisher.text = "unlock"
-                        break
-
-                    case "simulation":
-                        globalStates.state = "drawing"
-                        commandPublisher.text = "stop_sim"
-                        break
-
-                    case "execution":
-                        globalStates.state = "drawing"
-                        break
+                function getCoord(){
+                    var scaleX = map.sourceSize.width / map.paintedWidth
+                    var scaleY = map.sourceSize.height / map.paintedHeight
+                    return parseInt(x*scaleX)+','+parseInt(y*scaleY)
                 }
             }
         }
-        GuiButton{
-            id: lockViewButton
-            visible: false
-            z:10
-            anchors.horizontalCenter: commandButton.horizontalCenter
-            anchors.top: viewButton.bottom
-            anchors.topMargin: height/2
-            name: "lock"
-            color: "FireBrick"
-            onClicked:{
-                globalStates.state = "drawing"
-                commandPublisher.text = "lock"
-            }
-        }
-        GuiButton{
-            id: goToButton
-            visible: false
-            z:10
-
-            anchors.horizontalCenter: commandButton.horizontalCenter
-            anchors.verticalCenter: commandButton.verticalCenter
-
-            name: "send"
-            onClicked:{
-                globalStates.state = "execution"
-                map.toLoad = map.realCamera
-                commandPublisher.text = "go"
-            }
-        }
-        GuiButton{
-            id: stopButton
-            z:10
-            visible: executionGui.visible
-            anchors.right: parent.right
-            anchors.rightMargin: width/2
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: height/2
-            name: "stop"
-            color: "red"
-            onClicked:{
-                commandPublisher.text = "stop"
-                globalStates.state = "drawing"
-            }
-        }
-        GuiButton{
-            id: pauseButton
-            z:10
-            visible: executionGui.visible
-            anchors.horizontalCenter: stopButton.horizontalCenter
-            anchors.verticalCenter: commandButton.verticalCenter
-            name: "pause"
-            color: "orange"
-            onClicked:{
-                commandPublisher.text = name
-                if(name === "pause"){
-                    name = "play"
-                    color = "green"
-                }
-                else{
-                    name = "pause"
-                    color = "orange"
-                }
-            }
-        }
-        GuiButton{
-            id: editButton
-            z:10
-            visible: executionGui.visible
-            anchors.right: parent.right
-            anchors.rightMargin: width/2
-            anchors.top: parent.top
-            anchors.topMargin: height/2
-            name: "edit"
-            color: "#ffc27a"
-            onClicked:{
-                eventPublisher.text = 'start_edit'
-                pauseButton.name = "play"
-                pauseButton.color = "green"
-                commandPublisher.text = "pause"
-                globalStates.state = "edit"
-            }
-        }
-        GuiButton{
-            id: stopEditButton
-            z:10
-            visible: false
-            anchors.right: parent.right
-            anchors.rightMargin: width/2
-            anchors.top: parent.top
-            anchors.topMargin: height/2
-            name: "stop_edit"
-            color: "#ffc27a"
-            onClicked:{
-                eventPublisher.text = 'stop_edit'
-                globalStates.state = "execution"
-            }
-        }
-        GuiButton{
-            id: actButton
-            visible: roi.visible
-            z:20
-            anchors.horizontalCenter: stopButton.horizontalCenter
-            anchors.top: commandButton.bottom
-            anchors.topMargin: height/2
-            name: "act"
-            onClicked:{
-                waitGui.visible = false
-                eventPublisher.text = "act"
-                hideRoiTimer.start()
-            }
-        }
-        GuiButton{
-            id: nextButton
-            visible: roi.visible
-            z:30
-            anchors.horizontalCenter: stopButton.horizontalCenter
-            anchors.bottom: commandButton.top
-            anchors.bottomMargin: height/2
-            name: "skip"
-            onClicked:{
-                waitGui.visible = false
-                eventPublisher.text = "skip"
-                hideRoiTimer.start()
-            }
-        }
     }
 
-    Item{
-        id:executionGui
-        visible: false
-    }
-    Item{
-        id:fdGui
-        visible: false
-        anchors.fill: parent
-        GuiButton{
-            id: controlButton
-            z:10
-            visible: true
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: parent.bottom
-            width: parent.width/5
-            anchors.bottomMargin: height
-            text: "Take Back Control"
-            onClicked:{
-                eventPublisher.text = "gui_takeover"
-                globalStates.state = "drawing"
+    onSelectedChanged: {
+        var type = ""
+        if(typeof selected === "string")
+            type = selected
+        else
+            type = selected.type
+        for (var i=0;i<actionList.children.length;i++){
+            if(actionList.children[i].usableItem.indexOf(type) !== -1){
+                actionList.children[i].visible = true
             }
-        }
-    }
-    Item{
-        id:waitGui
-        property bool waitPoi: false
-        visible: false
-        anchors.fill: parent
-        Timer{
-            id: hideRoiTimer
-            interval: 100
-            onTriggered: roi.visible = false
-        }
-
-        Rectangle{
-            id: roi
-            x:0
-            y:0
-            property var poi: null
-            visible: false
-            width: 100
-            height: width
-            radius: width/2
-            opacity: .5
-            color: "transparent"
-            border.color: "red"
-            border.width: width/10
-        }
-        onVisibleChanged: {
-            waitPoi = true
-        }
-    }
-    Item{
-        id:drawingGui
-        anchors.fill: parent
-        visible: false
-    }
-    GuiButton{
-        id: gestureEditButton
-        z:10
-        visible: false
-        anchors.left: parent.left
-        anchors.top: parent.top
-        text: "Switch Mode"
-        onClicked:{
-            if (globalStates.state === "gestureEdit")
-                globalStates.state = "drawing"
             else
-                globalStates.state = "gestureEdit"
+                actionList.children[i].visible = false
         }
     }
 
-    Label{
-        id: warningDepth
-        anchors.horizontalCenter: parent.horizontalCenter
+    Item{
+        id:commandGui
+        anchors.fill: parent
+    }
+    Item{
+        id:actionPanel
+        anchors.right: parent.right
+        anchors.rightMargin: width/10
+        anchors.topMargin: anchors.rightMargin
         anchors.top: parent.top
-        anchors.topMargin: parent.height/10.
-        text: "Bad depth, please move one drawing"
-        font.pixelSize: 50
-        color: "red"
-        visible: false
+        width: parent.width/5
+        height: parent.height*2/3
+        Rectangle{
+            id: actionBackground
+            anchors.fill: parent
+            color: "white"
+            border.color: "steelblue"
+            opacity: .5
+            radius: width/10
+        }
+        Label{
+            id: title
+            visible: true
+            x:parent.width/20
+            y:x
+            font.pixelSize: map.width/50
+            height: map.height/30
+            text: "Possible actions"
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignLeft
+        }
+        Column{
+            id: actionList
+            width: parent.width
+            height: parent.height*9/10
+            y: parent.height/8
+            spacing: height/40
+            ActionButton{
+                text: "Move to target"
+                usableItem: ["unknown"]
+                parameterType: "Angle"
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;MoveContact:"+target.getCoord()+","+parseInt(value)
+                }
+            }
+            ActionButton{
+                text: grasped ? "Place at target" : "Pick at target"
+                usableItem: ["unknown"]
+                parameterType: "Angle"
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;"+text.split(" ")[0]+":"+target.getCoord()+","+parseInt(value)
+                }
+            }
+            ActionButton{
+                text: "Move forward"
+                usableItem: ["none"]
+                parameterType: "Distance"
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton){
+                        console.log(value*25.4)
+                        commandPublisher.text = "direct;Go:"+parseInt(value*25.4)+",0"
+                    }
+                }
+            }
+            ActionButton{
+                text: "Move back"
+                usableItem: ["none"]
+                parameterType: "Distance"
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;Go:-"+parseInt(value*25.4)+",0"
+                }
+            }
+            ActionButton{
+                text: "Move right"
+                usableItem: ["none"]
+                parameterType: "Distance"
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;Go:0,-"+parseInt(value*25.4)
+                }
+            }
+            ActionButton{
+                text: "Move left"
+                visible: false
+                usableItem: ["none"]
+                parameterType: "Distance"
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;Go:0,"+parseInt(value*25.4)
+                }
+            }
+            ActionButton{
+                text: "Pick"
+                usableItem: ["screw"]
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;Pick:"+selected.name
+                }
+            }
+            ActionButton{
+                text: "Screw"
+                usableItem: ["screw"]
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;Screw:"+selected.name
+                }
+            }
+            ActionButton{
+                text: "Unscrew"
+                usableItem: ["screw"]
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;Unscrew:"+selected.name
+                }
+            }
+            ActionButton{
+                text: grasped ? "Release" : "Grasp"
+                usableItem: ["none"]
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;"+text
+                }
+            }
+        }
+        GuiButton{
+            id: cancel
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: width/2
+            anchors.horizontalCenter: parent.horizontalCenter
+            name: 'add'
+            rotation: 45
+            color: "red"
+            visible: target.visible
 
+            onPressedChanged: {
+                target.visible = false
+                selected = "none"
+            }
+        }
+    }
+
+
+    GuiButton{
+        id: resetButton
+        anchors.right: displayView.right
+        anchors.rightMargin: width/2
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: width
+        z:10
+        name: "reset"
+        onClicked:{
+            commandPublisher.text = "reset_position"
+        }
+        visible: globalStates.state === "command"
+    }
+
+    GuiButton{
+        id: stopButton
+        z:10
+        anchors.horizontalCenter: resetButton.horizontalCenter
+        anchors.verticalCenter: resetButton.verticalCenter
+        name: "stop"
+        color: "red"
+        onClicked:{
+            commandPublisher.text = "stop"
+            globalStates.state = "drawing"
+        }
+        visible: globalStates.state === "execution"
+    }
+    ArrowPad{
+        id: virtualMouse
+        z:11
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: parent.width / 15 + width/2
+        anchors.verticalCenter: resetButton.verticalCenter
+        visible: commandGui.visible
+    }
+    ArrowPad{
+        id: other
+        z:11
+        type: "other"
+        width: map.width/14
+        visible: commandGui.visible
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: resetButton.verticalCenter
+    }
+    ArrowPad{
+        id: virtualMouseAngle
+        z:11
+        visible: commandGui.visible
+        type: "rotation"
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: -parent.width / 15 - width/2
+        anchors.verticalCenter: resetButton.verticalCenter
+    }
+
+    StateGroup {
+        id: globalStates
+        states: [
+            State {name: "command"},
+            State {name: "execution"; PropertyChanges { target: actionPanel; visible: false}}
+    ]
+        onStateChanged: {
+            switch (globalStates.state){
+            case "execution":
+                target.visible = false
+                selected = "none"
+            break
+            }
+        }
     }
 
     RosStringPublisher{
@@ -703,76 +424,12 @@ Window {
     }
 
     RosStringSubscriber{
-        id: eventsSubscriber
-        topic: "/event"
-        text:""
-        onTextChanged:{
-            console.log("event")
-            if(text === "start_exec"){
-                moving = true
-            }
-            if(text === "motion_finished"){
-                moving = false
-                if(globalStates.state === "execution"){
-                    for(var i =0; i < figures.children.length; i++){
-                        if(figures.children[i].testDelete()){
-                            figures.children[i].destroy()
-                        }
-                    }
-                }
-                globalStates.state = "drawing"
-                return
-            }
-            var cmd = text.split(";")
-            if (cmd[0] === "action_finished"){
-                cmd = cmd[1].split(":")
-                var name = cmd[0]
-                var target = cmd[1]
-                for (var i = 0; i<figures.children.length;i++){
-                    if(figures.children[i].testDone(name, target)){
-                        //gamePlan.update()
-                        break
-                    }
-                }
-            }
-            if (cmd[0] === "wait"){
-                if(globalStates.state !== "drawing"){
-                    waitGui.visible = true
-                    for(var j =0;j<pois.children.length;j++){
-                        var poi = pois.children[j]
-                        if(poi.name === cmd[1]){
-                            roi.poi = poi
-                            roi.x = poi.x-roi.width/2
-                            roi.y = poi.y-roi.width/2
-                        }
-                    }
-                }
-            }
-            if (cmd[0] === "fd_takeover"){
-                globalStates.state = "force_dimension"
-            }
-            if (cmd[0] === "z_or"){
-                // Use commanded theta and add absolute difference, not relative! Use orientation on click?
-                var theta = -parseFloat(cmd[1])
-                rotationSlider.theta_r = theta*180/Math.PI
-                theta += rotationSlider.theta_h/180.*Math.PI
-                dial.x=rotationSlider.width/2*(1+Math.sin(theta))-dial.width/2
-                dial.y=rotationSlider.height/2*(1-Math.cos(theta))-dial.height/2
-                displayView.rotation = theta/Math.PI*180
-                return
-                var theta=Math.atan2(dialCenter.y-rotationSlider.width/2,dialCenter.x-rotationSlider.width/2)
-                theta += parseFloat(cmd[1])/25.
-            }
-
-        }
-    }
-    RosStringSubscriber{
         id: infoSubscriber
         topic: "/parser/gui_info"
         text:""
         onTextChanged:{
             if(text === "bad_depth"){
-                warningDepth.visible = true
+                //warningDepth.visible = true
                 return
             }
             if(text === "good_depth"){
@@ -785,114 +442,39 @@ Window {
             }
         }
     }
-
-    Recognizer{
-        id: recognizer
-    }
-
-   Column{
-        id: palette
-        visible: false
-        anchors.top: parent.top
-        anchors.topMargin: parent.height/10
-        anchors.right: parent.right
-        anchors.rightMargin: parent.width/10
-        spacing: 10
-        PaletteElement{index:0}
-        PaletteElement{index:1}
-        PaletteElement{index:2}
-        PaletteElement{index:3}
-    }
-
-    GamePlan{
-        id: gamePlan
-    }
-    TemplateLoader{
-        id: templateLoader
-    }
-
-    Timer{
-        id: timerUpdateActions
-        interval: 100
-        onTriggered:{
-            gamePlan.update()
-        }
-    }
-
-    StateGroup {
-        id: globalStates
-        states: [
-            State {name: "gestureEdit"
-                PropertyChanges { target: gestureGui; visible: true }},
-            State {name: "drawing"
-                PropertyChanges { target: drawingGui; visible: true }
-                PropertyChanges { target: resetButton; enabled: true }},
-            State {name: "visualization"
-                PropertyChanges { target: lockViewButton; visible: true }
-                PropertyChanges { target: goToButton; visible: true }
-                PropertyChanges { target: pois; visible: false }
-                PropertyChanges { target: figures; visible: false}
-                PropertyChanges { target: drawingarea; enabled: false }
-                PropertyChanges { target: gamePlan; visible: false }
-            },
-            State {name: "simulation"
-                PropertyChanges { target: map; toLoad: virtualCamera}
-                PropertyChanges { target: pois; visible: false }
-                PropertyChanges { target: figures; visible: false}
-                PropertyChanges { target: drawingarea; enabled: false }
-            },
-            State {name: "execution"
-                //PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
-                PropertyChanges { target: pois; visible: false }
-                PropertyChanges { target: figures; visible: false}
-                PropertyChanges { target: drawingarea; enabled: false }
-                PropertyChanges { target: viewButton; visible: false}
-                PropertyChanges { target: executionGui; visible: true}
-            },
-            State {name: "edit"
-                PropertyChanges { target: map; toLoad: virtualCamera}
-                PropertyChanges { target: pois; visible: true }
-                PropertyChanges { target: figures; visible: true}
-                PropertyChanges { target: drawingarea; enabled: true }
-                PropertyChanges { target: viewButton; visible: false}
-                PropertyChanges { target: executionGui; visible: false}
-                PropertyChanges { target: stopEditButton; visible: true}
-                PropertyChanges { target: pauseButton; visible: true}
-            },
-            State {name: "force_dimension"
-                //PropertyChanges { target: map; toLoad: "image://rosimage/virtual_camera/image"}
-                PropertyChanges { target: pois; visible: false }
-                PropertyChanges { target: figures; visible: false}
-                PropertyChanges { target: drawingarea; enabled: false }
-                PropertyChanges { target: viewButton; visible: false}
-                PropertyChanges { target: fdGui; visible: true}
+    RosStringSubscriber{
+        id: pandaSubscriber
+        topic: "/panda/events"
+        text:""
+        onTextChanged:{
+            if(text === "release_finished"){
+                grasped = false
+                return
             }
-    ]
-        onStateChanged: {
-            switch (globalStates.state){
-            case "execution":
-                pauseButton.name = "pause"
-                break
-                case "gestureEdit":
-                    break
-                case "drawing":
-                    waitGui.visible = false
-                    for (var i = 0; i<figures.children.length;i++)
-                            figures.children[i].doneSim = false
-                    gamePlan.update()
-                    break
-                case "visualization":
-                    break
+            if(text === "grasp_finished"){
+                grasped = true
+                return
             }
         }
     }
+    RosStringSubscriber{
+        id: eventsSubscriber
+        topic: "/event"
+        text:""
+        onTextChanged:{
+            if(text === "start_exec"){
+                globalStates.state = "execution"
+            }
+            if(text === "motion_finished"){
+                globalStates.state = "command"
+            }
+        }
+    }
+
 
     Component.onCompleted: {
-        globalStates.state = "drawing"
         commandPublisher.text="init_gui"
-
-    }
-    Component.onDestruction: {
-        commandPublisher.text="remove;all"
+        globalStates.state = "command"
+        selected = "none"
     }
 }

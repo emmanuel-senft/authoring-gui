@@ -2,27 +2,10 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>main.cpp</file>
-        <file>Recognizer.qml</file>
-        <file>TouchJoint.qml</file>
-        <file>DrawingArea.qml</file>
-        <file>QClassifier.js</file>
-        <file>Figures.qml</file>
-        <file>DragArrow.qml</file>
-        <file>DragSpiral.qml</file>
-        <file>DragCross.qml</file>
-        <file>DragCircle.qml</file>
-        <file>DragRectangle.qml</file>
-        <file>DragAnchor.qml</file>
-        <file>DragSurface.qml</file>
         <file>POI.qml</file>
-        <file>DragItem.qml</file>
-        <file>PaletteElement.qml</file>
         <file>GuiButton.qml</file>
-        <file>SnapPoint.qml</file>
         <file>res/default.jpg</file>
-        <file>GuiRadioButton.qml</file>
         <file>res/plan.png</file>
-        <file>GamePlan.qml</file>
         <file>res/hole.png</file>
         <file>res/Inspect.png</file>
         <file>res/Move.png</file>
@@ -47,14 +30,12 @@
         <file>res/act.png</file>
         <file>res/Push.png</file>
         <file>res/skip.png</file>
-        <file>VirtualMouse.qml</file>
         <file>res/drag.png</file>
         <file>res/zoom_in.png</file>
         <file>res/zoom_out.png</file>
         <file>res/Loosen.png</file>
         <file>res/Tighten.png</file>
         <file>res/template.png</file>
-        <file>TemplateLoader.qml</file>
         <file>res/Disassembly.png</file>
         <file>res/Place.png</file>
         <file>res/save.png</file>
@@ -65,10 +46,14 @@
         <file>res/add.png</file>
         <file>res/edge.png</file>
         <file>res/Fold.png</file>
-        <file>GuiCheckBox.qml</file>
         <file>res/pause.png</file>
         <file>res/play.png</file>
-        <file>RectangleOverlay.qml</file>
         <file>res/up.png</file>
+        <file>ArrowPad.qml</file>
+        <file>res/arrow.png</file>
+        <file>res/rotArrow.png</file>
+        <file>res/bookview.png</file>
+        <file>res/view.png</file>
+        <file>ActionButton.qml</file>
     </qresource>
 </RCC>
