@@ -258,7 +258,7 @@ Window {
                 onClicked: {
                     if(mouse.button & Qt.LeftButton){
                         console.log(value*25.4)
-                        commandPublisher.text = "direct;Go:"+parseInt(value*25.4)+",0"
+                        commandPublisher.text = "direct;Go:"+parseInt(value*25.4)+",0,0"
                     }
                 }
             }
@@ -268,7 +268,25 @@ Window {
                 parameterType: "Distance"
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
-                        commandPublisher.text = "direct;Go:-"+parseInt(value*25.4)+",0"
+                        commandPublisher.text = "direct;Go:-"+parseInt(value*25.4)+",0,0"
+                }
+            }
+            ActionButton{
+                text: "Move up"
+                usableItem: ["none"]
+                parameterType: "Distance"
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;Go:0,0,"+parseInt(value*25.4)
+                }
+            }
+            ActionButton{
+                text: "Move down"
+                usableItem: ["none"]
+                parameterType: "Distance"
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;Go:0,0,-"+parseInt(value*25.4)
                 }
             }
             ActionButton{
@@ -277,7 +295,7 @@ Window {
                 parameterType: "Distance"
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
-                        commandPublisher.text = "direct;Go:0,-"+parseInt(value*25.4)
+                        commandPublisher.text = "direct;Go:0,-"+parseInt(value*25.4)+",0"
                 }
             }
             ActionButton{
@@ -287,7 +305,7 @@ Window {
                 parameterType: "Distance"
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
-                        commandPublisher.text = "direct;Go:0,"+parseInt(value*25.4)
+                        commandPublisher.text = "direct;Go:0,"+parseInt(value*25.4)+",0"
                 }
             }
             ActionButton{
