@@ -13,7 +13,7 @@ Window {
     height: 1824
     title: qsTr("Authoring GUI")
     property var selected: ""
-    property bool grasped: true
+    property bool grasped: false
 
     Item {
         id: displayView
@@ -67,7 +67,7 @@ Window {
             Item{
                 id: pois
                 anchors.fill:parent
-                visible: actionPanel.visible
+                visible: actionPanel.visible && hidePoisButton.show
 
                 property var scaleX: map.sourceSize.width / map.paintedWidth
                 property var scaleY:map.sourceSize.height / map.paintedHeight
@@ -367,6 +367,19 @@ Window {
             globalStates.state = "drawing"
         }
         visible: globalStates.state === "execution"
+    }
+    GuiButton{
+        id: hidePoisButton
+        z:10
+        anchors.top: actionPanel.top
+        anchors.left: displayView.left
+        anchors.leftMargin: width
+        name: show ? "hide" : "show"
+        property bool show: true
+        onClicked:{
+            show = ! show
+        }
+        visible: globalStates.state === "command"
     }
     ArrowPad{
         id: virtualMouse
