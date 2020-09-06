@@ -290,6 +290,14 @@ Window {
                 }
             }
             ActionButton{
+                text: "Pull"
+                usableItem: ["drawer"]
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;Pull:"+selected.name
+                }
+            }
+            ActionButton{
                 text: "Move right"
                 usableItem: ["none"]
                 parameterType: "Distance"
@@ -306,6 +314,15 @@ Window {
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
                         commandPublisher.text = "direct;Go:0,"+parseInt(value*25.4)+",0"
+                }
+            }
+            ActionButton{
+                text: "Place in"
+                visible: false
+                usableItem: ["box"]
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;Place:"+selected.name
                 }
             }
             ActionButton{
