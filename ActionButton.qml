@@ -1,6 +1,7 @@
 import QtQuick 2.12
  import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.12
+import QtQuick.Controls 2.15
 
 
 MouseArea{
@@ -151,10 +152,59 @@ MouseArea{
                 id: slider
                 width: parent.width
                 anchors.horizontalCenter: parent.horizontalCenter
+                property int delta: 1
                 from: 0
                 value: 0
                 to: 100
                 stepSize: 1
+                GuiButton{
+                    id: plusButton
+                    anchors.verticalCenter: slider.verticalCenter
+                    anchors.left: slider.right
+                    width: map.width/60
+                    onClicked: slider.value+=slider.stepSize
+                    name: "add"
+                }
+                GuiButton{
+                    id: minusButton
+                    anchors.verticalCenter: slider.verticalCenter
+                    anchors.right: slider.left
+                    width: map.width/60
+                    onClicked: slider.value-=slider.stepSize
+                    name: "minus"
+                }
+                // https://stackoverflow.com/questions/36398040/qml-slider-tickmark-with-text-at-start-and-end
+                Item{
+                    id: tickArea
+                    height: 20
+                    width: slider.availableWidth - slider.implicitHandleWidth
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.bottom
+
+                    Repeater {
+                        id:repeater
+                        model: (slider.to-slider.from) / (slider.stepSize * slider.delta)+1
+                        z:10
+                        Item{
+                            width: 50
+                            x:-width/2+index * ((tickArea.width) / (repeater.count-1))
+                            y:-slider.height/10
+                            Rectangle {id: tick; width: 5; height: 10; color: "black";anchors.horizontalCenter: parent.horizontalCenter}
+                            Text {
+                                anchors.top: tick.bottom
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                color: "black"
+                                font.pixelSize: 20
+                                text: getText()
+                                horizontalAlignment: Text.AlignHCenter
+
+                                function getText() {
+                                    return slider.from+slider.delta*slider.stepSize*index
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         onVisibleChanged: slider.value = 0
@@ -164,12 +214,13 @@ MouseArea{
             slider.from = -90
             slider.value = 0
             slider.to = 90
+            slider.delta = 30
             unit = "deg"
         }
         if(parameterType === "Distance"){
             slider.from = 0
-            slider.value = 0
-            slider.to = 12
+            slider.value = 1
+            slider.to = 10
             unit = "inch"
         }
     }

@@ -55,5 +55,8 @@
         <file>res/bookview.png</file>
         <file>res/view.png</file>
         <file>ActionButton.qml</file>
+        <file>res/minus.png</file>
+        <file>res/hide.png</file>
+        <file>res/show.png</file>
     </qresource>
 </RCC>
