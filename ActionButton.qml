@@ -78,6 +78,16 @@ MouseArea{
         }
     }
 
+    Rectangle{
+        id: disabledIndicator
+        color: "black"
+        border.width: actionButton.borderWidth
+        anchors.fill: parent
+        border.color: "black"
+        radius: parent.height/5
+        opacity: actionButton.enabled ? 0 :.5
+    }
+
 
     Item {
         id: parameterArea

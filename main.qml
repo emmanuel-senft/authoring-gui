@@ -14,7 +14,7 @@ Window {
     title: qsTr("Authoring GUI")
     property var selected: ""
     property bool grasped: false
-
+    property var pandaPose: Qt.vector3d(.36,0,.56)
     Item {
         id: displayView
         anchors.verticalCenter: parent.verticalCenter
@@ -252,6 +252,7 @@ Window {
                 }
             }
             ActionButton{
+                id: forward
                 text: "Move forward"
                 usableItem: ["none"]
                 parameterType: "Distance"
@@ -272,6 +273,7 @@ Window {
                 }
             }
             ActionButton{
+                id: up
                 text: "Move up"
                 usableItem: ["none"]
                 parameterType: "Distance"
@@ -281,6 +283,7 @@ Window {
                 }
             }
             ActionButton{
+                id: down
                 text: "Move down"
                 usableItem: ["none"]
                 parameterType: "Distance"
@@ -417,26 +420,26 @@ Window {
         visible: globalStates.state === "command"
     }
     ArrowPad{
-        id: virtualMouse
+        id: arrowPad
         z:11
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.horizontalCenterOffset: parent.width / 15 + width/2
         anchors.verticalCenter: resetButton.verticalCenter
-        visible: commandGui.visible
+        visible: actionPanel.visible
     }
     ArrowPad{
-        id: other
+        id: arrowPadOther
         z:11
         type: "other"
-        width: map.width/14
-        visible: commandGui.visible
+        //width: map.width/14
+        visible: actionPanel.visible
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: resetButton.verticalCenter
     }
     ArrowPad{
-        id: virtualMouseAngle
+        id: arrowPadAngle
         z:11
-        visible: commandGui.visible
+        visible: actionPanel.visible
         type: "rotation"
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.horizontalCenterOffset: -parent.width / 15 - width/2
@@ -487,6 +490,39 @@ Window {
             var cmd = text.split(";")
             if(cmd[0] === "poi"){
                 pois.cmd = cmd
+            }
+            if(cmd[0] === "panda_pose"){
+                var pose = cmd[1].split(",")
+                pandaPose.x = parseFloat(pose[0])
+                pandaPose.y = parseFloat(pose[1])
+                pandaPose.z = parseFloat(pose[2])
+                if(pandaPose.z > .6){
+                   arrowPadOther.setEnabled("down", false)
+                   up.enabled = false
+                }
+                else{
+                    arrowPadOther.setEnabled("down", true)
+                    up.enabled = true
+                }
+                if(pandaPose.x > .55){
+                   arrowPad.setEnabled("up", false)
+                   forward.enabled = false
+                }
+                else{
+                    arrowPad.setEnabled("up", true)
+                    forward.enabled = true
+                }
+                if(pandaPose.x**2 + pandaPose.z**2 > .56){
+                    arrowPad.setEnabled("up", false)
+                    forward.enabled = false
+                    arrowPadOther.setEnabled("down", false)
+                    up.enabled = false
+                }
+
+
+                for(var i =0;i<pois.children.length;i++){
+                    pois.children[i].update_shape()
+                }
             }
         }
     }
