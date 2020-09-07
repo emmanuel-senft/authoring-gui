@@ -17,7 +17,7 @@ Window {
     property var pandaPose: Qt.vector3d(.36,0,.56)
     Item {
         id: displayView
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
         height: width*3/4
@@ -33,8 +33,6 @@ Window {
             property bool useRealImage: true
             source: toLoad
             cache: false
-            horizontalAlignment: Image.AlignHCenter
-            verticalAlignment: Image.AlignVCenter
             rotation: 0
             Timer {
                 id: imageLoader
