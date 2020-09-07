@@ -141,6 +141,8 @@ Window {
             MouseArea{
                 anchors.fill: parent
                 onPressed:{
+                    if(globalStates.state === "execution")
+                        return
                     target.visible = true
                     target.x = mouseX
                     target.y = mouseY
@@ -179,6 +181,18 @@ Window {
         }
     }
 
+    Label{
+        id: warningDepth
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: parent.height/10.
+        text: "Bad depth, please move target"
+        font.pixelSize: 50
+        color: "red"
+        visible: false
+
+    }
+
     onSelectedChanged: {
         var type = ""
         if(typeof selected === "string")
@@ -214,6 +228,10 @@ Window {
             opacity: .5
             radius: width/10
         }
+        MouseArea{
+            anchors.fill: parent
+        }
+
         Label{
             id: title
             visible: true
@@ -225,11 +243,22 @@ Window {
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignLeft
         }
+        Label{
+            id: objectSelected
+            x:parent.width/20
+            anchors.top: title.bottom
+            font.pixelSize: map.width/50
+            height: map.height/30
+            text: "on "+selected.type
+            visible: selected !== "none"
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignLeft
+        }
         Column{
             id: actionList
             width: parent.width
             height: parent.height*9/10
-            y: parent.height/8
+            y: parent.height/6
             spacing: height/40
             ActionButton{
                 text: "Move to target"
@@ -296,6 +325,14 @@ Window {
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
                         commandPublisher.text = "direct;Pull:"+selected.name
+                }
+            }
+            ActionButton{
+                text: "Push"
+                usableItem: ["drawer"]
+                onClicked: {
+                    if(mouse.button & Qt.LeftButton)
+                        commandPublisher.text = "direct;Push:"+selected.name
                 }
             }
             ActionButton{
@@ -478,7 +515,7 @@ Window {
         text:""
         onTextChanged:{
             if(text === "bad_depth"){
-                //warningDepth.visible = true
+                warningDepth.visible = true
                 return
             }
             if(text === "good_depth"){
