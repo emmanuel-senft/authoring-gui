@@ -24,7 +24,7 @@ Item{
     Shape {
         id:shape
         anchors.fill: parent
-        z: -10
+        z: 10
         ShapePath {
             strokeWidth: 5
             strokeColor: "black"

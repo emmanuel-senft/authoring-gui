@@ -117,21 +117,24 @@ Item {
                 normalise(p0,p1,p2)
             }
         }
-
-        FreePoint{
-            id: movePoint
-            visible: overlay.target === "unknown"
-            Component.onCompleted: {
-                //radius = (p2Coord.x-p0Coord.x)/4
-                center= Qt.point((p0Coord.x+p2Coord.x)/2,(p0Coord.y+p2Coord.y)/2)
-            }
+    }
+    FreePoint{
+        id: movePoint
+        opacity: .8
+        z:10
+        visible: overlay.target === "unknown"
+        Component.onCompleted: {
+            //radius = (p2Coord.x-p0Coord.x)/4
+            center= Qt.point((p0Coord.x+p2Coord.x)/2,(p0Coord.y+p2Coord.y)/2)
         }
-        TriPoint{
-            id: graspPoint
-            visible: action.includes("Wipe")
-            midPoint: Qt.point((p0Coord.x+p2Coord.x)/2,(p0Coord.y+p2Coord.y)/2)
-            radius: map.width/30
-        }
+    }
+    TriPoint{
+        z:10
+        opacity: .8
+        id: graspPoint
+        visible: action.includes("Wipe")
+        midPoint: Qt.point((p0Coord.x+p2Coord.x)/2,(p0Coord.y+p2Coord.y)/2)
+        radius: map.width/30
     }
     Rectangle {
         id:boundingArea

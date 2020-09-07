@@ -392,7 +392,7 @@ Window {
             anchors.rightMargin: width/2
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenterOffset: -parent.width/4
-            name: "send"
+            name: "play"
             onClicked:{gamePlan.sendCommand("exec");
                 globalStates.state = "execution"
             }
@@ -507,9 +507,9 @@ Window {
             id: deleteButton
             z:10
 
-            anchors.verticalCenter: resetButton.verticalCenter
+            anchors.verticalCenter: viewButton.verticalCenter
             anchors.left: parent.left
-            anchors.leftMargin: width/2
+            anchors.leftMargin: 2*width
             name: "del"
             color: "red"
             onClicked:{
