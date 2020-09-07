@@ -286,9 +286,19 @@ Window {
                     selectionArea.x = Math.min(mouseX,selectionArea.startPoint.x)
                     selectionArea.y = Math.min(mouseY,selectionArea.startPoint.y)
                 }
+
                 onReleased: {
                     if(!selectionArea.visible)
                         return
+                    if(selectionArea.width === 0){
+                        console.log("is 0")
+                        selectionArea.width = map.width/12
+                        selectionArea.height = map.width/12
+                        selectionArea.x -= selectionArea.width/2
+                        selectionArea.y -= selectionArea.height/2
+                        console.log(-selectionArea.width/2)
+                    }
+
                     selectionArea.visible = false
                     figures.createRect(selectionArea.x,selectionArea.y,selectionArea.width,selectionArea.height)
                 }
