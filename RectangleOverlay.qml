@@ -19,8 +19,8 @@ Item{
                 move.visible = true
                 loosen.visible = true
                 tighten.visible = true
-                push.visible = false
                 wipe.visible = false
+                pull.visible = false
                 if(actionType.selected !== "Loosen" && actionType.selected !== "Tighten")
                     actionType.selected = ["Move"]
             }
@@ -28,17 +28,25 @@ Item{
                 move.visible = false
                 loosen.visible = false
                 tighten.visible = false
-                push.visible = true
                 wipe.visible = false
+                pull.visible = false
                 actionType.selected = ["Push"]
+            }
+            if(target === "drawers"){
+                move.visible = false
+                loosen.visible = false
+                tighten.visible = false
+                wipe.visible = false
+                pull.visible = true
+                actionType.selected = ["Pull"]
             }
             if(target === "surface"){
                 console.log("in surface")
                 move.visible = false
                 loosen.visible = false
                 tighten.visible = false
-                push.visible = false
                 wipe.visible = true
+                pull.visible = false
                 actionType.selected = ["Wipe"]
                 wipe.checked = true
                 console.log(actionType.selected)
@@ -48,8 +56,8 @@ Item{
                 move.visible = true
                 loosen.visible = false
                 tighten.visible = false
-                push.visible = false
                 wipe.visible = false
+                pull.visible = false
                 actionType.selected = ["Move"]
             }
             console.log(actionType.selected)
@@ -90,6 +98,10 @@ Item{
             }
             GuiRadioButton {
                 text: "Surface"
+                group: objectType
+            }
+            GuiRadioButton {
+                text: "Drawers"
                 group: objectType
             }
         }
@@ -248,6 +260,13 @@ Item{
             index: 1
         }
         GuiCheckBox {
+            id: pull
+            text: "Pull"
+            group: actionType
+            name:text
+            index: 1
+        }
+        GuiCheckBox {
             id: loosen
             text: "Loosen"
             group: actionType
@@ -258,6 +277,7 @@ Item{
             id: push
             text: "Push"
             group: actionType
+            visible: pull
             name:text
             index: 3
         }

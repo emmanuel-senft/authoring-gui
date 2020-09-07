@@ -147,6 +147,8 @@ Window {
                         color = "grey"
                     if(type === "hole")
                         color = "white"
+                    if(type === "drawer")
+                        color = "black"
                     if(type === "pusher")
                         color = "black"
                     if(type === "edge")

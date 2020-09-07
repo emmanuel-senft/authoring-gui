@@ -79,5 +79,7 @@
         <file>FreePoint.qml</file>
         <file>TriPoint.qml</file>
         <file>res/box.png</file>
+        <file>res/Pull.png</file>
+        <file>res/drawer.png</file>
     </qresource>
 </RCC>

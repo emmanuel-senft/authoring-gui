@@ -213,6 +213,8 @@ Item {
             }
             if(text === "screws")
                 action = ["Move"]
+            if(text === "drawers")
+                action = ["Pull"]
             if(text === "pushers")
                 action = ["Push"]
             if(text === "s"){
