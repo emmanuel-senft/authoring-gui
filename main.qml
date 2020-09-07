@@ -83,11 +83,11 @@ Window {
                         return
                         color = "white"
                     }
-                    if(type === "pusher")
+                    if(type === "drawer")
                         color = "black"
                     if(type === "edge")
                         color = "blue"
-                    var poi = component.createObject(pois, {type:type,index:id,color:color,x:x,y:y})
+                    var poi = component.createObject(pois, {type:type,index:id,objColor:color,center:Qt.point(x,y)})
                 }
                 function clearPoi(){
                     for(var i =0;i<pois.children.length;i++){
@@ -114,15 +114,15 @@ Window {
                         var type = info[0]
                         var id = parseInt(info[1])
                         var coord = info[2]
-                        var x = parseInt(coord.split(",")[0])/scaleX-map.width/100
-                        var y = parseInt(coord.split(",")[1])/scaleY-map.width/100
+                        var x = parseInt(coord.split(",")[0])/scaleX
+                        var y = parseInt(coord.split(",")[1])/scaleY
                         var new_poi = true
 
                         for(var j =0;j<pois.children.length;j++){
                             var poi = pois.children[j]
                             if(poi.type === type && poi.index === id){
-                                poi.x = x
-                                poi.y = y
+                                poi.center.x = x
+                                poi.center.y = y
                                 new_poi = false
                                 poi.updated = true
                                 break
