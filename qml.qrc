@@ -54,9 +54,12 @@
         <file>res/rotArrow.png</file>
         <file>res/bookview.png</file>
         <file>res/view.png</file>
-        <file>ActionButton.qml</file>
+        <file>CartesianCommand.qml</file>
         <file>res/minus.png</file>
         <file>res/hide.png</file>
         <file>res/show.png</file>
+        <file>res/Grasp.png</file>
+        <file>res/Release.png</file>
+        <file>ControlPanel.qml</file>
     </qresource>
 </RCC>

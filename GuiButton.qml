@@ -59,7 +59,15 @@ Button{
                mirror: button.mirror
                fillMode: Image.PreserveAspectFit
             }
+            Rectangle{
+                id: disabledIndicator
+                anchors.fill: parent
+                radius: parent.radius
+                color: "black"
+                opacity: enabled ? 0 :.5
+            }
         }
     }
+
     Component.onCompleted: {text=""}
 }

@@ -50,7 +50,7 @@ Item{
     }
 
     function publish(x,y){
-        globalStates.state = "execution"
+        //globalStates.state = "execution"
         x*=scaleX
         y*=scaleY
         if(type === "translation"){
@@ -119,5 +119,15 @@ Item{
         onClicked: {
             publish(-1,0)
         }
+    }
+    function setEnabled(button, value){
+        if(button === "up")
+            up.enabled = value
+        if(button === "down")
+            down.enabled = value
+        if(button === "left")
+            left.enabled = value
+        if(button === "right")
+           right.enabled = value
     }
 }
