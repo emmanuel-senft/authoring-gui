@@ -81,5 +81,7 @@
         <file>res/box.png</file>
         <file>res/Pull.png</file>
         <file>res/drawer.png</file>
+        <file>res/hide.png</file>
+        <file>res/show.png</file>
     </qresource>
 </RCC>

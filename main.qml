@@ -136,7 +136,7 @@ Window {
             }
             Item{
                 id: pois
-                visible: false
+                visible: hidePoisButton.show
                 property var cmd: null
                 function addPoi(type,id,x,y){
                     var component = Qt.createComponent("POI.qml")
@@ -423,6 +423,18 @@ Window {
                 globalStates.state = "simulation"
             }
             visible: drawingGui.visible
+        GuiButton{
+            id: hidePoisButton
+            z:10
+            anchors.verticalCenter: deleteButton.verticalCenter
+            anchors.left: displayArea.left
+            anchors.leftMargin: width
+            name: show ? "hide" : "show"
+            property bool show: false
+            onClicked:{
+                show = ! show
+            }
+            visible: globalStates.state === "drawing"
         }
 
         ArrowPad{
