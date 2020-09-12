@@ -20,6 +20,7 @@ Window {
     property var initTime: 0
     property bool autonomous: false
     property bool moving: false
+    property var pandaPose: Qt.vector3d(.36,0,.56)
     property var scaleX: map.sourceSize.width / map.paintedWidth
     property var scaleY:map.sourceSize.height / map.paintedHeight
     title: qsTr("Authoring GUI")
