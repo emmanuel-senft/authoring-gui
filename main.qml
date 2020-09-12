@@ -14,21 +14,14 @@ Window {
     //visibility: Window.FullScreen
     width: 2736
     height: 1824
-
+    property bool simu: false
     property int prevWidth:800
     property int prevHeight:600
     property var initTime: 0
     property bool autonomous: false
     property bool moving: false
-   onWidthChanged: {
-        prevWidth=width;
-        pois.updatePois()
-    }
-    onHeightChanged: {
-        prevHeight=height;
-    }
-
-    color: "white"
+    property var scaleX: map.sourceSize.width / map.paintedWidth
+    property var scaleY:map.sourceSize.height / map.paintedHeight
     title: qsTr("Authoring GUI")
     Item{
         id:rotationSlider
@@ -82,11 +75,7 @@ Window {
 
     Item {
         id: displayView
-        property int lineWidth: 50
-        property color fgColor: "steelblue"
-        property bool drawEnabled: true
-        property var touchs
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
         height: width*3/4
@@ -96,15 +85,12 @@ Window {
             anchors.fill: parent
             fillMode: Image.PreserveAspectFit
             property string toLoad: realCamera
-            //property string realCamera: "res/default.jpg"
-            //property string realCamera: "image://rosimage/rgb/image_raw"
-            property string realCamera: virtualCamera
             property string virtualCamera: "image://rosimage/virtual_camera/image_repub"
+            //property string realCamera: "res/default.jpg"
+            property string realCamera: simu ? virtualCamera : "image://rosimage/rgb/image_raw"
             property bool useRealImage: true
             source: toLoad
             cache: false
-            horizontalAlignment: Image.AlignHCenter
-            verticalAlignment: Image.AlignVCenter
             rotation: 0
             Timer {
                 id: imageLoader
@@ -180,11 +166,11 @@ Window {
                         var type = info[0]
                         var id = parseInt(info[1])
                         var coord = info[2]
-                        var x = (1 - parseInt(coord.split(",")[0])/map.sourceSize.width) * map.paintedWidth
-                        var y = (1 - parseInt(coord.split(",")[1])/map.sourceSize.height) * map.paintedHeight
+                        var x = (1 - parseInt(coord.split(",")[0]))/scaleX
+                        var y = (1 - parseInt(coord.split(",")[1]))/scaleY
                         if(map.rotation === 0){
-                            x = (parseInt(coord.split(",")[0])/map.sourceSize.width) * map.paintedWidth
-                            y = (parseInt(coord.split(",")[1])/map.sourceSize.height) * map.paintedHeight
+                            x = (parseInt(coord.split(",")[0]))/scaleX
+                            y = (parseInt(coord.split(",")[1]))/scaleY
                         }
                         var new_poi = true
 
