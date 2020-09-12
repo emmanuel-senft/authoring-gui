@@ -269,8 +269,8 @@ Window {
                         }
                     }
                     active = true
-                    selectionArea.startPoint = Qt.point(mouseX,mouseY)
-                    selectionArea.x = mouseX
+                    selectionArea.startPoint = Qt.point(Math.max(200+map.width/40,mouseX),mouseY)
+                    selectionArea.x = Math.max(200+map.width/40,mouseX)
                     selectionArea.y = mouseY
                     selectionArea.width = 0
                     selectionArea.height = 0
@@ -300,7 +300,7 @@ Window {
                     }
 
                     selectionArea.visible = false
-                    figures.createRect(selectionArea.x,selectionArea.y,selectionArea.width,selectionArea.height)
+                    figures.createRect(selectionArea.x,selectionArea.y,Math.max(100,selectionArea.width),Math.max(selectionArea.height))
                 }
             }
 

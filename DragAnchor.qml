@@ -81,5 +81,6 @@ Item{
             x=p_plus.x+d*Math.cos(a_diag)
             y=p_plus.y-d*Math.sin(a_diag)
         }
+       x = Math.max(x,150)
     }
 }

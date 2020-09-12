@@ -499,7 +499,20 @@ Item {
                 minY = Math.min(minY,listPoints[i].origin.y-height/100)
                 maxY = Math.max(maxY,listPoints[i].origin.y+height/100)
             }
+
             if (!allInHull){
+                var w = maxX-minX
+                var minWidth = map.width/10
+                if(w < minWidth){
+                    minX -= (minWidth-w)/2
+                    maxX += (minWidth-w)/2
+                }
+                var h = maxY-minY
+                var minHeight = map.width/10
+                if(h < minHeight){
+                    minY -= (minHeight-h)/2
+                    maxY += (minHeight-h)/2
+                }
                 p0.x = minX
                 p0.y = minY
                 p1.x = maxX
