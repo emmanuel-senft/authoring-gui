@@ -15,6 +15,10 @@ Window {
     property var selected: ""
     property bool grasped: false
     property var pandaPose: Qt.vector3d(.36,0,.56)
+    property var scaleX: map.sourceSize.width / map.paintedWidth
+    property var scaleY:map.sourceSize.height / map.paintedHeight
+    property bool simu: false
+
     Item {
         id: displayView
         anchors.bottom: parent.bottom
@@ -28,7 +32,7 @@ Window {
             property string toLoad: realCamera
             property string virtualCamera: "image://rosimage/virtual_camera/image_repub"
             //property string realCamera: "res/default.jpg"
-            property string realCamera: virtualCamera
+            property string realCamera: simu ? virtualCamera : "image://rosimage/rgb/image_raw"
             //property string realCamera: "image://rosimage/rgb/image_raw"
             property bool useRealImage: true
             source: toLoad
@@ -67,8 +71,6 @@ Window {
                 anchors.fill:parent
                 visible: actionPanel.visible && hidePoisButton.show
 
-                property var scaleX: map.sourceSize.width / map.paintedWidth
-                property var scaleY:map.sourceSize.height / map.paintedHeight
                 property var cmd: null
                 function addPoi(type,id,x,y){
                     var component = Qt.createComponent("POI.qml")
@@ -103,8 +105,10 @@ Window {
                     if(map.paintedWidth < 1000)
                         return
 
+                    console.log(pois.children.length)
+
                     for(var i =0;i<pois.children.length;i++){
-                        pois.children[i].updated = false
+                        pois.children[i].enabled = false
                     }
 
                     for(var i=0;i<cmd.length-1;i++){
@@ -122,7 +126,7 @@ Window {
                                 poi.center.x = x
                                 poi.center.y = y
                                 new_poi = false
-                                poi.updated = true
+                                poi.enabled = true
                                 break
                             }
                         }
@@ -130,11 +134,11 @@ Window {
                             pois.addPoi(type, id, x, y)
                     }
 
-                    for(var i = pois.children.length; i > 0 ; i--) {
-                      if (pois.children[i-1].updated === false){
-                          pois.children[i-1].destroy()
-                      }
-                    }
+                    //for(var i = pois.children.length; i > 0 ; i--) {
+                    //  if (pois.children[i-1].updated === false){
+                    //      pois.children[i-1].destroy()
+                    //  }
+                    //}
                 }
             }
 
@@ -150,9 +154,11 @@ Window {
                     console.log(item)
                     if (item === null){
                         selected = "unknown"
+                        commandPublisher.text = "direct;test:"+target.getCoord()
                     }
                     else{
                         selected = item
+                        warningDepth.visible = false
                     }
                 }
             }
@@ -177,6 +183,10 @@ Window {
                     var scaleY = map.sourceSize.height / map.paintedHeight
                     return parseInt(x*scaleX)+','+parseInt(y*scaleY)
                 }
+                onVisibleChanged: {
+                    if(visible === false)
+                        warningDepth.visible = false
+                }
             }
         }
     }
@@ -186,7 +196,7 @@ Window {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: parent.height/10.
-        text: "Bad depth, please move target"
+        text: "Bad depth, please move target or move up."
         font.pixelSize: 50
         color: "red"
         visible: false
@@ -372,7 +382,7 @@ Window {
                 }
             }
             ActionButton{
-                text: "Screw"
+                text: "Tighten"
                 usableItem: ["screw"]
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
@@ -380,7 +390,7 @@ Window {
                 }
             }
             ActionButton{
-                text: "Unscrew"
+                text: "Loosen"
                 usableItem: ["screw"]
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
@@ -406,7 +416,7 @@ Window {
             color: "red"
             visible: target.visible
 
-            onPressedChanged: {
+            onClicked: {
                 target.visible = false
                 selected = "none"
             }
@@ -581,9 +591,6 @@ Window {
         topic: "/event"
         text:""
         onTextChanged:{
-            if(text === "start_exec"){
-                globalStates.state = "execution"
-            }
             if(text === "motion_finished"){
                 globalStates.state = "command"
             }

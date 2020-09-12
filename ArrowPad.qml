@@ -50,7 +50,7 @@ Item{
     }
 
     function publish(x,y){
-        globalStates.state = "execution"
+        //globalStates.state = "execution"
         x*=scaleX
         y*=scaleY
         if(type === "translation"){

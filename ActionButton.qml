@@ -1,7 +1,6 @@
 import QtQuick 2.12
  import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.12
-import QtQuick.Controls 2.15
 
 
 MouseArea{
@@ -17,7 +16,6 @@ MouseArea{
     property var value: slider.value
     visible: false
     acceptedButtons: Qt.LeftButton | Qt.RightButton
-
     property var usableItem: []
     Text {
         anchors.fill: parent
@@ -74,7 +72,7 @@ MouseArea{
                 parameterArea.visible = viz
         }
         else{
-            delayedHide.start()
+            delayedExec.start()
         }
     }
 
@@ -241,11 +239,13 @@ MouseArea{
         if(!visible)
             hideParam()
     }
+
     Timer{
-        id: delayedHide
+        id: delayedExec
         interval: 100
         onTriggered: {
             hideParam()
+            globalStates.state = "execution"
         }
     }
 }
