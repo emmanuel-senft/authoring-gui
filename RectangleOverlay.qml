@@ -21,6 +21,7 @@ Item{
                 tighten.visible = true
                 wipe.visible = false
                 pull.visible = false
+                push.visible = false
                 if(actionType.selected !== "Loosen" && actionType.selected !== "Tighten")
                     actionType.selected = ["Move"]
             }
@@ -30,6 +31,7 @@ Item{
                 tighten.visible = false
                 wipe.visible = false
                 pull.visible = false
+                push.visible = false
                 actionType.selected = ["Push"]
             }
             if(target === "drawers"){
@@ -38,6 +40,7 @@ Item{
                 tighten.visible = false
                 wipe.visible = false
                 pull.visible = true
+                push.visible = true
                 actionType.selected = ["Pull"]
             }
             if(target === "surface"){
@@ -47,6 +50,7 @@ Item{
                 tighten.visible = false
                 wipe.visible = true
                 pull.visible = false
+                push.visible = false
                 actionType.selected = ["Wipe"]
                 wipe.checked = true
                 console.log(actionType.selected)
@@ -58,6 +62,7 @@ Item{
                 tighten.visible = false
                 wipe.visible = false
                 pull.visible = false
+                push.visible = false
                 actionType.selected = ["Move"]
             }
             console.log(actionType.selected)
