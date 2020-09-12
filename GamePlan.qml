@@ -10,8 +10,8 @@ Item {
         id: showPlanButton
         z:10
         visible: true
-        anchors.left: parent.left
-        anchors.leftMargin: width/2
+        anchors.right: parent.right
+        anchors.rightMargin: width/2
         anchors.top: parent.top
         anchors.topMargin: width/2
         color: "#ffc27a"
@@ -22,7 +22,7 @@ Item {
 
     Rectangle {
         id: actionTracker
-        anchors.left: showPlanButton.left
+        anchors.right: showPlanButton.right
         anchors.top: showPlanButton.bottom
         anchors.topMargin: showPlanButton.height/4
         height: 0
@@ -75,6 +75,43 @@ Item {
         }
     }
 
+    GuiButton{
+        id: commandButton
+        z:10
+        width: map.width/25
+        anchors.horizontalCenter: actionTracker.horizontalCenter
+        //anchors.rightMargin: width/2
+        anchors.top: actionTracker.bottom
+        anchors.topMargin: -height*3/10
+        //anchors.horizontalCenterOffset: -parent.width/4
+        name: "play"
+        onClicked:{
+            gamePlan.sendCommand("exec");
+            globalStates.state = "execution"
+            pauseButton.name = "pause"
+        }
+        visible: actionTracker.height !== 0 && actionTracker.visible && !pauseButton.visible
+    }
+    GuiButton{
+        id: pauseButton
+        z:9
+        visible: executionGui.visible && actionTracker.height !== 0 && actionTracker.visible
+        anchors.horizontalCenter: commandButton.horizontalCenter
+        anchors.verticalCenter: commandButton.verticalCenter
+        name: "pause"
+        color: "orange"
+        onClicked:{
+            commandPublisher.text = name
+            if(name === "pause"){
+                name = "play"
+                color = "yellowgreen"
+            }
+            else{
+                name = "pause"
+                color = "orange"
+            }
+        }
+    }
     Canvas {
         id: canvas
         anchors.fill: parent
@@ -91,6 +128,7 @@ Item {
 
             if (ref.height === 0)
                 return
+            var h = ref.height +commandButton.height*4/5
 
             ctx.lineJoin = "round"
             ctx.lineCap="round";
@@ -107,10 +145,10 @@ Item {
             ctx.lineTo(but.x+but.width/2+triangleSize/2, ref.y);
             ctx.lineTo(ref.x+ref.width-radius, ref.y);
             ctx.arc(ref.x+ref.width-radius, ref.y+radius, radius, -Math.PI/2,0)
-            ctx.lineTo(ref.x+ref.width, ref.y+ref.height-radius);
-            ctx.arc(ref.x+ref.width-radius, ref.y+ref.height-radius,radius, 0,Math.PI/2)
-            ctx.lineTo(ref.x+radius, ref.y+ref.height);
-            ctx.arc(ref.x+radius, ref.y+ref.height-radius,radius, Math.PI/2, Math.PI)
+            ctx.lineTo(ref.x+ref.width, ref.y+h-radius);
+            ctx.arc(ref.x+ref.width-radius, ref.y+h-radius,radius, 0,Math.PI/2)
+            ctx.lineTo(ref.x+radius, ref.y+h);
+            ctx.arc(ref.x+radius, ref.y+h-radius,radius, Math.PI/2, Math.PI)
             ctx.lineTo(ref.x, ref.y+radius);
             ctx.arc(ref.x+radius, ref.y+radius,radius, Math.PI, -Math.PI/2)
             ctx.lineTo(but.x+but.width/2-triangleSize/2, ref.y);

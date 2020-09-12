@@ -532,8 +532,8 @@ Window {
             z:10
 
             anchors.verticalCenter: viewButton.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 2*width
+            anchors.right: parent.right
+            anchors.rightMargin: 3*width
             name: "del"
             color: "red"
             onClicked:{
