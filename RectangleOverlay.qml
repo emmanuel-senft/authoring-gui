@@ -242,7 +242,7 @@ Item{
         anchors.top: overlay.top
         anchors.right:overlay.left
         anchors.rightMargin: width/10
-        width: 240
+        width: 150
         property int actionLength: 0
         z:3
         GuiCheckBox {

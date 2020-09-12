@@ -10,7 +10,7 @@ Item{
     x: center.x
     y: center.y
     z:30
-    property var rectWidth: 30
+    property var rectWidth: 35
     signal updated()
 
     Rectangle{

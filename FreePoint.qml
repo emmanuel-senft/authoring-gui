@@ -24,10 +24,10 @@ Item{
     Shape {
         id:shape
         anchors.fill: parent
-        z: 10
+        z: 20
         ShapePath {
             strokeWidth: 5
-            strokeColor: "black"
+            strokeColor: "#FF696969"
             strokeStyle: ShapePath.DashLine
             dashPattern: [ 1, 3 ]
             startX: start.midPoint.x; startY: start.midPoint.y
@@ -39,7 +39,7 @@ Item{
             property var d: 40
             strokeWidth: 5
             strokeColor: "transparent"
-            fillColor: "black"
+            fillColor: "#FF696969"
             startX: end.midPoint.x; startY: end.midPoint.y
             PathLine { x: end.midPoint.x+p.d*Math.cos(p.angle+Math.PI/12); y: end.midPoint.y+p.d*Math.sin(p.angle+Math.PI/12)}
             PathLine { x: end.midPoint.x+p.d*Math.cos(p.angle-Math.PI/12); y: end.midPoint.y+p.d*Math.sin(p.angle-Math.PI/12)}

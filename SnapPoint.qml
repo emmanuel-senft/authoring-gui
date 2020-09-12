@@ -25,7 +25,7 @@ Item{
         id: dragPoint
         x:-width/2
         y:-height/2
-        width: map.width/100
+        width: 50
         height: width
         radius: width/2
         color: "red"
@@ -86,7 +86,7 @@ Item{
     Rectangle{
         id: snapRect
         color: objColor
-        width: 20
+        width: 35
         height: width
         radius: width/2
         x:snapPoint.x-width/2
@@ -166,7 +166,7 @@ Item{
         }
         var tempSnap = null
         for (var i=0;i<pois.children.length;i++){
-            if(parentPois.includes(pois.children[i].name))
+            if(parentPois.includes(pois.children[i].name) || pois.children[i].type === "screw")
                 continue
             var d = Math.pow(pois.children[i].x-x,2)+Math.pow(pois.children[i].y-y,2)
             if(d < dMin){

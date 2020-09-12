@@ -25,7 +25,7 @@ Item{
             id: targetLeft
             x:-width/2
             y:-height/2
-            width: 20
+            width: 30
             height: width
             radius: width/2
             color: "white"
@@ -57,7 +57,7 @@ Item{
             id: targetRight
             x:-width/2
             y:-height/2
-            width: 20
+            width: 30
             height: width
             radius: width/2
             color: "black"
@@ -96,7 +96,7 @@ Item{
         z: -10
         ShapePath {
             strokeWidth: 5
-            strokeColor: "black"
+            strokeColor: "#FF696969"
             strokeStyle: ShapePath.DashLine
             dashPattern: [ 1, 3 ]
             startX: left.x; startY: left.y

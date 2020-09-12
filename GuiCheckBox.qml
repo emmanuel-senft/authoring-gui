@@ -91,7 +91,7 @@ CheckBox {
     Rectangle{
         id: button
         visible: order === 1 ? false : checked
-        width: parent.width/8
+        width: parent.height/2
         height: width
         radius: width/2
         anchors.verticalCenter: parent.verticalCenter

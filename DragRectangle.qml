@@ -35,6 +35,7 @@ Item {
                     overlay.additionalVisible = ! overlay.additionalVisible
                 }
                 else{
+                    selected(true)
                     mouse.accepted = false;
                 }
             }
@@ -49,7 +50,7 @@ Item {
     Item{
         id: drawings
         anchors.fill: parent
-        opacity: .5
+        opacity: .9
         Canvas {
             id: canvas
             anchors.fill: parent
@@ -65,7 +66,7 @@ Item {
                 ctx.lineWidth = 5;
 
                 ctx.strokeStyle = rect.objColor;
-                ctx.fillStyle = "white"
+                ctx.fillStyle = "#45FFFFff"
                 ctx.beginPath();
 
                 ctx.moveTo(p0.x+p0.width/2, p0.y+p0.width/2);
@@ -86,8 +87,8 @@ Item {
             center: p0Coord
             onUpdated: {
                 updateAction()
-                paint()
                 normalise(p1,p2,p3)
+                paint()
             }
         }
         DragAnchor{
@@ -95,8 +96,8 @@ Item {
             center: p1Coord
             onUpdated: {
                 updateAction()
-                paint()
                 normalise(p2,p3,p0)
+                paint()
             }
         }
         DragAnchor{
@@ -104,8 +105,8 @@ Item {
             center: p2Coord
             onUpdated: {
                 updateAction()
-                paint()
                 normalise(p3,p0,p1)
+                paint()
             }
         }
         DragAnchor{
@@ -113,8 +114,8 @@ Item {
             center: p3Coord
             onUpdated: {
                 updateAction()
-                paint()
                 normalise(p0,p1,p2)
+                paint()
             }
         }
     }
@@ -507,6 +508,7 @@ Item {
                 p2.y = maxY
                 p3.x = minX
                 p3.y = maxY
+                paint()
             }
         }
     }

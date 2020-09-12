@@ -145,11 +145,11 @@ Window {
                         color = "yellow"
                     if(type === "box")
                         color = "grey"
-                    if(type === "hole")
+                    if(type === "hole"){
+                        //return
                         color = "white"
+                    }
                     if(type === "drawer")
-                        color = "black"
-                    if(type === "pusher")
                         color = "black"
                     if(type === "edge")
                         color = "blue"
@@ -408,7 +408,7 @@ Window {
             onClicked:{gamePlan.sendCommand("exec");
                 globalStates.state = "execution"
             }
-            visible: drawingGui.visible
+            visible: false//drawingGui.visible
         }
         GuiButton{
             id: simulateButton
@@ -422,7 +422,8 @@ Window {
                 gamePlan.sendCommand("sim");
                 globalStates.state = "simulation"
             }
-            visible: drawingGui.visible
+            visible: false //drawingGui.visible
+        }
         GuiButton{
             id: hidePoisButton
             z:10
@@ -438,7 +439,7 @@ Window {
         }
 
         ArrowPad{
-            id: virtualMouse
+            id: arrowPad
             z:11
             visible: drawingGui.visible
             anchors.horizontalCenter: parent.horizontalCenter
@@ -446,16 +447,15 @@ Window {
             anchors.verticalCenter: resetButton.verticalCenter
         }
         ArrowPad{
-            id: other
+            id: arrowPadOther
             z:11
             type: "other"
-            width: map.width/14
             visible: drawingGui.visible
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: resetButton.verticalCenter
         }
         ArrowPad{
-            id: virtualMouseAngle
+            id: arrowPadAngle
             z:11
             visible: drawingGui.visible
             type: "rotation"
@@ -477,7 +477,7 @@ Window {
                 commandPublisher.text = "save_view;"+counter.toString()
                 counter = (counter+1)%2
             }
-            visible: drawingGui.visible
+            visible: false// drawingGui.visible
         }
         Item{
             id:viewButtons
@@ -550,7 +550,7 @@ Window {
         GuiButton{
             id: viewButton
             z:10
-            visible: true
+            visible: false//true
             anchors.horizontalCenter: commandButton.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: height/2
@@ -626,7 +626,7 @@ Window {
         GuiButton{
             id: pauseButton
             z:10
-            visible: executionGui.visible
+            visible: false//executionGui.visible
             anchors.horizontalCenter: stopButton.horizontalCenter
             anchors.verticalCenter: commandButton.verticalCenter
             name: "pause"
