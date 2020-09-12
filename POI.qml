@@ -7,7 +7,8 @@ Item{
     property int index: 0
     property var name: type+"_"+index
     property color color: "red"
-    property bool updated: true
+    property bool enabled: true
+    visible: enabled
     width: type === "hole" ? 10 : map.width/40
 
     Rectangle{

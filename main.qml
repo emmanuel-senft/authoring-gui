@@ -172,7 +172,7 @@ Window {
                         return
 
                     for(var i =0;i<pois.children.length;i++){
-                        pois.children[i].updated = false
+                        pois.children[i].enabled = false
                     }
 
                     for(var i=0;i<cmd.length-1;i++){
@@ -194,7 +194,7 @@ Window {
                                 poi.x = x
                                 poi.y = y
                                 new_poi = false
-                                poi.updated = true
+                                poi.enabled = true
                                 break
                             }
                         }
@@ -202,11 +202,11 @@ Window {
                             pois.addPoi(type, id, x, y)
                     }
 
-                    for(var i = pois.children.length; i > 0 ; i--) {
-                      if (pois.children[i-1].updated === false){
-                          pois.children[i-1].destroy()
-                      }
-                    }
+                    //for(var i = pois.children.length; i > 0 ; i--) {
+                    //  if (pois.children[i-1].updated === false){
+                    //      pois.children[i-1].destroy()
+                    //  }
+                    //}
                     if(waitGui.waitPoi){
                         roi.visible = true
                     }
@@ -881,8 +881,30 @@ Window {
                 return
             }
             var cmd = text.split(";")
-            if(cmd[0] === "poi"){
+            if(cmd[0] === "poi" && globalStates.state === "drawing"){
                 pois.cmd = cmd
+            }
+            if(cmd[0] === "panda_pose"){
+                var pose = cmd[1].split(",")
+                pandaPose.x = parseFloat(pose[0])
+                pandaPose.y = parseFloat(pose[1])
+                pandaPose.z = parseFloat(pose[2])
+                if(pandaPose.z > .6){
+                   arrowPadOther.setEnabled("down", false)
+                }
+                else{
+                    arrowPadOther.setEnabled("down", true)
+                }
+                if(pandaPose.x > .55){
+                   arrowPad.setEnabled("up", false)
+                }
+                else{
+                    arrowPad.setEnabled("up", true)
+                }
+                if(pandaPose.x**2 + pandaPose.z**2 > .56){
+                    arrowPad.setEnabled("up", false)
+                    arrowPadOther.setEnabled("down", false)
+                }
             }
         }
     }

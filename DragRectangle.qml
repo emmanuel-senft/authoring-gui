@@ -257,7 +257,7 @@ Item {
         var objectTypes={}
         for(var i=0; i<pois.children.length; i++){
             var poi = pois.children[i]
-            if (inHull(poi)){
+            if (poi.enabled && poi.type !== "box" && inHull(poi)){
                 if(objectTypes[poi.type+"s"])
                     objectTypes[poi.type+"s"]+=1
                 else
@@ -482,7 +482,7 @@ Item {
     }
 
     function poiUpdated(){
-        if(listPoints.length > 0){
+        if(listPoints.length > 0 && globalStates.state === "drawing"){
             cleanSnappedPois()
             var minX = width
             var maxX = 0
