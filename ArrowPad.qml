@@ -65,6 +65,27 @@ Item{
     }
 
     GuiButton{
+        id:center
+        visible: type !== "translation"
+        width: parent.width/5
+        height: width
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        color: "steelblue"
+        rotation: 45
+        mirror: false
+        name: "center"
+        onClicked: {
+            if(type === "rotation"){
+                commandPublisher.text = "center;x,y"
+            }
+            if(type === "other"){
+                commandPublisher.text = "center;z"
+            }
+        }
+    }
+
+    GuiButton{
         id:right
         width: parent.width/2.5
         height: width

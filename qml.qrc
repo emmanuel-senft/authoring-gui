@@ -58,5 +58,9 @@
         <file>res/minus.png</file>
         <file>res/hide.png</file>
         <file>res/show.png</file>
+        <file>ControlPanel.qml</file>
+        <file>res/Grasp.png</file>
+        <file>res/Release.png</file>
+        <file>res/center.png</file>
     </qresource>
 </RCC>

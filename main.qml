@@ -417,40 +417,13 @@ Window {
             visible: target.visible
 
             onClicked: {
+                console.log("cancelled")
                 target.visible = false
                 selected = "none"
             }
         }
     }
 
-
-    GuiButton{
-        id: resetButton
-        anchors.right: displayView.right
-        anchors.rightMargin: width/2
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: width
-        z:10
-        name: "reset"
-        onClicked:{
-            commandPublisher.text = "reset_position"
-        }
-        visible: globalStates.state === "command"
-    }
-
-    GuiButton{
-        id: stopButton
-        z:10
-        anchors.horizontalCenter: resetButton.horizontalCenter
-        anchors.verticalCenter: resetButton.verticalCenter
-        name: "stop"
-        color: "red"
-        onClicked:{
-            commandPublisher.text = "stop"
-            globalStates.state = "drawing"
-        }
-        visible: globalStates.state === "execution"
-    }
     GuiButton{
         id: hidePoisButton
         z:10
@@ -464,31 +437,9 @@ Window {
         }
         visible: globalStates.state === "command"
     }
-    ArrowPad{
-        id: arrowPad
-        z:11
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.horizontalCenterOffset: parent.width / 15 + width/2
-        anchors.verticalCenter: resetButton.verticalCenter
-        visible: actionPanel.visible
-    }
-    ArrowPad{
-        id: arrowPadOther
-        z:11
-        type: "other"
-        //width: map.width/14
-        visible: actionPanel.visible
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: resetButton.verticalCenter
-    }
-    ArrowPad{
-        id: arrowPadAngle
-        z:11
-        visible: actionPanel.visible
-        type: "rotation"
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.horizontalCenterOffset: -parent.width / 15 - width/2
-        anchors.verticalCenter: resetButton.verticalCenter
+
+    ControlPanel{
+        id:controlPanel
     }
 
     StateGroup {
@@ -538,31 +489,11 @@ Window {
             }
             if(cmd[0] === "panda_pose"){
                 var pose = cmd[1].split(",")
-                pandaPose.x = parseFloat(pose[0])
-                pandaPose.y = parseFloat(pose[1])
-                pandaPose.z = parseFloat(pose[2])
-                if(pandaPose.z > .6){
-                   arrowPadOther.setEnabled("down", false)
-                   up.enabled = false
+                var panda_pose =[]
+                for(var i=0;i<pose.length;i++){
+                    panda_pose.push(parseFloat(pose[i]))
                 }
-                else{
-                    arrowPadOther.setEnabled("down", true)
-                    up.enabled = true
-                }
-                if(pandaPose.x > .55){
-                   arrowPad.setEnabled("up", false)
-                   forward.enabled = false
-                }
-                else{
-                    arrowPad.setEnabled("up", true)
-                    forward.enabled = true
-                }
-                if(pandaPose.x**2 + pandaPose.z**2 > .56){
-                    arrowPad.setEnabled("up", false)
-                    forward.enabled = false
-                    arrowPadOther.setEnabled("down", false)
-                    up.enabled = false
-                }
+                controlPanel.filter_button(panda_pose)
 
 
                 for(var i =0;i<pois.children.length;i++){
