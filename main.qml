@@ -425,31 +425,10 @@ Window {
             visible: globalStates.state === "drawing"
         }
 
-        ArrowPad{
-            id: arrowPad
-            z:11
-            visible: drawingGui.visible
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: parent.width / 15 + width/2
-            anchors.verticalCenter: resetButton.verticalCenter
+        ControlPanel{
+            id: controlPanel
         }
-        ArrowPad{
-            id: arrowPadOther
-            z:11
-            type: "other"
-            visible: drawingGui.visible
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: resetButton.verticalCenter
-        }
-        ArrowPad{
-            id: arrowPadAngle
-            z:11
-            visible: drawingGui.visible
-            type: "rotation"
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: -parent.width / 15 - width/2
-            anchors.verticalCenter: resetButton.verticalCenter
-        }
+/*
         GuiButton{
             id: bookButton
             anchors.verticalCenter: resetButton.verticalCenter
@@ -464,14 +443,14 @@ Window {
                 commandPublisher.text = "save_view;"+counter.toString()
                 counter = (counter+1)%2
             }
-            visible: false// drawingGui.visible
+            visible: false// commandGui.visible
         }
         Item{
             id:viewButtons
-            anchors.verticalCenter: resetButton.verticalCenter
+            anchors.verticalCenter: bookButton.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.horizontalCenterOffset: + parent.width / 5
-            visible: drawingGui.visible
+            visible: commandGui.visible
             GuiButton{
                 property int number: 0
                 anchors.verticalCenter: parent.verticalCenter
@@ -499,21 +478,21 @@ Window {
                 visible: false
             }
         }
+*/
 
-
-        GuiButton{
-            id: resetButton
-            anchors.horizontalCenter: commandButton.horizontalCenter
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: width
-            z:10
-            name: "reset"
-            onClicked:{
-                globalStates.state = "execution"
-                commandPublisher.text = "reset_position"
-            }
-            visible: drawingGui.visible
-        }
+    //    GuiButton{
+    //        id: resetButton
+    //        anchors.horizontalCenter: commandButton.horizontalCenter
+    //        anchors.bottom: parent.bottom
+    //        anchors.bottomMargin: width
+    //        z:10
+    //        name: "reset"
+    //        onClicked:{
+    //            globalStates.state = "execution"
+    //            commandPublisher.text = "reset_position"
+    //        }
+    //        visible: visible
+    //    }
         GuiButton{
             id: deleteButton
             z:10
@@ -873,25 +852,11 @@ Window {
             }
             if(cmd[0] === "panda_pose"){
                 var pose = cmd[1].split(",")
-                pandaPose.x = parseFloat(pose[0])
-                pandaPose.y = parseFloat(pose[1])
-                pandaPose.z = parseFloat(pose[2])
-                if(pandaPose.z > .6){
-                   arrowPadOther.setEnabled("down", false)
+                var panda_pose =[]
+                for(var i=0;i<pose.length;i++){
+                    panda_pose.push(parseFloat(pose[i]))
                 }
-                else{
-                    arrowPadOther.setEnabled("down", true)
-                }
-                if(pandaPose.x > .55){
-                   arrowPad.setEnabled("up", false)
-                }
-                else{
-                    arrowPad.setEnabled("up", true)
-                }
-                if(pandaPose.x**2 + pandaPose.z**2 > .56){
-                    arrowPad.setEnabled("up", false)
-                    arrowPadOther.setEnabled("down", false)
-                }
+                controlPanel.filter_button(panda_pose)
             }
         }
     }
