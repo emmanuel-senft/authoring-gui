@@ -4,7 +4,7 @@ import QtGraphicalEffects 1.12
 
 Rectangle{
     property var parameterType: "distance"
-    property var unit: "mm"
+    property var unit: parameterType === "distance" ? (window.unit) : "deg"
     property var label: "x:"
     property bool edited: false
     property var text: input.text
@@ -50,7 +50,7 @@ Rectangle{
                 verticalAlignment: TextInput.AlignVCenter
                 horizontalAlignment: TextInput.AlignHCenter
                 onTextChanged: {
-                    var val = parseFloat(text)
+                    var val = parseFloat(text)/unitScale
                     if(isNaN(val)){
                         warningReach.visible = false
                         warningNumber.visible = true
@@ -58,20 +58,39 @@ Rectangle{
                         return
                     }
                     warningNumber.visible = false
-                    if(unit === "m" && (val > .8 || val < -.8)){
+                    if(unit === "m" && (val > .65 || val < -.65)){
                         warningReach.visible = true
                         edited = false
                         return
                     }
-                    if(label === "z:" && val < 0.04){
-                        warningReach.visible = true
-                        edited = false
-                        return
+                    if(label === "x:"){
+                        var test = val < .05
+                        test = test || ((val**2+pandaPose.y**2+pandaPose.z**2) > .65)
+                        test = test || ((val**2+pandaPose.y**2) < .084)
+                        if(test){
+                            warningReach.visible = true
+                            edited = false
+                            return
+                        }
                     }
-                    if(label === "y:" && val < -0.25){
-                        warningReach.visible = true
-                        edited = false
-                        return
+                    if(label === "y:"){
+                        var test = val > 0.25
+                        test = test || ((pandaPose.x**2+val**2+pandaPose.z**2) > .65)
+                        test = test || ((pandaPose.x**2+val**2) < .084)
+                        if(test){
+                            warningReach.visible = true
+                            edited = false
+                            return
+                        }
+                    }
+                    if(label === "z:"){
+                        var test = val < 0.04
+                        test = test || ((pandaPose.x**2+pandaPose.y**2+val**2) > .65)
+                        if(test){
+                            warningReach.visible = true
+                            edited = false
+                            return
+                        }
                     }
                     warningReach.visible = false
                 }
@@ -85,7 +104,14 @@ Rectangle{
                     console.log("edited")
                 }
                 onAccepted: {
-                    send_pose()
+                    update_pose()
+                    if (((pandaPose.x**2+pandaPose.y**2+pandaPose.z**2) < .65) && ((pandaPose.x**2+pandaPose.y**2) > .084) && ((pandaPose.z) >= .04)){
+                        send_pose()
+                    }
+                    else{
+                        warningReach.visible = true
+                    }
+
                     focusMouse.focus = true
                 }
             }
@@ -107,14 +133,5 @@ Rectangle{
     function setText(val){
         if(!edited && !input.focus)
             input.text = val
-    }
-
-    Component.onCompleted: {
-        if(parameterType === "angle"){
-            unit = "deg"
-        }
-        if(parameterType === "distance"){
-            unit = "m"
-        }
     }
 }

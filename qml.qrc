@@ -61,5 +61,9 @@
         <file>res/Grasp.png</file>
         <file>res/Release.png</file>
         <file>ControlPanel.qml</file>
+        <file>res/center.png</file>
+        <file>res/in.png</file>
+        <file>res/m.png</file>
+        <file>res/toggle_unit.png</file>
     </qresource>
 </RCC>

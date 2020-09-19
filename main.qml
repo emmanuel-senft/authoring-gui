@@ -15,6 +15,10 @@ Window {
     property var selected: ""
     property bool grasped: false
     property bool simu: false
+    property var pandaPose: Qt.vector3d(.36,0,.56)
+    property var pandaRot: Qt.vector3d(.0,0,.0)
+    property var unit: "m"
+    property double unitScale: unit === "m" ? 1 : 39.3701
 
     Item {
         id: displayView
@@ -102,6 +106,22 @@ Window {
             border.color: "steelblue"
             opacity: .5
             radius: width/10
+        }
+        GuiButton{
+            id: unit_toggle
+            anchors.top: parent.top
+            anchors.topMargin: width/5
+            anchors.right: parent.right
+            anchors.rightMargin: width/5
+            width: parent.width/6
+            color: "steelblue"
+            name: "toggle_unit"
+            onClicked: {
+                if(unit === "in")
+                    unit = "m"
+                else
+                    unit = "in"
+            }
         }
         Text{
             id: title
@@ -229,11 +249,15 @@ Window {
                 var pose = cmd[1].split(",")
                 var panda_pose =[]
                 for(var i=0;i<dimensions.children.length;i++){
-                    dimensions.children[i].setText(pose[i])
+                    if(i<3){
+                        dimensions.children[i].setText(Math.round(pose[i]*unitScale*1000+ Number.EPSILON)/1000)
+                    }
+                    else
+                        dimensions.children[i].setText(pose[i])
                     panda_pose.push(parseFloat(pose[i]))
                 }
+                update_pose()
                 controlPanel.filter_button(panda_pose)
-
             }
         }
     }
@@ -271,5 +295,13 @@ Window {
         commandPublisher.text="init_gui"
         globalStates.state = "command"
         selected = "none"
+    }
+    function update_pose(){
+        pandaPose.x = parseFloat(x.text)/unitScale
+        pandaPose.y = parseFloat(y.text)/unitScale
+        pandaPose.z = parseFloat(z.text)/unitScale
+        pandaRot.x = parseFloat(rX.text)
+        pandaRot.y = parseFloat(rY.text)
+        pandaRot.z = parseFloat(rZ.text)
     }
 }
