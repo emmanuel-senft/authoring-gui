@@ -14,7 +14,7 @@ Window {
     title: qsTr("Point GUI")
     property var selected: ""
     property bool grasped: false
-    property var pandaPose: Qt.vector3d(.36,0,.56)
+    property var pandaZ: .56
     property var scaleX: map.sourceSize.width / map.paintedWidth
     property var scaleY:map.sourceSize.height / map.paintedHeight
     property bool simu: false
@@ -78,13 +78,13 @@ Window {
                     if(type === "screw")
                         color = "yellow"
                     if(type === "box")
-                        color = "grey"
+                        color = "gainsboro"
                     if(type === "hole"){
                         return
                         color = "white"
                     }
                     if(type === "drawer")
-                        color = "black"
+                        color = "aliceblue"
                     if(type === "edge")
                         color = "blue"
                     var poi = component.createObject(pois, {type:type,index:id,objColor:color,center:Qt.point(x,y)})
@@ -123,9 +123,13 @@ Window {
                         for(var j =0;j<pois.children.length;j++){
                             var poi = pois.children[j]
                             if(poi.type === type && poi.index === id){
-                                poi.center.x = x
-                                poi.center.y = y
                                 new_poi = false
+                                if(x<0 || y<0){
+                                    poi.enabled = false
+                                    break
+                                }
+                                poi.centerX = x
+                                poi.centerY = y
                                 poi.enabled = true
                                 break
                             }
@@ -224,9 +228,9 @@ Window {
     }
     Item{
         id:actionPanel
-        anchors.right: parent.right
-        anchors.rightMargin: width/10
-        anchors.topMargin: anchors.rightMargin
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: 3*parent.width/8
+        anchors.topMargin: parent.height/10
         anchors.top: parent.top
         width: parent.width/5
         height: parent.height*2/3
@@ -235,7 +239,7 @@ Window {
             anchors.fill: parent
             color: "white"
             border.color: "steelblue"
-            opacity: .5
+            opacity: .8
             radius: width/10
         }
         MouseArea{
@@ -280,7 +284,7 @@ Window {
                 }
             }
             ActionButton{
-                text: grasped ? "Place at target" : "Pick at target"
+                text: grasped ? "Place at target" : "Pick up target"
                 usableItem: ["unknown"]
                 parameterType: "Angle"
                 onClicked: {
@@ -374,7 +378,7 @@ Window {
                 }
             }
             ActionButton{
-                text: "Pick"
+                text: "Pick up"
                 usableItem: ["screw"]
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
@@ -493,12 +497,13 @@ Window {
                 for(var i=0;i<pose.length;i++){
                     panda_pose.push(parseFloat(pose[i]))
                 }
+                pandaZ = panda_pose[2]
                 controlPanel.filter_button(panda_pose)
+            }
 
 
-                for(var i =0;i<pois.children.length;i++){
-                    pois.children[i].update_shape()
-                }
+            for(var i =0;i<pois.children.length;i++){
+                pois.children[i].update_shape()
             }
         }
     }
