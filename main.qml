@@ -163,6 +163,7 @@ Window {
                     else{
                         selected = item
                         warningDepth.visible = false
+                        warningReach.visible = false
                     }
                 }
             }
@@ -188,8 +189,10 @@ Window {
                     return parseInt(x*scaleX)+','+parseInt(y*scaleY)
                 }
                 onVisibleChanged: {
-                    if(visible === false)
+                    if(visible === false){
                         warningDepth.visible = false
+                        warningReach.visible = false
+                    }
                 }
             }
         }
@@ -204,9 +207,17 @@ Window {
         font.pixelSize: 50
         color: "red"
         visible: false
-
     }
-
+    Label{
+        id: warningReach
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: parent.height/10.
+        text: "Position out of reach, please move one drawing"
+        font.pixelSize: 50
+        color: "red"
+        visible: false
+    }
     onSelectedChanged: {
         var type = ""
         if(typeof selected === "string")
@@ -278,6 +289,7 @@ Window {
                 text: "Move to target"
                 usableItem: ["unknown"]
                 parameterType: "Angle"
+                enabled: warningDepth.visible === false && warningReach.visible === false
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
                         commandPublisher.text = "direct;MoveContact:"+target.getCoord()+","+parseInt(value)
@@ -286,6 +298,7 @@ Window {
             ActionButton{
                 text: grasped ? "Place at target" : "Pick up target"
                 usableItem: ["unknown"]
+                enabled: warningDepth.visible === false && warningReach.visible === false
                 parameterType: "Angle"
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
@@ -479,18 +492,26 @@ Window {
         topic: "/parser/gui_info"
         text:""
         onTextChanged:{
+            var cmd = text.split(";")
             if(text === "bad_depth"){
                 warningDepth.visible = true
+                warningReach.visible = false
                 return
             }
-            if(text === "good_depth"){
+            if(text === "out_of_reach"){
+                warningReach.visible = true
                 warningDepth.visible = false
                 return
             }
-            var cmd = text.split(";")
+            if(text === "good_move"){
+                warningDepth.visible = false
+                warningReach.visible = false
+                return
+            }
             if(cmd[0] === "poi"){
                 pois.cmd = cmd
             }
+
             if(cmd[0] === "panda_pose"){
                 var pose = cmd[1].split(",")
                 var panda_pose =[]
