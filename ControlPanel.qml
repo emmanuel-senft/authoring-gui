@@ -81,13 +81,15 @@ Item{
         color: "red"
         onClicked:{
             commandPublisher.text = "stop"
-            globalStates.state = "drawing"
+            globalStates.state = "command"
         }
         visible: globalStates.state === "execution"
     }
     function filter_button(panda_pose){
-        trans.setEnabled("up", panda_pose[0]**2 + panda_pose[1]**2 + panda_pose[2]**2 < .56)
-        other.setEnabled("down", panda_pose[0]**2 + panda_pose[1]**2 + panda_pose[2]**2 < .56)
+        trans.setEnabled("up", (panda_pose[0]**2 + panda_pose[1]**2 + panda_pose[2]**2) < .56)
+        trans.setEnabled("left", !((panda_pose[0]**2 + panda_pose[1]**2 + panda_pose[2]**2) > .56 && panda_pose[1] > 0))
+        trans.setEnabled("right", !((panda_pose[0]**2 + panda_pose[1]**2 + panda_pose[2]**2) > .56 && panda_pose[1] < 0))
+        other.setEnabled("down", (panda_pose[0]**2 + panda_pose[1]**2 + panda_pose[2]**2) < .56)
         other.setEnabled("up", panda_pose[2]>.1)
     }
 }

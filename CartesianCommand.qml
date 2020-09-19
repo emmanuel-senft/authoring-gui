@@ -46,9 +46,10 @@ Rectangle{
                 font.family: "Helvetica"
                 font.pointSize: map.width/80
                 color: "black"
-                selectByMouse: true
+                selectByMouse: false
                 verticalAlignment: TextInput.AlignVCenter
                 horizontalAlignment: TextInput.AlignHCenter
+                activeFocusOnTab: true
                 onTextChanged: {
                     var val = parseFloat(text)/unitScale
                     if(isNaN(val)){
@@ -113,6 +114,13 @@ Rectangle{
                     }
 
                     focusMouse.focus = true
+                }
+                MouseArea{
+                    anchors.fill: parent
+                    onClicked: {
+                        input.selectAll()
+                        input.focus = true
+                    }
                 }
             }
         }

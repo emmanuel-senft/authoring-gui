@@ -93,10 +93,11 @@ Window {
 
     Item{
         id:cartesianPanel
+        visible:true
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.horizontalCenterOffset: 3*parent.width/8
         anchors.top: parent.top
-        anchors.topMargin: height/8
+        anchors.topMargin: map.height/15
         width: parent.width/5
         height: parent.height*3/5
         Rectangle{
@@ -104,7 +105,7 @@ Window {
             anchors.fill: parent
             color: "white"
             border.color: "steelblue"
-            opacity: .5
+            opacity: .8
             radius: width/10
         }
         GuiButton{
@@ -130,7 +131,7 @@ Window {
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             anchors.top: parent.top
-            anchors.topMargin: 0
+            anchors.topMargin: height/4
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width
             height: parent.height*2/10
@@ -179,6 +180,7 @@ Window {
             name: "play"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: dimensions.bottom
+            enabled: !(warningReach.visible || warningNumber.visible)
             onPressedChanged: {
                 if(pressed){
                     send_pose()
