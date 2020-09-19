@@ -49,6 +49,7 @@ Item{
             mouseArea.enabled = false
             snapRect.visible = false
             snappedPoi=origin
+            doSnap(origin)
             movedPois.removePoi(origin.type, origin.index, objColor)
         }
     }
