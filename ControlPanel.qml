@@ -81,7 +81,7 @@ Item{
         color: "red"
         onClicked:{
             commandPublisher.text = "stop"
-            globalStates.state = "drawing"
+            globalStates.state = "command"
         }
         visible: globalStates.state === "execution"
     }

@@ -11,7 +11,7 @@ Window {
     visible: true
     width: 2736
     height: 1824
-    title: qsTr("Authoring GUI")
+    title: qsTr("Point GUI")
     property var selected: ""
     property bool grasped: false
     property var pandaPose: Qt.vector3d(.36,0,.56)
