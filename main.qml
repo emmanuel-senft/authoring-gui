@@ -246,6 +246,8 @@ Window {
             }
 
             MouseArea{
+                enabled: globalStates.state === "command"
+
                 anchors.fill: parent
                 property bool active: false
                 onPressed: {
@@ -397,7 +399,7 @@ Window {
             onClicked:{gamePlan.sendCommand("exec");
                 globalStates.state = "execution"
             }
-            visible: false//drawingGui.visible
+            visible: false//commandGui.visible
         }
         GuiButton{
             id: simulateButton
@@ -411,7 +413,7 @@ Window {
                 gamePlan.sendCommand("sim");
                 globalStates.state = "simulation"
             }
-            visible: false //drawingGui.visible
+            visible: false //commandGui.visible
         }
         GuiButton{
             id: hidePoisButton
@@ -424,7 +426,7 @@ Window {
             onClicked:{
                 show = ! show
             }
-            visible: globalStates.state === "drawing"
+            visible: globalStates.state === "command"
         }
 
         ControlPanel{
@@ -513,7 +515,7 @@ Window {
                 //    }
                 //}
             }
-            visible: drawingGui.visible
+            visible: commandGui.visible
         }
         GuiButton{
             id: viewButton
@@ -527,24 +529,24 @@ Window {
             onClicked:{
                 switch(globalStates.state){
                     case "visualization":
-                        globalStates.state = "drawing"
+                        globalStates.state = "command"
                         map.toLoad = map.realCamera
                         commandPublisher.text = "init_gui"
                         break
 
-                    case "drawing":
+                    case "command":
                         globalStates.state = "visualization"
                         map.toLoad = map.virtualCamera
                         commandPublisher.text = "unlock"
                         break
 
                     case "simulation":
-                        globalStates.state = "drawing"
+                        globalStates.state = "command"
                         commandPublisher.text = "stop_sim"
                         break
 
                     case "execution":
-                        globalStates.state = "drawing"
+                        globalStates.state = "command"
                         break
                 }
             }
@@ -559,7 +561,7 @@ Window {
             name: "lock"
             color: "FireBrick"
             onClicked:{
-                globalStates.state = "drawing"
+                globalStates.state = "command"
                 commandPublisher.text = "lock"
             }
         }
@@ -578,7 +580,7 @@ Window {
                 commandPublisher.text = "go"
             }
         }
-        GuiButton{
+      /*  GuiButton{
             id: stopButton
             z:10
             visible: executionGui.visible
@@ -588,7 +590,7 @@ Window {
             color: "red"
             onClicked:{
                 commandPublisher.text = "stop"
-                globalStates.state = "drawing"
+                globalStates.state = "command"
             }
         }
         GuiButton{
@@ -672,7 +674,7 @@ Window {
                 eventPublisher.text = "skip"
                 hideRoiTimer.start()
             }
-        }
+        }*/
     }
 
     Item{
@@ -694,7 +696,7 @@ Window {
             text: "Take Back Control"
             onClicked:{
                 eventPublisher.text = "gui_takeover"
-                globalStates.state = "drawing"
+                globalStates.state = "command"
             }
         }
     }
@@ -728,7 +730,7 @@ Window {
         }
     }
     Item{
-        id:drawingGui
+        id:commandGui
         anchors.fill: parent
         visible: false
     }
@@ -741,7 +743,7 @@ Window {
         text: "Switch Mode"
         onClicked:{
             if (globalStates.state === "gestureEdit")
-                globalStates.state = "drawing"
+                globalStates.state = "command"
             else
                 globalStates.state = "gestureEdit"
         }
@@ -789,7 +791,7 @@ Window {
                         }
                     }
                 }
-                globalStates.state = "drawing"
+                globalStates.state = "command"
                 return
             }
             var cmd = text.split(";")
@@ -805,7 +807,7 @@ Window {
                 }
             }
             if (cmd[0] === "wait"){
-                if(globalStates.state !== "drawing"){
+                if(globalStates.state !== "command"){
                     waitGui.visible = true
                     for(var j =0;j<pois.children.length;j++){
                         var poi = pois.children[j]
@@ -849,7 +851,7 @@ Window {
                 return
             }
             var cmd = text.split(";")
-            if(cmd[0] === "poi" && globalStates.state === "drawing"){
+            if(cmd[0] === "poi" && globalStates.state === "command"){
                 pois.cmd = cmd
             }
             if(cmd[0] === "panda_pose"){
@@ -899,9 +901,8 @@ Window {
         states: [
             State {name: "gestureEdit"
                 PropertyChanges { target: gestureGui; visible: true }},
-            State {name: "drawing"
-                PropertyChanges { target: drawingGui; visible: true }
-                PropertyChanges { target: resetButton; enabled: true }},
+            State {name: "command"
+                PropertyChanges { target: commandGui; visible: true }},
             State {name: "visualization"
                 PropertyChanges { target: lockViewButton; visible: true }
                 PropertyChanges { target: goToButton; visible: true }
@@ -950,7 +951,7 @@ Window {
                 break
                 case "gestureEdit":
                     break
-                case "drawing":
+                case "command":
                     waitGui.visible = false
                     for (var i = 0; i<figures.children.length;i++)
                             figures.children[i].doneSim = false
@@ -963,7 +964,7 @@ Window {
     }
 
     Component.onCompleted: {
-        globalStates.state = "drawing"
+        globalStates.state = "command"
         commandPublisher.text="init_gui"
 
     }

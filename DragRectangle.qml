@@ -485,7 +485,7 @@ Item {
     }
 
     function poiUpdated(){
-        if(listPoints.length > 0 && globalStates.state === "drawing"){
+        if(listPoints.length > 0 && globalStates.state === "command"){
             cleanSnappedPois()
             var minX = width
             var maxX = 0
