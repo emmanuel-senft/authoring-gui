@@ -758,7 +758,16 @@ Window {
         font.pixelSize: 50
         color: "red"
         visible: false
-
+    }
+    Label{
+        id: warningReach
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: parent.height/10.
+        text: "Position out of reach, please move one drawing"
+        font.pixelSize: 50
+        color: "red"
+        visible: false
     }
 
     RosStringPublisher{
@@ -843,10 +852,20 @@ Window {
         onTextChanged:{
             if(text === "bad_depth"){
                 warningDepth.visible = true
+                globalStates.state = "command"
+                warningReach.visible = false
                 return
             }
-            if(text === "good_depth"){
+            if(text === "out_of_reach"){
+                console.log("got it")
+                warningReach.visible = true
                 warningDepth.visible = false
+                globalStates.state = "command"
+                return
+            }
+            if(text === "good_move"){
+                warningDepth.visible = false
+                warningReach.visible = false
                 return
             }
             var cmd = text.split(";")
