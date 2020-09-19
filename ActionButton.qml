@@ -14,6 +14,7 @@ MouseArea{
     property var borderWidth: height/20
     property var unit: ""
     property var value: slider.value
+    property var defaultVal: 0
     visible: false
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     property var usableItem: []
@@ -162,7 +163,7 @@ MouseArea{
                 anchors.horizontalCenter: parent.horizontalCenter
                 property int delta: 1
                 from: 0
-                value: 0
+                value: defaultVal
                 to: 100
                 stepSize: 1
                 GuiButton{
@@ -215,19 +216,18 @@ MouseArea{
                 }
             }
         }
-        onVisibleChanged: slider.value = 0
+        onVisibleChanged: slider.value = defaultVal
     }
     Component.onCompleted: {
         if(parameterType === "Angle"){
             slider.from = -90
-            slider.value = 0
             slider.to = 90
             slider.delta = 30
             unit = "deg"
         }
         if(parameterType === "Distance"){
             slider.from = 0
-            slider.value = 1
+            defaultVal = 1
             slider.to = 10
             unit = "inch"
         }
