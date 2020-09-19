@@ -13,15 +13,15 @@ Item {
         width: parent.width; height: parent.height
         color: done ? "white" : "transparent"
         opacity: done ? .7 : 1
-        MouseArea{
-            id: dragArea
-            anchors.fill: parent
-            property bool held: false
-            drag.axis: Drag.YAxis
-            onPressed: {
-                parameterArea.visible = !parameterArea.visible
-            }
-        }
+        //MouseArea{
+        //    id: dragArea
+        //    anchors.fill: parent
+        //    property bool held: false
+        //    drag.axis: Drag.YAxis
+        //    onPressed: {
+        //        parameterArea.visible = !parameterArea.visible
+        //    }
+        //}
 
         Row {
             anchors.horizontalCenter: parent.horizontalCenter

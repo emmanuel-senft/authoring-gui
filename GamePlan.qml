@@ -112,6 +112,16 @@ Item {
             }
         }
     }
+    MouseArea{
+        id:protectionArea
+        width: 1.1*actionTracker.width
+        anchors.horizontalCenter: actionTracker.horizontalCenter
+        anchors.top: parent.top
+        anchors.bottom: actionTracker.bottom
+        anchors.bottomMargin: -1.2*pauseButton.height
+        visible:actionTracker.visible
+    }
+
     Canvas {
         id: canvas
         anchors.fill: parent
