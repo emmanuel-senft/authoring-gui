@@ -387,7 +387,7 @@ Window {
                 usableItem: ["box"]
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
-                        commandPublisher.text = "direct;Place:"+selected.name
+                        commandPublisher.text = "direct;Drop:"+selected.name
                 }
             }
             ActionButton{
