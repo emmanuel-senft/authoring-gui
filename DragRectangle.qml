@@ -32,7 +32,9 @@ Item {
             cleanSnappedPois()
             if(inHull(Qt.point(mouseX,mouseY))){
                 if (mouse.button & Qt.RightButton){
-                    overlay.additionalVisible = ! overlay.additionalVisible
+                    if(currentItem)
+                        overlay.nextTip()
+                    selected(true)
                 }
                 else{
                     selected(true)
@@ -123,7 +125,7 @@ Item {
         id: movePoint
         opacity: .8
         z:10
-        visible: overlay.target === "unknown"
+        visible: overlay.target === "object"
         Component.onCompleted: {
             //radius = (p2Coord.x-p0Coord.x)/4
             center= Qt.point((p0Coord.x+p2Coord.x)/2,(p0Coord.y+p2Coord.y)/2)
@@ -264,8 +266,8 @@ Item {
                     objectTypes[poi.type+"s"]=1
             }
         }
-        objectTypes["unknown"]=1
-        objectTypes["surface"]=1
+        objectTypes["object"]=1
+        objectTypes["area"]=1
         return objectTypes
     }
 
@@ -343,6 +345,7 @@ Item {
             if(figures.currentItem !== null && figures.currentItem !== rect)
                 figures.currentItem.selected(false)
             figures.currentItem = rect
+            overlay.additionalVisible = true
             paint()
         }
         else{
@@ -383,7 +386,7 @@ Item {
             act[0]="Inspect-"+act[0]
         if(action !== act)
             action = act
-        if (overlay.target === "unknown"){
+        if (overlay.target === "object"){
             var a ={}
             a.name = rect.action[0]
             a.target = movePoint.getTarget()
@@ -402,7 +405,7 @@ Item {
             var a ={}
             a.name = action[0]
             a.target = graspPoint.getCoord()+'_'+p0.getCoord()+'_'+p1.getCoord()+'_'+p2.getCoord()+'_'+p3.getCoord()
-            a.targetDisplay = rect.target
+            a.targetDisplay = figures.colorNames[rect.index]+" Area"
             a.order = rect.index
             a.color = rect.objColor
             a.done = done || doneSim
@@ -439,7 +442,7 @@ Item {
     }
 
     function testDone(act, t){
-        if(overlay.target === "unknown"){
+        if(overlay.target === "object"){
             if(act === "Move" && t === movePoint.getTarget()){
                 done = true
                 return true
@@ -464,7 +467,7 @@ Item {
     }
 
     function testDelete(){
-        if(overlay.target === "unknown" || overlay.target === "surface"){
+        if(overlay.target === "object" || overlay.target.includes("Area")){
                 return done
         }
         for(var i =0; i < listPoints.length; i++){

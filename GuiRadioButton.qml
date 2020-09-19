@@ -5,7 +5,7 @@ RadioButton {
     id: control
     property var group: null
     property var name: text.toLowerCase()
-    property bool lastVisible: false
+    property bool lastVisible: true
     visible: true
 
     text: qsTr("RadioButton")
@@ -48,12 +48,12 @@ RadioButton {
             group.selected = name
     }
     onVisibleChanged: {
-        //if(lastVisible !== visible){
-        //    if (visible)
-        //        parent.objectLength+=1
-        //    else
-        //        parent.objectLength-=1
-        //}
-        //lastVisible = visible
+        if(lastVisible !== visible){
+            if (visible)
+                parent.objectLength+=1
+            else
+                parent.objectLength-=1
+        }
+        lastVisible = visible
     }
 }

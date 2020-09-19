@@ -6,7 +6,21 @@ Item{
     id: overlay
     property var action: ""
     property var target: ""
-    property bool additionalVisible: false
+    property bool additionalVisible: true
+    property bool toolTipVisible: false
+    property int toolTipIndex: 0
+    property var tips: [""]
+
+    function nextTip(){
+        if(toolTipIndex<tips.length-1){
+            toolTipIndex+=1
+            toolTipVisible = true
+        }
+        else{
+            toolTipIndex = 0
+            toolTipVisible = false
+        }
+    }
 
     ButtonGroup {
         id: objectType
@@ -24,15 +38,10 @@ Item{
                 push.visible = false
                 if(actionType.selected !== "Loosen" && actionType.selected !== "Tighten")
                     actionType.selected = ["Move"]
-            }
-            if(target === "pushers"){
-                move.visible = false
-                loosen.visible = false
-                tighten.visible = false
-                wipe.visible = false
-                pull.visible = false
-                push.visible = false
-                actionType.selected = ["Push"]
+                tips = ["","To move an object, drag the colored handle to the desired position",
+                        "You can change the actions and the order by checking the boxes on the left or clicking the small arrow up button",
+                        "The series of actions will be applied to every object of the selected type",
+                        "If the action list contains 'move', only the moved objects will have any action"]
             }
             if(target === "drawers"){
                 move.visible = false
@@ -42,9 +51,9 @@ Item{
                 pull.visible = true
                 push.visible = true
                 actionType.selected = ["Pull"]
+                tips = ["","To change the selected objects, move the corners of the area","You can change the action by checking and unchecking the buttons on the left"]
             }
-            if(target === "surface"){
-                console.log("in surface")
+            if(target === "area"){
                 move.visible = false
                 loosen.visible = false
                 tighten.visible = false
@@ -55,8 +64,9 @@ Item{
                 wipe.checked = true
                 console.log(actionType.selected)
                 target = figures.colorNames[index]+" Area"
+                tips = ["","The robot will wipe the selected area with the object located at the handle"]
             }
-            if(target === "unknown"){
+            if(target === "object"){
                 move.visible = true
                 loosen.visible = false
                 tighten.visible = false
@@ -64,8 +74,10 @@ Item{
                 pull.visible = false
                 push.visible = false
                 actionType.selected = ["Move"]
+                tips = ["","The robot will move the object from the starting handle to the goal one",
+                        "The right (R) and left (L) handles represent the fingers of the robot and can be rotated"]
             }
-            console.log(actionType.selected)
+
             for(var i =0; i<actions.children.length;i++){
                 if(actionType.selected.includes(actions.children[i].name)){
                     actions.children[i].checked = true
@@ -82,27 +94,29 @@ Item{
         anchors.top: overlay.top
         anchors.left:overlay.right
         anchors.leftMargin: 25
-        property int objectLength: 5
+        property int objectLength: objectsColumn.objectLength
         z:240
         ColumnLayout {
+            id: objectsColumn
+            property int objectLength: 5
             GuiRadioButton {
                 text: "Screws"
                 group: objectType
             }
-            GuiRadioButton {
-                text: "Holes"
-                group: objectType
-            }
+            //GuiRadioButton {
+            //    text: "Holes"
+            //    group: objectType
+            //}
             GuiRadioButton {
                 text: "Pushers"
                 group: objectType
             }
             GuiRadioButton {
-                text: "Unknown"
+                text: "Object"
                 group: objectType
             }
             GuiRadioButton {
-                text: "Surface"
+                text: "Area"
                 group: objectType
             }
             GuiRadioButton {
@@ -241,6 +255,79 @@ Item{
         color: "white"
     }
 
+    Rectangle {
+        id: backTitle
+        anchors.top: actionDisplay.top
+        anchors.topMargin: -10
+        anchors.bottom: actionDisplay.bottom
+        anchors.bottomMargin: -10
+        anchors.right:actionDisplay.right
+        anchors.rightMargin: -10
+        anchors.left: actionDisplay.left
+        anchors.leftMargin: -10
+        color: "grey"
+        z:2
+        opacity: .5
+        radius: map.width/130
+        MouseArea{
+            anchors.fill: parent
+        }
+    }
+    Label{
+        z:50
+        id: toolTip
+        visible: additionalVisible && toolTipVisible
+        wrapMode: Text.WordWrap
+        text: tips[toolTipIndex]
+        anchors.top: overlay.bottom
+        anchors.topMargin: 25
+        anchors.left: overlay.left
+        anchors.right: overlay.right
+        anchors.rightMargin: 10
+        color: "white"
+        verticalAlignment: Text.AlignVCenter
+        font.family: "Helvetica"
+        font.pointSize: 17
+        font.bold: true
+        style: Text.Outline
+        styleColor: "black"
+    }
+    Label{
+        z:50
+        id: tipCounter
+        visible: additionalVisible && toolTipVisible
+        text: toolTipIndex.toString()+"/"+(tips.length-1).toString()
+        anchors.bottom: backToolTip.bottom
+        anchors.bottomMargin: 5
+        anchors.right: backToolTip.right
+        anchors.rightMargin: 5
+        color: "white"
+        verticalAlignment: Text.AlignVCenter
+        font.family: "Helvetica"
+        font.pointSize: 17
+        font.bold: true
+        style: Text.Outline
+        styleColor: "black"
+    }
+
+    Rectangle {
+        id: backToolTip
+        visible: toolTip.visible
+        anchors.top: toolTip.top
+        anchors.topMargin: -10
+        anchors.bottom: toolTip.bottom
+        anchors.bottomMargin: -25
+        anchors.right:overlay.right
+        anchors.left: toolTip.left
+        anchors.leftMargin: -10
+        color: "grey"
+        z:2
+        opacity: .5
+        radius: map.width/130
+        MouseArea{
+            anchors.fill: parent
+        }
+    }
     Item {
         id: actions
         visible:objects.visible
@@ -293,6 +380,7 @@ Item{
             name:text
             index: 4
         }
+        onActionLengthChanged: console.log(actionLength)
     }
 
     Rectangle {
@@ -307,6 +395,9 @@ Item{
         z:2
         opacity: .5
         radius: map.width/130
+        MouseArea{
+            anchors.fill: parent
+        }
     }
     Rectangle {
         id: backObjects
@@ -321,6 +412,9 @@ Item{
         opacity: .5
         radius: map.width/130
         visible: additionalVisible
+        MouseArea{
+            anchors.fill: parent
+        }
     }
 
     function setObjectSelected(sel){
