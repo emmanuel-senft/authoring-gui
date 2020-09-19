@@ -131,13 +131,13 @@ Window {
                     if(type === "screw")
                         color = "yellow"
                     if(type === "box")
-                        color = "grey"
+                        color = "gainsboro"
                     if(type === "hole"){
                         //return
                         color = "white"
                     }
                     if(type === "drawer")
-                        color = "black"
+                        color = "aliceblue"
                     if(type === "edge")
                         color = "blue"
                     var poi = component.createObject(pois, {type:type,index:id,color:color,x:x,y:y})
@@ -328,7 +328,9 @@ Window {
             }
         }
     }
-
+    GamePlan{
+        id: gamePlan
+    }
     Item{
         id:gestureGui
         anchors.fill: parent
@@ -498,18 +500,18 @@ Window {
             z:10
 
             anchors.verticalCenter: viewButton.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: 3*width
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: 3*parent.width/8
             name: "del"
             color: "red"
             onClicked:{
                 figures.currentItem.destroy()
                 figures.currentItem = null
-                for(var i =0; i < figures.children.length; i++){
-                    if(figures.children[i].testDelete()){
-                        figures.children[i].destroy()
-                    }
-                }
+                //for(var i =0; i < figures.children.length; i++){
+                //    if(figures.children[i].testDelete()){
+                //        figures.children[i].destroy()
+                //    }
+                //}
             }
             visible: drawingGui.visible
         }
@@ -879,9 +881,6 @@ Window {
         PaletteElement{index:3}
     }
 
-    GamePlan{
-        id: gamePlan
-    }
     TemplateLoader{
         visible: false
         id: templateLoader
@@ -947,7 +946,7 @@ Window {
         onStateChanged: {
             switch (globalStates.state){
             case "execution":
-                pauseButton.name = "pause"
+            //    pauseButton.name = "pause"
                 break
                 case "gestureEdit":
                     break

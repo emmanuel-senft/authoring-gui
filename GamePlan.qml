@@ -3,15 +3,13 @@ import QtQuick.Controls 1.4
 
 Item {
     id: gamePlan
-
     anchors.fill: parent
 
     GuiButton{
         id: showPlanButton
         z:10
         visible: true
-        anchors.right: parent.right
-        anchors.rightMargin: width/2
+        anchors.right: actionTracker.right
         anchors.top: parent.top
         anchors.topMargin: width/2
         color: "#ffc27a"
@@ -22,7 +20,8 @@ Item {
 
     Rectangle {
         id: actionTracker
-        anchors.right: showPlanButton.right
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: 3*parent.width/8
         anchors.top: showPlanButton.bottom
         anchors.topMargin: showPlanButton.height/4
         height: 0
@@ -146,7 +145,7 @@ Item {
             ctx.lineWidth = but.borderWidth;
 
             ctx.strokeStyle = showPlanButton.color;
-            ctx.fillStyle = "#B0f8f8ff";
+            ctx.fillStyle = "#E0f8f8ff";
 
             ctx.beginPath();
 

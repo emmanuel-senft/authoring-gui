@@ -10,6 +10,7 @@ Item{
     property bool selected: true
     property var  angle: 0
     property var color: objColor
+    property var centerText: ""
 
     onRadiusChanged: {
         mid.center = Qt.point(midPoint.x,midPoint.y)
@@ -25,12 +26,21 @@ Item{
             id: targetLeft
             x:-width/2
             y:-height/2
-            width: 30
+            width: 37
             height: width
             radius: width/2
+            color: "black"
+            border.color: "white"
+            border.width:width/8
+        }
+        Text{
+            anchors.verticalCenter: targetLeft.verticalCenter
+            anchors.horizontalCenter: targetLeft.horizontalCenter
+            text:"L"
+            font.family: "Helvetica"
+            font.pointSize: 15
+            font.bold: true
             color: "white"
-            border.color: "black"
-            border.width:width/3
         }
 
         MouseArea {
@@ -57,12 +67,21 @@ Item{
             id: targetRight
             x:-width/2
             y:-height/2
-            width: 30
+            width: 37
             height: width
             radius: width/2
+            color: "white"
+            border.color: "black"
+            border.width:width/8
+        }
+        Text{
+            anchors.verticalCenter: targetRight.verticalCenter
+            anchors.horizontalCenter: targetRight.horizontalCenter
+            text:"R"
+            font.family: "Helvetica"
+            font.pointSize: 15
+            font.bold: true
             color: "black"
-            border.color: "white"
-            border.width:width/3
         }
 
         MouseArea {
@@ -90,7 +109,16 @@ Item{
         }
         borderColor: color
     }
-
+    Text{
+        z:200
+        anchors.verticalCenter: mid.verticalCenter
+        anchors.horizontalCenter: mid.horizontalCenter
+        text:centerText
+        font.family: "Helvetica"
+        font.pointSize: 20
+        font.bold: true
+        color: "black"
+    }
     Shape {
         anchors.fill: parent
         z: -10

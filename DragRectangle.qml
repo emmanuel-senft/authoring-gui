@@ -78,9 +78,9 @@ Item {
                 ctx.lineTo(p0.x+p0.width/2, p0.y+p0.width/2);
 
                 ctx.stroke();
+                if(action.includes("Wipe"))
+                    ctx.fillStyle = objColor
                 ctx.fill();
-                if(action === "Wipe")
-                    ctx.fill();
             }
         }
 
@@ -146,7 +146,7 @@ Item {
         width: 100
         height: 100
         visible: true
-        z:250
+        z:-10
         color: "transparent"
         property var displayAngle: -displayView.rotation
         rotation:displayAngle

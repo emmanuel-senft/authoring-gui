@@ -18,6 +18,8 @@ Item{
         height: width
         radius: poi.type === "screw" ? width/2 : 0
         color: parent.color
+        border.color: "black"
+        border.width: width/15
     }
     opacity: .5
 }

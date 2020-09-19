@@ -53,10 +53,10 @@ CheckBox {
         color: "white"
         verticalAlignment: Text.AlignVCenter
         leftPadding: control.indicator.width + control.spacing
-
         font.family: "Helvetica"
         font.pointSize: 17
         font.bold: true
+        style: Text.Outline
         styleColor: "black"
     }
 
