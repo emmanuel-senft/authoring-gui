@@ -62,5 +62,6 @@
         <file>res/Grasp.png</file>
         <file>res/Release.png</file>
         <file>res/center.png</file>
+        <file>res/settings.png</file>
     </qresource>
 </RCC>

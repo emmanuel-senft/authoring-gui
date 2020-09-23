@@ -19,16 +19,36 @@ MouseArea{
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     property var usableItem: []
     Text {
-        anchors.fill: parent
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.rightMargin: parameterType !== ""? edit.width : 0
         renderType: Text.NativeRendering
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         font.family: "Helvetica"
-        font.pointSize: map.width/80
+        font.pointSize: map.width/100
         color: "black"
-        text: actionButton.text
+        text: actionButton.text + (parameterType !== "" ? ": " + slider.value.toString()+" "+unit : "")
         z:2
     }
+    GuiButton{
+        id: edit
+        z:10
+        width: parent.width/10
+        color: "orange"
+        visible: parameterType !== ""
+        name: "settings"
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: width/4
+        anchors.bottomMargin: width/4
+        onClicked: {
+            parameterArea.visible = !parameterArea.visible
+        }
+    }
+
     Rectangle{
         border.width: actionButton.borderWidth
         anchors.fill: parent
@@ -69,7 +89,7 @@ MouseArea{
             var viz = !parameterArea.visible
             for (var i=0;i<actionList.children.length;i++)
                 actionList.children[i].hideParam()
-            if(parameterType != "")
+            if(parameterType !== "")
                 parameterArea.visible = viz
         }
         else{
@@ -216,7 +236,6 @@ MouseArea{
                 }
             }
         }
-        onVisibleChanged: slider.value = defaultVal
     }
     Component.onCompleted: {
         if(parameterType === "Angle"){
@@ -234,6 +253,7 @@ MouseArea{
     }
     function hideParam(){
         parameterArea.visible = false
+        slider.value = defaultVal
     }
     onVisibleChanged: {
         if(!visible)
