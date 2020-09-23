@@ -348,7 +348,9 @@ Item {
         onTriggered: selectedPois()
     }
     onCurrentItemChanged: {
+
         if(currentItem){
+            timerHint.restart()
             drawings.opacity=.5
             if(figures.currentItem !== null && figures.currentItem !== rect)
                 figures.currentItem.selected(false)
@@ -357,11 +359,22 @@ Item {
             paint()
         }
         else{
+            timerHint.stop()
             drawings.opacity=.2
             overlay.additionalVisible = false
             paint()
         }
     }
+
+    Timer{
+        id: timerHint
+        interval: 30000
+        onTriggered: {
+            if(overlay.toolTipIndex === 0)
+                overlay.nextTip()
+        }
+    }
+
     function setIndexes(val){
         indexes = val
     }
@@ -577,5 +590,8 @@ Item {
               listPoints.splice(i-1,1)
           }
         }
+    }
+    function nextTip(){
+        overlay.nextTip()
     }
 }

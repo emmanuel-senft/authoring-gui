@@ -518,6 +518,23 @@ Window {
             visible: commandGui.visible
         }
         GuiButton{
+            id: infoButton
+            z:10
+
+            anchors.verticalCenter: deleteButton.verticalCenter
+            anchors.horizontalCenter: deleteButton.horizontalCenter
+            anchors.horizontalCenterOffset: -2*width
+            name: "unknown"
+            color: "orange"
+            onClicked:{
+                var item = figures.currentItem
+                if(item !== null){
+                    item.nextTip()
+                }
+            }
+            visible: commandGui.visible && figures.children.length>0
+        }
+        GuiButton{
             id: viewButton
             z:10
             visible: false//true

@@ -28,6 +28,7 @@ Item{
         property var selected: ""
         onSelectedChanged: {
             selectedPois()
+            timerHint.restart()
             updateObjects()
             toolTipIndex = 0
             toolTipVisible = false
