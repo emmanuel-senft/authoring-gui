@@ -74,6 +74,20 @@ Window {
         }
     }
 
+    MouseArea{
+        id: clickRecorder
+        z:200
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onPressed: {
+            if (mouse.button == Qt.RightButton)
+                eventPublisher.text = "right_click"
+            else
+                eventPublisher.text = "left_click"
+            mouse.accepted = false
+        }
+    }
+
     Item {
         id: displayView
         anchors.bottom: parent.bottom
@@ -1008,9 +1022,11 @@ Window {
     Component.onCompleted: {
         globalStates.state = "command"
         commandPublisher.text="init_gui"
+        eventPublisher.text="starting_authoring"
 
     }
     Component.onDestruction: {
         commandPublisher.text="remove;all"
+        eventPublisher.text="closing"
     }
 }
