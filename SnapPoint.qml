@@ -25,7 +25,7 @@ Item{
         id: dragPoint
         x:-width/2
         y:-height/2
-        width: 50
+        width: mouseArea.enabled ? 50 : 25
         height: width
         radius: width/2
         color: "red"
@@ -266,6 +266,10 @@ Item{
 
     function testDone(act, t){
         if(action.includes(act) && target.split("-").includes(t.split("-")[0])){
+            if(act === "Pull")
+                origin.pulled = true
+            if(act === "Push")
+                origin.pulled = false
             if(globalStates.state === "simulation")
                 doneSim.push(act)
             else

@@ -502,8 +502,8 @@ Window {
             z:10
 
             anchors.verticalCenter: viewButton.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.horizontalCenterOffset: 3*parent.width/8
+            anchors.horizontalCenter: viewButton.horizontalCenter
+            anchors.horizontalCenterOffset: -2*width
             name: "del"
             color: "red"
             onClicked:{
@@ -799,7 +799,7 @@ Window {
                     }
                 }
                 globalStates.state = "command"
-                timerUpdateActions.start()
+                delayedTimerUpdateActions.start()
                 return
             }
             var cmd = text.split(";")
@@ -909,6 +909,13 @@ Window {
     Timer{
         id: timerUpdateActions
         interval: 100
+        onTriggered:{
+            gamePlan.update()
+        }
+    }
+    Timer{
+        id: delayedTimerUpdateActions
+        interval: 500
         onTriggered:{
             gamePlan.update()
         }

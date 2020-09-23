@@ -28,7 +28,17 @@ Item{
         property var selected: ""
         onSelectedChanged: {
             selectedPois()
+            updateObjects()
+            toolTipIndex = 0
+            toolTipVisible = false
             target = selected
+
+            move.checked = false
+            loosen.checked = false
+            tighten.checked = false
+            wipe.checked = false
+            pull.checked = false
+
             if(target === "screws"){
                 move.visible = true
                 loosen.visible = true

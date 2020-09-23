@@ -192,6 +192,7 @@ Item {
         boundingArea.y=y-height/2+height_ini/2//+Math.min(height_ini/2,height/2)
         //boundingArea.x=x//*Math.cos(-alpha)-y*Math.sin(-alpha)//-Math.abs(width_ini/2*Math.cos(alpha))//-Math.abs(height_ini/2*Math.sin(alpha))+width_ini/2
         //boundingArea.y=y//*Math.cos(-alpha)+x*Math.sin(-alpha)//-Math.abs(height_ini/2*Math.cos(alpha))//-Math.abs(width_ini/2*Math.sin(alpha))+height_ini/2
+        updateObjects()
     }
 
     Component.onCompleted: {
@@ -282,7 +283,10 @@ Item {
         var currentPois = []
         var i = listPoints.length
         while(i--){
-            if(typeof listPoints[i].origin === "undefined" || ! inHull(listPoints[i].origin) || listPoints[i].origin.type !== type){
+            var test = typeof listPoints[i].origin === "undefined" || ! inHull(listPoints[i].origin) || listPoints[i].origin.type !== type
+            test = test || (overlay.getActionsSelected()[0] === "Pull" && listPoints[i].origin.pulled)
+            test = test || (overlay.getActionsSelected()[0] === "Push" && !listPoints[i].pulled)
+            if(test){
                 listPoints[i].destroy()
                 listPoints.splice(i,1)
             }
@@ -294,6 +298,10 @@ Item {
         for(var i=0; i<pois.children.length; i++){
             var poi = pois.children[i]
             if (inHull(poi) && poi.type === type && ! currentPois.includes(poi.name)){
+                if(overlay.getActionsSelected()[0] === "Pull" && poi.pulled)
+                    continue
+                if(overlay.getActionsSelected()[0] === "Push" && !poi.pulled)
+                    continue
                 var component = Qt.createComponent("SnapPoint.qml");
                 var anchor = component.createObject(rect, {container:rect,snappedPoi:poi,type:poi.type,index:poi.index,x:poi.x,y:poi.y,objColor:figures.colors[rect.index],opacity:1,origin:poi});
                 listPoints.push(anchor)
