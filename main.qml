@@ -18,6 +18,7 @@ Window {
     property var scaleX: map.sourceSize.width / map.paintedWidth
     property var scaleY:map.sourceSize.height / map.paintedHeight
     property bool simu: false
+    property double pandaRZ: 0
 
     Item {
         id: displayView
@@ -178,7 +179,7 @@ Window {
                     height: width
                     radius: width/2
                     color:  "transparent"
-                    border.color: "red"
+                    border.color: "green"
                     border.width: width/10
                     x:-width/2
                     y:-height/2
@@ -198,6 +199,20 @@ Window {
         }
     }
 
+    MouseArea{
+        id: clickRecorder
+        z:200
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onPressed: {
+            if (mouse.button == Qt.RightButton)
+                eventPublisher.text = "right_click"
+            else
+                eventPublisher.text = "left_click"
+            mouse.accepted = false
+        }
+    }
+
     Label{
         id: warningDepth
         anchors.horizontalCenter: parent.horizontalCenter
@@ -213,7 +228,7 @@ Window {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: parent.height/10.
-        text: "Position out of reach, please move one drawing"
+        text: "Position out of reach, please move the target"
         font.pixelSize: 50
         color: "red"
         visible: false
@@ -292,7 +307,7 @@ Window {
                 enabled: warningDepth.visible === false && warningReach.visible === false
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
-                        commandPublisher.text = "direct;MoveContact:"+target.getCoord()+","+parseInt(value)
+                        commandPublisher.text = "direct;MoveContact:"+target.getCoord()+","+parseInt(value+pandaRZ)
                 }
             }
             ActionButton{
@@ -302,7 +317,7 @@ Window {
                 parameterType: "Angle"
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
-                        commandPublisher.text = "direct;"+text.split(" ")[0]+":"+target.getCoord()+","+parseInt(value)
+                        commandPublisher.text = "direct;"+text.split(" ")[0]+":"+target.getCoord()+","+parseInt(value+pandaRZ)
                 }
             }
             ActionButton{
@@ -519,6 +534,7 @@ Window {
                     panda_pose.push(parseFloat(pose[i]))
                 }
                 pandaZ = panda_pose[2]
+                pandaRZ = panda_pose[5]
                 controlPanel.filter_button(panda_pose)
             }
 
@@ -550,14 +566,27 @@ Window {
         onTextChanged:{
             if(text === "motion_finished"){
                 globalStates.state = "command"
+                testTarget.start()
             }
         }
     }
 
+    Timer{
+        id: testTarget
+        interval: 500
+        onTriggered: {
+            if(target.visible)
+                commandPublisher.text = "direct;test:"+target.getCoord()
+        }
+    }
 
     Component.onCompleted: {
         commandPublisher.text="init_gui"
         globalStates.state = "command"
         selected = "none"
+        eventPublisher.text = "starting_point"
+    }
+    Component.onDestruction: {
+        eventPublisher.text = "closing"
     }
 }

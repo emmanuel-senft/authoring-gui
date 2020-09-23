@@ -17,7 +17,7 @@ Rectangle{
     width: map.width/40
     height: width
     radius: type === "screw" ? width/2 : 0
-    color: selected === poi ? "red" : objColor
+    color: selected === poi ? "green" : objColor
     property var centerX: 100
     property var centerY: 100
     opacity: .5
