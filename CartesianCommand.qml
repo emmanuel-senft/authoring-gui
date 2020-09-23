@@ -51,10 +51,12 @@ Rectangle{
                 horizontalAlignment: TextInput.AlignHCenter
                 activeFocusOnTab: true
                 onTextChanged: {
+                    if(!focus)
+                        return
                     var val = parseFloat(text)/unitScale
                     if(isNaN(val)){
                         warningReach.visible = false
-                        warningNumber.visible = true
+                        //warningNumber.visible = true
                         edited = false
                         return
                     }
@@ -93,11 +95,21 @@ Rectangle{
                             return
                         }
                     }
+                    if(label === "RY:"){
+                        if(val > 20){
+                            warningReach.visible = true
+                            edited = false
+                            return
+                        }
+                    }
                     warningReach.visible = false
                 }
                 onFocusChanged: {
                     if(focus){
                         selectAll()
+                    }
+                    else{
+                        warningReach.visible = false
                     }
                 }
                 onTextEdited: {
@@ -106,7 +118,7 @@ Rectangle{
                 }
                 onAccepted: {
                     update_pose()
-                    if (((pandaPose.x**2+pandaPose.y**2+pandaPose.z**2) < .65) && ((pandaPose.x**2+pandaPose.y**2) > .084) && ((pandaPose.z) >= .04)){
+                    if (((pandaPose.x**2+pandaPose.y**2+pandaPose.z**2) < .65) && ((pandaPose.x**2+pandaPose.y**2) > .084) && (pandaPose.z >= .039) && (pandaRot.y <= 20)){
                         send_pose()
                     }
                     else{

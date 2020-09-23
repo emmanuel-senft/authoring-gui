@@ -69,6 +69,21 @@ Window {
             }
         }
     }
+
+    MouseArea{
+        id: clickRecorder
+        z:200
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onPressed: {
+            if (mouse.button == Qt.RightButton)
+                eventPublisher.text = "right_click"
+            else
+                eventPublisher.text = "left_click"
+            mouse.accepted = false
+        }
+    }
+
     Label{
         id: warningNumber
         anchors.horizontalCenter: parent.horizontalCenter
@@ -191,7 +206,10 @@ Window {
     function send_pose(){
         var msg = "panda_goal;"
         for(var i=0;i<dimensions.children.length;i++){
-            msg+=dimensions.children[i].text+","
+            var val = parseFloat(dimensions.children[i].text)
+            if(i<3)
+                val = val / unitScale
+            msg+=val.toString()+","
             dimensions.children[i].edited = false
             dimensions.children[i].focus = false
         }
@@ -296,6 +314,7 @@ Window {
     Component.onCompleted: {
         commandPublisher.text="init_gui"
         globalStates.state = "command"
+        eventPublisher.text="starting_cartesian"
         selected = "none"
     }
     function update_pose(){
@@ -305,5 +324,8 @@ Window {
         pandaRot.x = parseFloat(rX.text)
         pandaRot.y = parseFloat(rY.text)
         pandaRot.z = parseFloat(rZ.text)
+    }
+    Component.onDestruction: {
+        eventPublisher.text="closing"
     }
 }
