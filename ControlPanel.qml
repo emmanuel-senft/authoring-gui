@@ -7,17 +7,6 @@ Item{
     id: controlPanel
     anchors.fill: parent
 
-
-    MouseArea{
-        id:protectionArea
-        anchors.left: rot.left
-        anchors.leftMargin: -50
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        anchors.top: trans.top
-        anchors.topMargin: -50
-    }
-
     ArrowPad{
         id: trans
         z:11

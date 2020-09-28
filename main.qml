@@ -158,7 +158,13 @@ Window {
                 }
                 function clearPoi(){
                     for(var i =0;i<pois.children.length;i++){
-                        pois.children[i].destroy()
+                        try{
+                            pois.children[i].destroy()
+
+                        }
+                        catch(err) {
+                         ;
+                        }
                     }
                 }
 
@@ -272,9 +278,9 @@ Window {
                         }
                     }
                     active = true
-                    selectionArea.startPoint = Qt.point(Math.max(200+map.width/40,mouseX),mouseY)
-                    selectionArea.x = Math.max(200+map.width/40,mouseX)
-                    selectionArea.y = mouseY
+                    selectionArea.startPoint = Qt.point(Math.max(180+map.width/40,mouseX),Math.max(650,mouseY))
+                    selectionArea.x = selectionArea.startPoint.x
+                    selectionArea.y = selectionArea.startPoint.y
                     selectionArea.width = 0
                     selectionArea.height = 0
                     selectionArea.visible = true
@@ -308,12 +314,20 @@ Window {
             }
 
         }
+        MouseArea{
+            id:protectionArea
+            width: parent.width*2.02/3
+            anchors.right: parent.right
+            height: parent.height/6.5
+            anchors.bottom: parent.bottom
+            z:9
+        }
 
         Figures {
             id:figures
             z:10
         }
-        Item{
+        /*Item{
             id: movedPois
             visible: false
 
@@ -342,7 +356,7 @@ Window {
                     }
                 }
             }
-        }
+        }*/
     }
     GamePlan{
         id: gamePlan
@@ -436,7 +450,7 @@ Window {
             anchors.left: displayArea.left
             anchors.leftMargin: width
             name: show ? "hide" : "show"
-            property bool show: false
+            property bool show: true
             onClicked:{
                 show = ! show
             }
@@ -521,16 +535,31 @@ Window {
             name: "del"
             color: "red"
             onClicked:{
-                figures.currentItem.destroy()
-                figures.currentItem = null
-                //for(var i =0; i < figures.children.length; i++){
-                //    if(figures.children[i].testDelete()){
-                //        figures.children[i].destroy()
-                //    }
-                //}
+                if(figures.currentItem !== null){
+                    try{
+                        figures.currentItem.destroy()
+                    }
+                    catch(err){
+                        console.log(err)
+                    }
+                    figures.currentItem = null
+                    timerCurrentItem.start()
+                }
             }
             visible: commandGui.visible
         }
+        Timer{
+            id: timerCurrentItem
+            interval: 200
+            onTriggered: {
+                if(figures.currentItem === null){
+                    if(figures.children.length>0){
+                        figures.children[figures.children.length-1].currentItem = true
+                    }
+                }
+            }
+        }
+
         GuiButton{
             id: infoButton
             z:10
@@ -779,23 +808,49 @@ Window {
                 globalStates.state = "gestureEdit"
         }
     }
+    Rectangle{
+        id: backWarningDepth
+        anchors.verticalCenter: warningDepth.verticalCenter
+        anchors.horizontalCenter: warningDepth.horizontalCenter
+        width: 1.1 * warningDepth.width
+        height: 1.2 * warningDepth.height
+        color: "gainsboro"
+        radius: height/4
+        border.color: "steelblue"
+        visible: warningDepth.visible
+        opacity: .8
+    }
 
     Label{
         id: warningDepth
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: parent.height/10.
-        text: "Bad depth, please move one drawing"
+        text: "Bad depth, please move one handle"
         font.pixelSize: 50
         color: "red"
         visible: false
     }
+
+    Rectangle{
+        id: backWarningReach
+        anchors.verticalCenter: warningReach.verticalCenter
+        anchors.horizontalCenter: warningReach.horizontalCenter
+        width: 1.1 * warningReach.width
+        height: 1.2 * warningReach.height
+        color: "gainsboro"
+        radius: height/4
+        border.color: "steelblue"
+        visible: warningReach.visible
+        opacity: .8
+    }
+
     Label{
         id: warningReach
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: parent.height/10.
-        text: "Position out of reach, please move one drawing"
+        text: "Position out of reach, please move one handle"
         font.pixelSize: 50
         color: "red"
         visible: false
@@ -826,7 +881,12 @@ Window {
                 moving = false
                 for(var i =0; i < figures.children.length; i++){
                     if(figures.children[i].testDelete()){
-                        figures.children[i].destroy()
+                        try{
+                            figures.children[i].destroy()
+                        }
+                        catch(err){
+                            ;
+                        }
                     }
                 }
                 globalStates.state = "command"

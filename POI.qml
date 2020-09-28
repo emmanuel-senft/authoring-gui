@@ -10,7 +10,7 @@ Item{
     property bool enabled: true
     property bool pulled: false
     visible: enabled
-    width: type === "hole" ? 10 : map.width/40
+    width: type === "box" ? map.width/40 : (type === "screw" ? 30:10)
 
     Rectangle{
         x:-width/2
@@ -23,4 +23,7 @@ Item{
         border.width: width/15
     }
     opacity: .5
+    onPulledChanged: {
+        console.log(pulled)
+    }
 }

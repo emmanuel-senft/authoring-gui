@@ -51,8 +51,7 @@ Item{
                     actionType.selected = ["Move"]
                 tips = ["","To move an object, drag the colored handle to the desired position",
                         "You can change the actions and the order by checking the boxes on the left or clicking the small arrow up button",
-                        "The series of actions will be applied to every object of the selected type",
-                        "If the action list contains 'move', only the moved objects will have any action"]
+                        "The series of actions will be applied to every object of the selected type"]
             }
             if(target === "drawers"){
                 move.visible = false
@@ -253,7 +252,7 @@ Item{
     onCheckedChanged: updateAction()
     }
     Label{
-        z:50
+        z:500
         id: actionDisplay
         text:action+" "+target
         anchors.bottom: overlay.top

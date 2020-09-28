@@ -40,7 +40,7 @@ Item{
             property var angle: Math.atan2(start.midPoint.y-end.midPoint.y,start.midPoint.x-end.midPoint.x)
             property var d: 40
             strokeWidth: 5
-            strokeColor: objColor
+            strokeColor: "black"
             fillColor: objColor
             startX: end.midPoint.x+15*Math.cos(p.angle); startY: end.midPoint.y+15*Math.sin(p.angle)
             PathLine { x: end.midPoint.x+p.d*Math.cos(p.angle+Math.PI/12); y: end.midPoint.y+p.d*Math.sin(p.angle+Math.PI/12)}

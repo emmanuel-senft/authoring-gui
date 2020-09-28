@@ -59,6 +59,7 @@ Item {
             antialiasing: true
             z:-1
             property var path: []
+            opacity: .5
             onPaint: {
                 var ctx = canvas.getContext('2d');
                 ctx.reset();
@@ -68,7 +69,7 @@ Item {
                 ctx.lineWidth = 5;
 
                 ctx.strokeStyle = rect.objColor;
-                ctx.fillStyle = "#45FFFFff"
+                ctx.fillStyle = "#ffFFFFff"
                 ctx.beginPath();
 
                 ctx.moveTo(p0.x+p0.width/2, p0.y+p0.width/2);
@@ -124,7 +125,7 @@ Item {
     FreePoint{
         id: movePoint
         opacity: .8
-        z:10
+        z:50
         visible: overlay.target === "object"
         Component.onCompleted: {
             //radius = (p2Coord.x-p0Coord.x)/4
@@ -153,12 +154,13 @@ Item {
         onDisplayAngleChanged: {
             updateArea()
         }
-        RectangleOverlay{
-            id: overlay
-            anchors.fill:parent
-            action: rect.action
-            target: rect.target
-        }
+    }
+    RectangleOverlay{
+        id: overlay
+        z:20
+        anchors.fill:boundingArea
+        action: rect.action
+        target: rect.target
     }
     function updateAction(){
         timerUpdateActions.restart()
@@ -287,7 +289,12 @@ Item {
             test = test || (overlay.getActionsSelected()[0] === "Pull" && listPoints[i].origin.pulled)
             test = test || (overlay.getActionsSelected()[0] === "Push" && !listPoints[i].pulled)
             if(test){
-                listPoints[i].destroy()
+                try{
+                    listPoints[i].destroy()
+                }
+                catch(err) {
+                  console.log(err.message)
+                }
                 listPoints.splice(i,1)
             }
             else{
@@ -307,6 +314,7 @@ Item {
                 listPoints.push(anchor)
             }
         }
+        /*
         for(var i=0; i<movedPois.children.length; i++){
             var poi = movedPois.children[i]
             if (inHull(poi) && poi.type === type && ! currentPois.includes(poi.name)){
@@ -315,6 +323,7 @@ Item {
                 listPoints.push(anchor)
             }
         }
+        */
         //timerUpdateActions.start()
     }
 
@@ -352,6 +361,7 @@ Item {
         if(currentItem){
             timerHint.restart()
             drawings.opacity=.5
+            canvas.opacity=.5
             if(figures.currentItem !== null && figures.currentItem !== rect)
                 figures.currentItem.selected(false)
             figures.currentItem = rect
@@ -361,6 +371,7 @@ Item {
         else{
             timerHint.stop()
             drawings.opacity=.2
+            canvas.opacity=.8
             overlay.additionalVisible = false
             paint()
         }
@@ -552,7 +563,12 @@ Item {
     function init(names){
         var i = listPoints.length
         while(i--){
-            listPoints[i].destroy()
+            try{
+                listPoints[i].destroy()
+            }
+            catch(err) {
+              console.log(err.message)
+            }
             listPoints.splice(i,1)
         }
         var type =""
@@ -582,12 +598,13 @@ Item {
                continue
           if (typeof listPoints[i].origin === "undefined" || listPoints[i-1].origin === null){
               try{
-                listPoints[i-1].destroy()
+                 listPoints[i-1].destroy()
               }
               catch(err) {
                ;
               }
               listPoints.splice(i-1,1)
+
           }
         }
     }

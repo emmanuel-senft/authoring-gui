@@ -55,6 +55,10 @@ Item{
             }
             onPositionChanged: {
                 angle=Math.atan2(mid.y-left.y,mid.x-left.x)
+                if (angle > Math.PI/2)
+                    angle = Math.PI/2
+                if (angle < -Math.PI/2)
+                    angle = -Math.PI/2
                 updatePos()
             }
         }
@@ -96,6 +100,10 @@ Item{
             }
             onPositionChanged: {
                 angle=Math.atan2(right.y-mid.y,right.x-mid.x)
+                if (angle > Math.PI/2)
+                    angle = Math.PI/2
+                if (angle < -Math.PI/2)
+                    angle = -Math.PI/2
                 updatePos()
             }
         }

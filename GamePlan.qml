@@ -14,7 +14,8 @@ Item {
         anchors.topMargin: width/2
         color: "#ffc27a"
         onClicked:{
-            actionTracker.visible = !actionTracker.visible
+            if(actionTracker.height !== 0)
+                actionTracker.visible = !actionTracker.visible
         }
     }
 
@@ -84,6 +85,7 @@ Item {
         anchors.topMargin: -height*3/10
         //anchors.horizontalCenterOffset: -parent.width/4
         name: "play"
+        enabled: !(warningReach.visible || warningDepth.visible)
         onClicked:{
             gamePlan.sendCommand("exec");
             globalStates.state = "execution"

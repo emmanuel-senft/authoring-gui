@@ -50,12 +50,12 @@ Item{
             snapRect.visible = false
             snappedPoi=origin
             doSnap(origin)
-            movedPois.removePoi(origin.type, origin.index, objColor)
+            //movedPois.removePoi(origin.type, origin.index, objColor)
         }
     }
     Component.onDestruction: {
-        if(origin !== null)
-            movedPois.removePoi(origin.type, origin.index, objColor)
+        //if(origin !== null)
+            //movedPois.removePoi(origin.type, origin.index, objColor)
     }
     Component.onCompleted: {
         snappedPoi = origin
@@ -64,6 +64,7 @@ Item{
     MouseArea {
         id:mouseArea
         anchors.fill: dragPoint
+        enabled: false
         drag.target: parent
         drag.axis: Drag.XAndYAxis
         onPressed: {
@@ -92,8 +93,8 @@ Item{
         radius: width/2
         x:snapPoint.x-width/2
         y:snapPoint.y-height/2
-        z:10
-        opacity: 1
+        z:-11
+        opacity: .8
         visible: false
     }
     /*
@@ -139,6 +140,25 @@ Item{
             startX: startPoint.x; startY: startPoint.y
             PathLine { x: dragPoint.x+dragPoint.width/2; y: dragPoint.y+dragPoint.height/2}
         }
+     }
+     Shape{
+         id: p
+         anchors.fill: parent
+         z: -10
+         visible: ((startPoint.x - endX)**2 + (startPoint.y - endY)**2) > d**2
+         property var endX: dragPoint.x+dragPoint.width/2
+         property var endY: dragPoint.y+dragPoint.height/2
+         property var angle: Math.atan2(startPoint.y-endY,startPoint.x-endX)
+         property var d: 40
+         ShapePath {
+            strokeWidth: 5
+            strokeColor: "black"
+            fillColor: objColor
+            startX: p.endX+20*Math.cos(p.angle); startY: p.endY+20*Math.sin(p.angle)
+            PathLine { x: p.endX+p.d*Math.cos(p.angle+Math.PI/12); y: p.endY+p.d*Math.sin(p.angle+Math.PI/12)}
+            PathLine { x: p.endX+p.d*Math.cos(p.angle-Math.PI/12); y: p.endY+p.d*Math.sin(p.angle-Math.PI/12)}
+            PathLine { x: p.endX+15*Math.cos(p.angle); y: p.endY+15*Math.sin(p.angle)}
+        }
     }
 
     onXChanged: {
@@ -181,13 +201,13 @@ Item{
         if(dMin === rMax*rMax){
             snapRect.visible = false
             snappedPoi=null
-            movedPois.removePoi(origin.type, origin.index,objColor)
+            //movedPois.removePoi(origin.type, origin.index,objColor)
         }
         else{
             if(tempSnap !== snappedPoi){
                 snappedPoi = tempSnap
             }
-            movedPois.updatePoi(origin.type, origin.index,snappedPoi.x,snappedPoi.y,objColor)
+            //movedPois.updatePoi(origin.type, origin.index,snappedPoi.x,snappedPoi.y,objColor)
         }
     }
     function doSnap(){
@@ -211,8 +231,13 @@ Item{
     onOriginChanged:{
         updateParam()
         if(origin === null){
-            movedPois.removePoi(type, index, objColor)
-            anchor.destroy()
+            //movedPois.removePoi(type, index, objColor)
+            try{
+                anchor.destroy()
+            }
+            catch(err) {
+              console.log(err.message)
+            }
            return
         }
     }
@@ -226,8 +251,7 @@ Item{
             a.name = action[i]
             if(a.name.includes("Move")){
                 if (origin.name === snappedPoi.name){
-                    time = -1
-                    return []
+                    continue //time = -1
                 }
                 target = origin.name +"-"+snappedPoi.name
                 a.img1 = origin.name
