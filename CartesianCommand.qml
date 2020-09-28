@@ -7,6 +7,7 @@ Rectangle{
     property var unit: parameterType === "distance" ? (window.unit) : "deg"
     property var label: "x:"
     property bool edited: false
+    property bool error: false
     property var text: input.text
     anchors.horizontalCenter: parent.horizontalCenter
     width: parent.width*9/10
@@ -34,7 +35,7 @@ Rectangle{
         }
         Rectangle{
             id:back
-            color: edited ? "steelblue":"white"
+            color: edited ? "steelblue":(error ?"red":"white")
             width: parent.width/2
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
@@ -61,18 +62,26 @@ Rectangle{
                         return
                     }
                     warningNumber.visible = false
-                    if(unit === "m" && (val > .65 || val < -.65)){
+                    if(parameterType === "distance" && (val > .65 || val < -.65)){
                         warningReach.visible = true
                         edited = false
+                        error = true
+                        return
+                    }
+                    if(parameterType === "angle" && (val > 90 || val < -90)){
+                        warningReach.visible = true
+                        edited = false
+                        error = true
                         return
                     }
                     if(label === "x:"){
                         var test = val < .05
                         test = test || ((val**2+pandaPose.y**2+pandaPose.z**2) > .65)
-                        test = test || ((val**2+pandaPose.y**2) < .084)
+                        test = test || ((val**2+pandaPose.y**2) < .08)
                         if(test){
                             warningReach.visible = true
                             edited = false
+                            error = true
                             return
                         }
                     }
@@ -83,6 +92,7 @@ Rectangle{
                         if(test){
                             warningReach.visible = true
                             edited = false
+                            error = true
                             return
                         }
                     }
@@ -92,6 +102,7 @@ Rectangle{
                         if(test){
                             warningReach.visible = true
                             edited = false
+                            error = true
                             return
                         }
                     }
@@ -99,9 +110,11 @@ Rectangle{
                         if(val > 20){
                             warningReach.visible = true
                             edited = false
+                            error = true
                             return
                         }
                     }
+                    error = false
                     warningReach.visible = false
                 }
                 onFocusChanged: {
@@ -110,6 +123,7 @@ Rectangle{
                     }
                     else{
                         warningReach.visible = false
+                        error = false
                     }
                 }
                 onTextEdited: {
@@ -118,7 +132,7 @@ Rectangle{
                 }
                 onAccepted: {
                     update_pose()
-                    if (((pandaPose.x**2+pandaPose.y**2+pandaPose.z**2) < .65) && ((pandaPose.x**2+pandaPose.y**2) > .084) && (pandaPose.z >= .039) && (pandaRot.y <= 20)){
+                    if (((pandaPose.x**2+pandaPose.y**2+pandaPose.z**2) < .65) && ((pandaPose.x**2+pandaPose.y**2) > .08) && (pandaPose.z >= .039) && (pandaRot.y <= 20) && (pandaPose.y <= .25)){
                         send_pose()
                     }
                     else{

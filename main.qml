@@ -94,6 +94,18 @@ Window {
         color: "red"
         visible: false
     }
+    Rectangle{
+        id: backWarningReach
+        anchors.verticalCenter: warningReach.verticalCenter
+        anchors.horizontalCenter: warningReach.horizontalCenter
+        width: 1.1 * warningReach.width
+        height: 1.2 * warningReach.height
+        color: "gainsboro"
+        radius: height/4
+        border.color: "steelblue"
+        visible: warningReach.visible
+        opacity: .8
+    }
     Label{
         id: warningReach
         anchors.horizontalCenter: parent.horizontalCenter
@@ -104,7 +116,6 @@ Window {
         color: "red"
         visible: false
     }
-
 
     Item{
         id:cartesianPanel
