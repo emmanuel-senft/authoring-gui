@@ -258,6 +258,13 @@ MouseArea{
     onVisibleChanged: {
         if(!visible)
             hideParam()
+        else{
+            for(var i=0; i < actionList.children.length; i++ ){
+                var item = actionList.children[i]
+                if(item !== actionButton)
+                    hideParam()
+            }
+        }
     }
 
     Timer{

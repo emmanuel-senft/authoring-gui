@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Window 2.2
 import QtGraphicalEffects 1.0
 import QtQuick.Controls 2.15
+import QtQuick.Shapes 1.15
 
 
 import Ros 1.0
@@ -92,7 +93,12 @@ Window {
                 }
                 function clearPoi(){
                     for(var i =0;i<pois.children.length;i++){
-                        pois.children[i].destroy()
+                        try{
+                            pois.children[i].destroy()
+                        }
+                        catch(err){
+                            ;
+                        }
                     }
                 }
                 onCmdChanged: {timerPoi.start()}
@@ -105,8 +111,6 @@ Window {
                     //clearPoi()
                     if(map.paintedWidth < 1000)
                         return
-
-                    console.log(pois.children.length)
 
                     for(var i =0;i<pois.children.length;i++){
                         pois.children[i].enabled = false
@@ -175,14 +179,35 @@ Window {
                 visible: false
                 z:2
                 Rectangle{
+                    id: circle
                     width: parent.width
                     height: width
                     radius: width/2
                     color:  "transparent"
                     border.color: "green"
-                    border.width: width/10
+                    border.width: width/15
                     x:-width/2
                     y:-height/2
+                }
+                Shape {
+                    id:cross
+                    anchors.horizontalCenter: circle.horizontalCenter
+                    anchors.verticalCenter: circle.verticalCenter
+                    width: 1.2 * circle.width
+                    height: 1.2 * circle.height
+                    z: -1
+                    ShapePath {
+                        strokeWidth: circle.border.width
+                        strokeColor: "green"
+                        startX: 0; startY: cross.height/2
+                        PathLine { x: cross.width; y: cross.height/2}
+                    }
+                    ShapePath {
+                        strokeWidth: circle.border.width
+                        strokeColor: "green"
+                        startX: cross.width/2; startY: 0
+                        PathLine { x: cross.width/2; y: cross.height}
+                    }
                 }
                 function getCoord(){
                     var scaleX = map.sourceSize.width / map.paintedWidth
@@ -213,6 +238,18 @@ Window {
         }
     }
 
+    Rectangle{
+        id: backWarningDepth
+        anchors.verticalCenter: warningDepth.verticalCenter
+        anchors.horizontalCenter: warningDepth.horizontalCenter
+        width: 1.1 * warningDepth.width
+        height: 1.2 * warningDepth.height
+        color: "gainsboro"
+        radius: height/4
+        border.color: "steelblue"
+        visible: warningDepth.visible
+        opacity: .8
+    }
     Label{
         id: warningDepth
         anchors.horizontalCenter: parent.horizontalCenter
@@ -222,6 +259,18 @@ Window {
         font.pixelSize: 50
         color: "red"
         visible: false
+    }
+    Rectangle{
+        id: backWarningReach
+        anchors.verticalCenter: warningReach.verticalCenter
+        anchors.horizontalCenter: warningReach.horizontalCenter
+        width: 1.1 * warningReach.width
+        height: 1.2 * warningReach.height
+        color: "gainsboro"
+        radius: height/4
+        border.color: "steelblue"
+        visible: warningReach.visible
+        opacity: .8
     }
     Label{
         id: warningReach
@@ -327,7 +376,6 @@ Window {
                 parameterType: "Distance"
                 onClicked: {
                     if(mouse.button & Qt.LeftButton){
-                        console.log(value*25.4)
                         commandPublisher.text = "direct;Go:"+parseInt(value*25.4)+",0,0"
                     }
                 }
@@ -406,8 +454,10 @@ Window {
                 }
             }
             ActionButton{
+                id:pick
                 text: "Pick up"
                 usableItem: ["screw"]
+                enabled: ! grasped
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
                         commandPublisher.text = "direct;Pick:"+selected.name
@@ -416,14 +466,17 @@ Window {
             ActionButton{
                 text: "Tighten"
                 usableItem: ["screw"]
+                enabled: ! grasped
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
                         commandPublisher.text = "direct;Screw:"+selected.name
                 }
             }
             ActionButton{
+                id:loosen
                 text: "Loosen"
                 usableItem: ["screw"]
+                enabled: ! grasped
                 onClicked: {
                     if(mouse.button & Qt.LeftButton)
                         commandPublisher.text = "direct;Unscrew:"+selected.name
@@ -438,6 +491,20 @@ Window {
                 }
             }
         }
+
+        Label{
+            id: warningFinger
+            anchors.horizontalCenter: actionPanel.horizontalCenter
+            anchors.verticalCenter: actionPanel.verticalCenter
+            //anchors.topMargin: -2*height
+            text: "Open the robot fingers \n to interact with screws"
+            horizontalAlignment: Text.AlignHCenter
+
+            font.pixelSize: 30
+            color: "red"
+            visible: (!pick.enabled && pick.visible)
+        }
+
         GuiButton{
             id: cancel
             anchors.bottom: parent.bottom
@@ -481,6 +548,7 @@ Window {
             State {name: "execution"; PropertyChanges { target: actionPanel; visible: false}}
     ]
         onStateChanged: {
+            console.log("Changed state")
             switch (globalStates.state){
             case "execution":
                 target.visible = false
@@ -508,6 +576,8 @@ Window {
         text:""
         onTextChanged:{
             var cmd = text.split(";")
+            if(cmd[0]!== "poi" && cmd[0]!="panda_pose")
+            console.log(text)
             if(text === "bad_depth"){
                 warningDepth.visible = true
                 warningReach.visible = false
@@ -573,9 +643,9 @@ Window {
 
     Timer{
         id: testTarget
-        interval: 500
+        interval: 900
         onTriggered: {
-            if(target.visible)
+            if(target.visible && selected === "none")
                 commandPublisher.text = "direct;test:"+target.getCoord()
         }
     }
