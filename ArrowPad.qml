@@ -54,13 +54,13 @@ Item{
         x*=scaleX
         y*=scaleY
         if(type === "translation"){
-            commandPublisher.text = "mouse;"+x+":"+y+":0:0:0:0"
+            pubCommand("mouse;"+x+":"+y+":0:0:0:0")
         }
         if(type === "rotation"){
-            commandPublisher.text = "mouse;0:0:0:"+y+":"+x+":0"
+            pubCommand("mouse;0:0:0:"+y+":"+x+":0")
         }
         if(type === "other"){
-            commandPublisher.text = "mouse;0:0:"+x+":0:0:"+y
+            pubCommand("mouse;0:0:"+x+":0:0:"+y)
         }
     }
 
@@ -77,10 +77,10 @@ Item{
         name: "center"
         onClicked: {
             if(type === "rotation"){
-                commandPublisher.text = "center;x,y"
+                pubCommand("center;x,y")
             }
             if(type === "other"){
-                commandPublisher.text = "center;z"
+                pubCommand("center;z")
             }
         }
     }

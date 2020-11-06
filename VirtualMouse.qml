@@ -117,9 +117,9 @@ Item{
                     dragPoint.y=0
                     moving = true
                     if(!angle)
-                        commandPublisher.text = "mouse;"+parseInt(dragPoint.relativeX)+":"+parseInt(dragPoint.relativeY)+":0:0"
+                        pubCommand("mouse;"+parseInt(dragPoint.relativeX)+":"+parseInt(dragPoint.relativeY)+":0:0")
                     else
-                        commandPublisher.text = "mouse;0:0:"+parseInt(dragPoint.relativeX)+":"+parseInt(dragPoint.relativeY)
+                        pubCommand("mouse;0:0:"+parseInt(dragPoint.relativeX)+":"+parseInt(dragPoint.relativeY))
                 }
                 onPressed: {
                     timerUpdate.restart()
@@ -131,9 +131,9 @@ Item{
                     repeat: true
                     onTriggered: {
                         if(!angle)
-                            commandPublisher.text = "mouse;"+parseInt(dragPoint.relativeX)+":"+parseInt(dragPoint.relativeY)+":0:0"
+                            pubCommand("mouse;"+parseInt(dragPoint.relativeX)+":"+parseInt(dragPoint.relativeY)+":0:0")
                         else
-                            commandPublisher.text = "mouse;0:0:"+parseInt(dragPoint.relativeX)+":"+parseInt(dragPoint.relativeY)
+                            pubCommand("mouse;0:0:"+parseInt(dragPoint.relativeX)+":"+parseInt(dragPoint.relativeY))
                     }
                 }
             }

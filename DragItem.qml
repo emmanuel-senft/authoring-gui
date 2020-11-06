@@ -77,7 +77,7 @@ Item {
     }
 
     Component.onDestruction: {
-        commandPublisher.text="remove;"+name+":"+parseInt(index)
+        pubCommand("remove;"+name+":"+parseInt(index))
         indexes.splice(indexes.indexOf(index), 1);
         timerUpdateActions.restart()
     }

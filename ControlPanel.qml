@@ -42,7 +42,7 @@ Item{
         name: 'Grasp'
         color: "steelblue"
         onClicked: {
-            commandPublisher.text = "direct;"+name
+            pubCommand("direct;"+name)
         }
     }
     GuiButton{
@@ -54,7 +54,7 @@ Item{
         name: 'Release'
         color: "steelblue"
         onClicked: {
-            commandPublisher.text = "direct;"+name
+            pubCommand("direct;"+name)
         }
     }
 
@@ -67,7 +67,7 @@ Item{
         z:10
         name: "reset"
         onClicked:{
-            commandPublisher.text = "reset_position"
+            pubCommand("reset_position")
         }
         visible: globalStates.state === "command"
     }
@@ -80,7 +80,7 @@ Item{
         name: "stop"
         color: "red"
         onClicked:{
-            commandPublisher.text = "stop"
+            pubCommand("stop")
             globalStates.state = "command"
         }
         visible: globalStates.state === "execution"

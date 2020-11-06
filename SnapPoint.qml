@@ -17,6 +17,8 @@ Item{
     property var doneSim: []
     property var action: container.action
     property var time: null
+    //Scaling for variable display
+    property var k: map.width/2500
     z:30
     opacity: .5
 
@@ -25,7 +27,7 @@ Item{
         id: dragPoint
         x:-width/2
         y:-height/2
-        width: mouseArea.enabled ? 50 : 25
+        width: mouseArea.enabled ? 50*k : 25*k
         height: width
         radius: width/2
         color: "red"
@@ -88,7 +90,7 @@ Item{
     Rectangle{
         id: snapRect
         color: objColor
-        width: 35
+        width: 35*k
         height: width
         radius: width/2
         x:snapPoint.x-width/2
@@ -119,7 +121,7 @@ Item{
     Rectangle{
         id: startRect
         color: "black"
-        width: 10
+        width: 10*k
         height: width
         radius: width/2
         x:startPoint.x-width/2
@@ -133,7 +135,7 @@ Item{
         anchors.fill: parent
         z: -10
         ShapePath {
-            strokeWidth: 5
+            strokeWidth: 5*k
             strokeColor: objColor
             strokeStyle: ShapePath.DashLine
             dashPattern: [ 1, 3 ]
@@ -149,15 +151,15 @@ Item{
          property var endX: dragPoint.x+dragPoint.width/2
          property var endY: dragPoint.y+dragPoint.height/2
          property var angle: Math.atan2(startPoint.y-endY,startPoint.x-endX)
-         property var d: 40
+         property var d: 40*k
          ShapePath {
-            strokeWidth: 5
+            strokeWidth: 5*k
             strokeColor: "black"
             fillColor: objColor
-            startX: p.endX+20*Math.cos(p.angle); startY: p.endY+20*Math.sin(p.angle)
+            startX: p.endX+20*k*Math.cos(p.angle); startY: p.endY+20*k*Math.sin(p.angle)
             PathLine { x: p.endX+p.d*Math.cos(p.angle+Math.PI/12); y: p.endY+p.d*Math.sin(p.angle+Math.PI/12)}
             PathLine { x: p.endX+p.d*Math.cos(p.angle-Math.PI/12); y: p.endY+p.d*Math.sin(p.angle-Math.PI/12)}
-            PathLine { x: p.endX+15*Math.cos(p.angle); y: p.endY+15*Math.sin(p.angle)}
+            PathLine { x: p.endX+15*k*Math.cos(p.angle); y: p.endY+15*k*Math.sin(p.angle)}
         }
     }
 
@@ -173,8 +175,8 @@ Item{
     }
 
     function getCoord(){
-        var imx = x /map.paintedWidth * map.sourceSize.width;
-        var imy = y /map.paintedHeight * map.sourceSize.height;
+        var imx = x/pixScale // /map.paintedWidth * map.sourceSize.width;
+        var imy = y/pixScale + map.offset //  /map.paintedHeight * map.sourceSize.height;
         return parseInt(imx)+','+parseInt(imy)
     }
     function checkSnap(){

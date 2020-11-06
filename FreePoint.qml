@@ -49,8 +49,6 @@ Item{
         }
     }
     function getTarget(){
-        var scaleX = map.sourceSize.width / map.paintedWidth
-        var scaleY = map.sourceSize.height / map.paintedHeight
         return start.getCoord()+'_'+end.getCoord()
     }
 

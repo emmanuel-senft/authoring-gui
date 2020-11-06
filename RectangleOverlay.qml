@@ -103,7 +103,7 @@ Item{
         visible:overlay.additionalVisible
         anchors.top: overlay.top
         anchors.left:overlay.right
-        anchors.leftMargin: 25
+        anchors.leftMargin: 25*k
         property int objectLength: objectsColumn.objectLength
         z:240
         ColumnLayout {
@@ -214,25 +214,25 @@ Item{
     CheckBox {
     id: inspect
     anchors.top: overlay.bottom
-    anchors.topMargin: 25
+    anchors.topMargin: 25*k
     anchors.left:overlay.left
     checked: false
     //visible:objects.visible
     visible: false
     indicator: Rectangle {
-        implicitWidth: 26
-        implicitHeight: 26
+        implicitWidth: 26*k
+        implicitHeight: 26*k
         x: inspect.leftPadding
         y: parent.height / 2 - height / 2
-        radius: 3
+        radius: 3*k
         border.color: inspect.down ? "#696969" : "black"
 
         Rectangle {
-            width: 14
-            height: 14
-            x: 6
-            y: 6
-            radius: 2
+            width: 14*k
+            height: 14*k
+            x: 6*k
+            y: 6*k
+            radius: 2*k
             color: inspect.down ? "#696969" : "black"
             visible: inspect.checked
         }
@@ -241,7 +241,7 @@ Item{
 
         text: "Inspect"
         font.family: "Helvetica"
-        font.pointSize: 15
+        font.pointSize: 15*k
         font.bold: true
         style: Text.Outline
         styleColor: "black"
@@ -256,10 +256,10 @@ Item{
         id: actionDisplay
         text:action+" "+target
         anchors.bottom: overlay.top
-        anchors.bottomMargin: 25
+        anchors.bottomMargin: 25*k
         anchors.left: overlay.left
         font.bold: true
-        font.pixelSize: 30
+        font.pointSize: 15*k
         style: Text.Outline
         styleColor: "black"
         color: "white"
@@ -268,13 +268,13 @@ Item{
     Rectangle {
         id: backTitle
         anchors.top: actionDisplay.top
-        anchors.topMargin: -10
+        anchors.topMargin: -10*k
         anchors.bottom: actionDisplay.bottom
-        anchors.bottomMargin: -10
+        anchors.bottomMargin: -10*k
         anchors.right:actionDisplay.right
-        anchors.rightMargin: -10
+        anchors.rightMargin: -10*k
         anchors.left: actionDisplay.left
-        anchors.leftMargin: -10
+        anchors.leftMargin: -10*k
         color: "grey"
         z:2
         opacity: .5
@@ -290,14 +290,14 @@ Item{
         wrapMode: Text.WordWrap
         text: tips[toolTipIndex]
         anchors.top: overlay.bottom
-        anchors.topMargin: 25
+        anchors.topMargin: 25*k
         anchors.left: overlay.left
         anchors.right: overlay.right
-        anchors.rightMargin: 10
+        anchors.rightMargin: 10*k
         color: "white"
         verticalAlignment: Text.AlignVCenter
         font.family: "Helvetica"
-        font.pointSize: 17
+        font.pointSize: 17*k
         font.bold: true
         style: Text.Outline
         styleColor: "black"
@@ -308,13 +308,13 @@ Item{
         visible: additionalVisible && toolTipVisible
         text: toolTipIndex.toString()+"/"+(tips.length-1).toString()
         anchors.bottom: backToolTip.bottom
-        anchors.bottomMargin: 5
+        anchors.bottomMargin: 5*k
         anchors.right: backToolTip.right
-        anchors.rightMargin: 5
+        anchors.rightMargin: 5*k
         color: "white"
         verticalAlignment: Text.AlignVCenter
         font.family: "Helvetica"
-        font.pointSize: 17
+        font.pointSize: 17*k
         font.bold: true
         style: Text.Outline
         styleColor: "black"
@@ -324,12 +324,12 @@ Item{
         id: backToolTip
         visible: toolTip.visible
         anchors.top: toolTip.top
-        anchors.topMargin: -10
+        anchors.topMargin: -10*k
         anchors.bottom: toolTip.bottom
-        anchors.bottomMargin: -25
+        anchors.bottomMargin: -25*k
         anchors.right:overlay.right
         anchors.left: toolTip.left
-        anchors.leftMargin: -10
+        anchors.leftMargin: -10*k
         color: "grey"
         z:2
         opacity: .5
@@ -344,7 +344,7 @@ Item{
         anchors.top: overlay.top
         anchors.right:overlay.left
         anchors.rightMargin: width/10
-        width: 150
+        width: 150*k
         property int actionLength: 0
         z:3
         GuiCheckBox {
@@ -397,9 +397,9 @@ Item{
         id: backActions
         anchors.top: overlay.top
         anchors.right:actions.right
-        anchors.rightMargin: -10
+        anchors.rightMargin: -10*k
         anchors.left: actions.left
-        anchors.leftMargin: -10
+        anchors.leftMargin: -10*k
         height: loosen.height * 1.1 * actions.actionLength
         color: "grey"
         z:2
@@ -413,9 +413,9 @@ Item{
         id: backObjects
         anchors.top: overlay.top
         anchors.right:objects.right
-        anchors.rightMargin: -10
+        anchors.rightMargin: -10*k
         anchors.left: objects.left
-        anchors.leftMargin: -10
+        anchors.leftMargin: -10*k
         height: loosen.height * 1.1 * objects.objectLength
         color: "grey"
         z:2

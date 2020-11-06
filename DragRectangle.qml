@@ -23,6 +23,7 @@ Item {
     property var p3Coord: null
     property bool c: false
     property var listPoints: []
+    property var k: map.width/2500
 
     MouseArea{
         id: mouseArea

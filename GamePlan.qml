@@ -37,7 +37,7 @@ Item {
             x:parent.width/20
             y:x/3
             font.pixelSize: map.width/50
-            height: map.height/30
+            height: map.width/50
             text: "Game plan"
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignLeft
@@ -56,7 +56,7 @@ Item {
             y: title.height*1.2
             anchors.horizontalCenter: parent.horizontalCenter
             width:.9*parent.width
-            property var rowHeight: map.height/30
+            property var rowHeight: map.width/40
             color: "transparent"
 
 
@@ -102,7 +102,7 @@ Item {
         name: "pause"
         color: "orange"
         onClicked:{
-            commandPublisher.text = name
+            pubCommand(name)
             if(name === "pause"){
                 name = "play"
                 color = "yellowgreen"
@@ -226,6 +226,6 @@ Item {
             }
         }
         str+=";Reset"
-        commandPublisher.text=str
+        pubCommand(str)
     }
 }

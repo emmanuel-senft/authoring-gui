@@ -10,7 +10,7 @@ Item{
     x: center.x
     y: center.y
     z:30
-    property var rectWidth: 35
+    property var rectWidth: map.width/70
     signal updated()
 
     Rectangle{
@@ -44,8 +44,8 @@ Item{
         released = false
     }
     function getCoord(){
-        var imx = x /map.paintedWidth * map.sourceSize.width;
-        var imy = y /map.paintedHeight * map.sourceSize.height;
+        var imx = x / pixScale // /map.paintedWidth * map.sourceSize.width;
+        var imy = y / pixScale+map.offset // /map.paintedHeight * map.sourceSize.height;
         return parseInt(imx)+','+parseInt(imy)
     }
     function angle(p0,p1){

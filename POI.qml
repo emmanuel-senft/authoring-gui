@@ -10,7 +10,7 @@ Item{
     property bool enabled: true
     property bool pulled: false
     visible: enabled
-    width: type === "box" ? map.width/40 : (type === "screw" ? 30:10)
+    width: type === "box" ? map.width/40 : (type === "screw" ? map.width/80:map.width/180)
 
     Rectangle{
         x:-width/2

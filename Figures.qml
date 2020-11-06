@@ -122,8 +122,8 @@ Item{
 
 
     function getImagePosition(x,y){
-        var imx = x/map.paintedWidth * map.sourceSize.width;
-        var imy = y/map.paintedHeight * map.sourceSize.height;
+        var imx = x / pixScale // /map.paintedWidth * map.sourceSize.width;
+        var imy = y / pixScale + map.offset // /map.paintedHeight * map.sourceSize.height;
         return Qt.point(imx,imy)
     }
     function getIndexes(name){

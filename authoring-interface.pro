@@ -1,10 +1,9 @@
 TEMPLATE = app
 
-QT += qml quick
-CONFIG += c++11  link_pkgconfig
-PKGCONFIG += roscpp
+QT += qml quick websockets
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    imagepainter.cpp
 
 RESOURCES += qml.qrc
 
@@ -18,7 +17,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    fileio.hpp
+    fileio.hpp \
+    imagepainter.h
 
 DISTFILES += \
     res/gestures.json

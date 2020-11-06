@@ -4,7 +4,7 @@ import QtQuick.Controls 1.4
 Item {
     id: actionDelegate
     width: map.width/4
-    height: map.height/20
+    height: map.width/20
 
     Rectangle {
         id: dragRect
@@ -88,7 +88,7 @@ Item {
                 wrapMode: Text.WordWrap
                 font.italic: true
                 verticalAlignment: Text.AlignVCenter
-                font.pixelSize: parent.height/2.5
+                font.pixelSize: parent.height/2
             }
         }
         Rectangle{
