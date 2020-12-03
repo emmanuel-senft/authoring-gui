@@ -12,7 +12,23 @@ Button{
     property var name: "plan"
     property var borderWidth: width/20
     property bool mirror: false
+    property bool hideImage: false
+    text: ""
     style: ButtonStyle {
+
+        label: Text {
+          y: -button.width/25
+          renderType: Text.NativeRendering
+          verticalAlignment: Text.AlignVCenter
+          horizontalAlignment: Text.AlignHCenter
+          font.family: "Helvetica"
+          font.pointSize: button.width/6
+          style: Text.Outline
+          styleColor: "#696969"
+          color: "#696969"
+          text: button.text
+        }
+
         background: Rectangle {
             border.width: button.borderWidth
 
@@ -51,6 +67,7 @@ Button{
             }
             Image{
                id:img
+               visible: ! hideImage
                width: rectIn.width/1.41
                height: rectIn.height/1.41
                source: "/res/"+name+".png"
@@ -69,5 +86,4 @@ Button{
         }
     }
 
-    Component.onCompleted: {text=""}
 }

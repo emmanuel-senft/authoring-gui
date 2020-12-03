@@ -384,6 +384,154 @@ Window {
             visible: globalStates.state === "command"
         }
 
+        GuiButton{
+             id: resetWorldButton
+             anchors.horizontalCenter: hidePoisButton.horizontalCenter
+             anchors.bottom: parent.bottom
+             anchors.bottomMargin: width
+             name: 'world'
+             color: "purple"
+             onClicked: {
+                 pubEvent("reset_world;")
+             }
+        }
+        ListView {
+            anchors.left: resetWorldButton.left
+            anchors.top: hidePoisButton.bottom
+            anchors.topMargin: hidePoisButton.height
+            height: parent.height
+            spacing: resetWorldButton.height*3/2
+
+            model: behaviorList
+            delegate: behaviorDelegate
+        }
+        ListModel {
+            id: behaviorList
+
+            function addBehavior(list){
+                behaviorList.append({"behavior":list})
+            }
+        }
+        Component {
+            id: actionDisplay
+            Item{
+                width: map.width/15; height: map.width/25
+                Rectangle{
+                    anchors.fill: parent
+                    color: "white"
+                    opacity: .5
+                    radius: height/4
+                }
+                Row {
+                    id: imageRow
+                    anchors.centerIn: parent
+                    width: parent.width*.95
+                    height: parent.height
+                    spacing: width/32
+                    Item{
+                        width: parent.width/3.2
+                        height: parent.height
+                        Image{
+                           anchors.fill:parent
+                           source: "/res/"+img1.split("_")[0]+".png"
+                           fillMode: Image.PreserveAspectFit
+                        }
+                        Text{
+                            anchors.fill: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            text: img1.split("_")[1]
+                            color: "white"
+                            font.bold: true
+                            font.pixelSize: parent.width/2
+                        }
+                    }
+                    Item{
+                        width: parent.width/3.2
+                        height: parent.height
+                        Image{
+                           anchors.fill:parent
+                           source: "/res/"+img2+".png"
+                           fillMode: Image.PreserveAspectFit
+                        }
+                        Component.onCompleted: console.log(img2)
+                    }
+                    Item{
+                        width: parent.width/3.2
+                        height: parent.height
+                        Image{
+                           anchors.fill:parent
+                           source: "/res/"+img3.split("_")[0]+".png"
+                           fillMode: Image.PreserveAspectFit
+                        }
+                        Text{
+                            anchors.fill: parent
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            text: img3.split("_")[1]
+                            color: "white"
+                            font.bold: true
+                            font.pixelSize: parent.width/2
+                        }
+                    }
+                }
+            }
+        }
+
+        Component {
+            id: behaviorDelegate
+            Item{
+                property var counter: 0
+                GuiButton{
+                    id: bookButton
+                    x:0
+                    y:0
+                    z:10
+                    text: (counter+1).toString()
+                    color: figures.colors[counter]
+                    name: "bookmark"
+                    onClicked:{
+                        pubCommand("play;behavior_"+counter.toString())
+                        return
+                        var l = behavior.split(";").slice(1).join(";")
+                        print(l)
+                        pubCommand("exec;"+l)
+                    }
+                }
+                ListView {
+                    anchors.left: bookButton.right
+                    anchors.leftMargin: bookButton.width/4
+                    anchors.verticalCenter: bookButton.verticalCenter
+                    width: 8*bookButton.width
+                    height: bookButton.height
+                    orientation: ListView.Horizontal
+                    spacing: anchors.leftMargin
+
+                    model: actionL
+                    delegate: actionDisplay
+                }
+                ListModel {
+                    id: actionL
+                    function addAction(act){
+                        //Need to adapt to different format, reset and other
+                        var img1 = act.split(":")[1].split("-")[0]
+                        var img2 = act.split(":")[0]
+                        var img3 = act.split(":")[1].split("-")[1]
+                        actionL.append({"img1":img1,"img2":img2,"img3":img3})
+                    }
+                }
+                Component.onCompleted: {
+                    var entries = behavior.split(";")
+                    counter = parseInt(entries[0].split("_")[1])
+                    var acts = entries.slice(1,-1)
+                    for(var i=0;i<acts.length;i++){
+                        actionL.addAction(acts[i])
+                    }
+                }
+            }
+        }
+
+
         ControlPanel{
             id: controlPanel
         }
@@ -930,6 +1078,9 @@ Window {
         if (cmd[0] === "fd_takeover"){
             globalStates.state = "force_dimension"
         }
+        if (cmd[0] === "recorded"){
+            behaviorList.addBehavior(cmd.splice(1).join(";"))
+        }
         /*if (cmd[0] === "z_or"){
             // Use commanded theta and add absolute difference, not relative! Use orientation on click?
             var theta = -parseFloat(cmd[1])
@@ -961,6 +1112,39 @@ Window {
         PaletteElement{index:1}
         PaletteElement{index:2}
         PaletteElement{index:3}
+    }
+
+   GuiButton{
+        id: recordButton
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenterOffset: 3.7*parent.width/8
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: width
+        name: 'record'
+        color: "red"
+        onClicked: {
+            if(name === "record"){
+                pubEvent("record;")
+                name = "recording"
+                hidingT.start()
+            }
+            else{
+                pubEvent("stop_record;")
+                name = "record"
+                hidingT.stop()
+                recordButton.hideImage = false
+            }
+        }
+
+        Timer{
+            id: hidingT
+            interval: 500
+            running: false
+            repeat: true
+            onTriggered: {
+                recordButton.hideImage = !recordButton.hideImage
+            }
+        }
     }
 
     TemplateLoader{
