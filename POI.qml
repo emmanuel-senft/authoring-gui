@@ -13,6 +13,7 @@ Item{
     width: type === "box" ? map.width/40 : (type === "screw" ? map.width/80:map.width/180)
 
     Rectangle{
+        id: marker
         x:-width/2
         y:-height/2
         width: parent.width
@@ -21,8 +22,19 @@ Item{
         color: parent.color
         border.color: "black"
         border.width: width/15
+        opacity: .5
     }
-    opacity: .5
+    Text {
+        id: name
+        anchors.fill: marker
+        renderType: Text.NativeRendering
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+        font.family: "Helvetica"
+        font.pointSize: marker.width/2
+        color: "black"
+        text: type === "screw" ? index : ""
+    }
     onPulledChanged: {
         console.log(pulled)
     }
