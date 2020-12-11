@@ -26,6 +26,9 @@ Window {
     property var scaleX: 1 //map.width / map.paintedWidth
     property var scaleY: 1 //map.height / map.paintedHeight
     property var pixScale: map.ratio //map.width / map.paintedWidth
+    property var socketIP: "ws://146.151.105.145:49152"
+    //property var socketIP: "ws://10.134.71.34:49152"
+    //url: "ws://0.0.0.0:49155"
     title: qsTr("Authoring GUI")
 
     MouseArea{
@@ -970,8 +973,7 @@ Window {
     */
     WebSocket {
         id: socket
-        url: "ws://146.151.105.145:49152"
-        //url: "ws://0.0.0.0:49155"
+        url: socketIP
         onTextMessageReceived: {
             if(message.startsWith("event:"))
                 onEvent(message.substring("event:".length))
@@ -1183,7 +1185,6 @@ Window {
                 PropertyChanges { target: gamePlan; visible: false }
             },
             State {name: "simulation"
-                PropertyChanges { target: map; toLoad: virtualCamera}
                 PropertyChanges { target: pois; visible: false }
                 PropertyChanges { target: figures; visible: false}
                 //PropertyChanges { target: drawingarea; enabled: false }

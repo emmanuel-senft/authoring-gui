@@ -9,17 +9,11 @@ ImagePainter::ImagePainter(QQuickItem* parent)
     img = QImage(10,10, QImage::Format_RGB888);
     _parent = parent;
     m_ratio = 1;
-    //m_webSocket.open(QUrl("ws://192.168.0.160:49154"));
-    //connect(&m_webSocket, &QWebSocket::binaryMessageReceived,
-    //        this, &ImagePainter::onBinaryMessageReceived);
-    //connect(&m_webSocket, &QWebSocket::disconnected,
-    //        this, &ImagePainter::onDisconnected);
 }
 
 
 void ImagePainter::paint(QPainter* painter)
 {
-    qDebug("painting");
     img.loadFromData(QByteArray::fromBase64(m_bArray));
     float imgW = img.width();
     float imgH = img.height();
@@ -27,7 +21,6 @@ void ImagePainter::paint(QPainter* painter)
     float pW = width();
     float pH = height();
 
-    qDebug()<<pW;
     float r = pW/pH;
     float h = imgW/r;
     setRatio(pW/imgW);
