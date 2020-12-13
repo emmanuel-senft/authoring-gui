@@ -18,7 +18,7 @@ Window {
     property var pandaZ: .56
     property var scaleX: map.sourceSize.width / map.paintedWidth
     property var scaleY:map.sourceSize.height / map.paintedHeight
-    property bool simu: false
+    property bool simu: true
     property double pandaRZ: 0
 
     Item {
