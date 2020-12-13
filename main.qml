@@ -14,7 +14,7 @@ Window {
     title: qsTr("Cartesian GUI")
     property var selected: ""
     property bool grasped: false
-    property bool simu: false
+    property bool simu: true
     property var pandaPose: Qt.vector3d(.36,0,.56)
     property var pandaRot: Qt.vector3d(.0,0,.0)
     property var unit: "m"
