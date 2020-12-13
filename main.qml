@@ -14,7 +14,7 @@ Window {
     //visibility: Window.FullScreen
     width: 2736
     height: 1824
-    property bool simu: false
+    property bool simu: true
     property int prevWidth:800
     property int prevHeight:600
     property var initTime: 0
