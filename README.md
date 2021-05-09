@@ -1,12 +1,13 @@
-Task-Level Authoring for Robot Teleoperation
+Task-Level Authoring for Remote Robot Teleoperation
 ============================================
 Authoring GUI
 -------------
 
+This work is part of the code for the implementation of the system presented in the paper *Task-Level Authoring for Remote Robot Teleoperation*. It is designed to be used with the
+[Authoring Interface](https://github.com/emmanuel-senft/authoring-gui/tree/authoring-study), the [Point-and-Click Interface](https://github.com/emmanuel-senft/authoring-gui/tree/point-click) or the [Cartesian interface](https://github.com/emmanuel-senft/authoring-gui/tree/cartesian).
 
-
-*This work is part of the code for the implementation of the system presented in  Task-Level Authoring for Robot Teleoperation. It is designed to be used with the
-[Robot Controller](https://github.com/emmanuel-senft/authoring-ros/tree/study).*
+This work is part of the code for the implementation of the system presented in the paper *Task-Level Authoring for Remote Robot Teleoperation*. It is designed to be used with the
+[Robot Controller](https://github.com/emmanuel-senft/authoring-ros/tree/study).
 
 ![Screenshot of the interface](docs/gui.png)
 
