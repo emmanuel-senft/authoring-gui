@@ -1,11 +1,9 @@
-Task-Level Authoring for Robot Teleoperation
+Task-Level Authoring for Remote Robot Teleoperation
 ============================================
 Cartesian GUI
 -------------
 
-
-
-*This work is part of the code for the implementation of the system presented in  Task-Level Authoring for Robot Teleoperation. It is designed to be used with the
+This work is part of the code for the implementation of the system presented in the paper *Task-Level Authoring for Remote Robot Teleoperation*. It is designed to be used with the
 [Robot Controller](https://github.com/emmanuel-senft/authoring-ros/).*
 
 ![Screenshot of the interface](docs/gui.png)
