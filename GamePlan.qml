@@ -8,14 +8,16 @@ Item {
     GuiButton{
         id: showPlanButton
         z:10
+        name:"trigger"
         visible: true
         anchors.right: actionTracker.right
         anchors.top: parent.top
         anchors.topMargin: width/2
         color: "#ffc27a"
         onClicked:{
-            if(actionTracker.height !== 0)
-                actionTracker.visible = !actionTracker.visible
+            gamePlan.visible = false
+            //if(actionTracker.height !== 0)
+            //    actionTracker.visible = !actionTracker.visible
         }
     }
 
@@ -211,21 +213,21 @@ Item {
         actionList.update()
     }
     function sendCommand(type,actionToInsert=""){
-        var str=type
+        var str=type+";"
         if(actionToInsert !== "")
-            str+=';'+actionToInsert
+            str+=actionToInsert
         for (var i=0;i<actionList.count;i++) {
             var a = actionList.get(i)
             if(!a.done){
                 if(a.name.includes("-")){
-                    str+=";"+a.name.split("-")[0]+":"+actionList.get(i).target
-                    str+=";"+a.name.split("-")[1]+":"+actionList.get(i).target
+                    str+=a.name.split("-")[0]+":"+actionList.get(i).target+","
+                    str+=a.name.split("-")[1]+":"+actionList.get(i).target+","
                 }
                 else
-                    str+=";"+actionList.get(i).name+":"+actionList.get(i).target
+                    str+=actionList.get(i).name+":"+actionList.get(i).target+","
             }
         }
-        str+=";Reset"
+        str+="Reset"
         pubCommand(str)
     }
 }

@@ -12,6 +12,7 @@ class ImagePainter : public QQuickPaintedItem
     Q_PROPERTY(QByteArray bArray READ bArray WRITE setBArray NOTIFY bArrayChanged)
 private:
     QImage img;
+    QImage defaultImg;
     QQuickItem* _parent;
     QString color;
     float m_ratio;

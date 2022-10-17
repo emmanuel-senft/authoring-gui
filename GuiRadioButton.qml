@@ -12,18 +12,17 @@ RadioButton {
     checked: false
 
     indicator: Rectangle {
-        implicitWidth: 26*k
-        implicitHeight: 26*k
+        implicitWidth: 15*k
+        implicitHeight: 15*k
         x: control.leftPadding
         y: parent.height / 2 - height / 2
-        radius: 13*k
+        radius: implicitHeight/2
 
         Rectangle {
-            width: 14*k
-            height: 14*k
-            x: 6*k
-            y: 6*k
-            radius: 7*k
+            width: parent.implicitWidth/2
+            height: width
+            anchors.centerIn: parent
+            radius: width/2
             color: control.down ? "#17a81a" : "black"
             visible: control.checked
         }
@@ -37,7 +36,7 @@ RadioButton {
         leftPadding: control.indicator.width + control.spacing
 
         font.family: "Helvetica"
-        font.pointSize: 12*k
+        font.pixelSize: 16*k
         font.bold: true
         style: Text.Outline
         styleColor: "black"

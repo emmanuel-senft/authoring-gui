@@ -31,7 +31,7 @@ Item{
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         font.family: "Helvetica"
-        font.pointSize: marker.width/2
+        font.pixelSize: marker.width*2/3
         color: "black"
         text: type === "screw" ? index : ""
     }

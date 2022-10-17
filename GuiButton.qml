@@ -22,7 +22,7 @@ Button{
           verticalAlignment: Text.AlignVCenter
           horizontalAlignment: Text.AlignHCenter
           font.family: "Helvetica"
-          font.pointSize: button.width/6
+          font.pixelSize: button.width/2
           style: Text.Outline
           styleColor: "#696969"
           color: "#696969"

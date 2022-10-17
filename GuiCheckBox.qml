@@ -18,8 +18,8 @@ CheckBox {
     checked: false
 
     indicator: Rectangle {
-        implicitWidth: 26*k
-        implicitHeight: 26*k
+        implicitWidth: 15*k
+        implicitHeight: 15*k
         x: control.leftPadding
         y: parent.height / 2 - height / 2
 /*
@@ -40,7 +40,7 @@ CheckBox {
             horizontalAlignment: Text.AlignHCenter
             anchors.fill: parent
             font.family: "Helvetica"
-            font.pointSize: 10*k
+            font.pixelSize: 10*k
             font.bold: false
             style: Text.Outline
             styleColor: color
@@ -54,7 +54,7 @@ CheckBox {
         verticalAlignment: Text.AlignVCenter
         leftPadding: control.indicator.width + control.spacing
         font.family: "Helvetica"
-        font.pointSize: 12*k
+        font.pixelSize: 16*k
         font.bold: true
         style: Text.Outline
         styleColor: "black"

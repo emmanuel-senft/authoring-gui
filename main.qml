@@ -26,8 +26,10 @@ Window {
     property var scaleX: 1 //map.width / map.paintedWidth
     property var scaleY: 1 //map.height / map.paintedHeight
     property var pixScale: map.ratio //map.width / map.paintedWidth
-    property var socketIP: "ws://146.151.105.145:49152"
-    //property var socketIP: "ws://10.134.71.34:49152"
+    //property var socketIP: "ws://146.151.105.145:49152"
+    property var socketIP: "ws://192.168.0.157:49152"
+    //property var socketIP: "ws://192.168.0.158:49152"
+    //property var socketIP: "ws://10.134.71.33:49152"
     //url: "ws://0.0.0.0:49155"
     title: qsTr("Authoring GUI")
 
@@ -201,8 +203,14 @@ Window {
                 anchors.fill: parent
                 property bool active: false
                 onPressed: {
+                    print(triggers.currentTrig)
+                    if(triggerPannel.visible && triggers.currentTrig !== null){
+                        active = false
+                        return
+                    }
+
                     for(var i = 0;i<figures.children.length;i++){
-                        if(figures.children[i].name === "rect" && figures.children[i].inHull(Qt.point(mouseX,mouseY))){
+                        if(figures.children[i].name === "rect" && figures.children[i].inHull(Qt.point(mouseX,mouseY)) && figures.children[i].visible){
                             active = false
                             return
                         }
@@ -239,7 +247,10 @@ Window {
                     }
 
                     selectionArea.visible = false
-                    figures.createRect(selectionArea.x,selectionArea.y,Math.max(100,selectionArea.width),Math.max(selectionArea.height))
+                    if(gamePlan.visible)
+                        figures.createRect(selectionArea.x,selectionArea.y,Math.max(100,selectionArea.width),Math.max(selectionArea.height))
+                    else
+                        triggers.createTrig(selectionArea.x,selectionArea.y,Math.max(100,selectionArea.width),Math.max(selectionArea.height))
                 }
             }
 
@@ -255,6 +266,10 @@ Window {
 
         Figures {
             id:figures
+            z:10
+        }
+        Triggers {
+            id: triggers
             z:10
         }
         /*Item{
@@ -290,6 +305,11 @@ Window {
     }
     GamePlan{
         id: gamePlan
+        visible: false
+    }
+    TriggerPannel{
+        id: triggerPannel
+        visible: ! gamePlan.visible
     }
     Item{
         id:gestureGui
@@ -398,142 +418,10 @@ Window {
                  pubEvent("reset_world;")
              }
         }
-        ListView {
-            anchors.left: resetWorldButton.left
-            anchors.top: hidePoisButton.bottom
-            anchors.topMargin: hidePoisButton.height
-            height: parent.height
-            spacing: resetWorldButton.height*3/2
 
-            model: behaviorList
-            delegate: behaviorDelegate
+        BehaviorDisplay{
+            id: behaviorDisplay
         }
-        ListModel {
-            id: behaviorList
-
-            function addBehavior(list){
-                behaviorList.append({"behavior":list})
-            }
-        }
-        Component {
-            id: actionDisplay
-            Item{
-                width: map.width/15; height: map.width/25
-                Rectangle{
-                    anchors.fill: parent
-                    color: "white"
-                    opacity: .5
-                    radius: height/4
-                }
-                Row {
-                    id: imageRow
-                    anchors.centerIn: parent
-                    width: parent.width*.95
-                    height: parent.height
-                    spacing: width/32
-                    Item{
-                        width: parent.width/3.2
-                        height: parent.height
-                        Image{
-                           anchors.fill:parent
-                           source: "/res/"+img1.split("_")[0]+".png"
-                           fillMode: Image.PreserveAspectFit
-                        }
-                        Text{
-                            anchors.fill: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            text: img1.split("_")[1]
-                            color: "white"
-                            font.bold: true
-                            font.pixelSize: parent.width/2
-                        }
-                    }
-                    Item{
-                        width: parent.width/3.2
-                        height: parent.height
-                        Image{
-                           anchors.fill:parent
-                           source: "/res/"+img2+".png"
-                           fillMode: Image.PreserveAspectFit
-                        }
-                        Component.onCompleted: console.log(img2)
-                    }
-                    Item{
-                        width: parent.width/3.2
-                        height: parent.height
-                        Image{
-                           anchors.fill:parent
-                           source: "/res/"+img3.split("_")[0]+".png"
-                           fillMode: Image.PreserveAspectFit
-                        }
-                        Text{
-                            anchors.fill: parent
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            text: img3.split("_")[1]
-                            color: "white"
-                            font.bold: true
-                            font.pixelSize: parent.width/2
-                        }
-                    }
-                }
-            }
-        }
-
-        Component {
-            id: behaviorDelegate
-            Item{
-                property var counter: 0
-                GuiButton{
-                    id: bookButton
-                    x:0
-                    y:0
-                    z:10
-                    text: (counter+1).toString()
-                    color: figures.colors[counter]
-                    name: "bookmark"
-                    onClicked:{
-                        pubCommand("play;behavior_"+counter.toString())
-                        return
-                        var l = behavior.split(";").slice(1).join(";")
-                        print(l)
-                        pubCommand("exec;"+l)
-                    }
-                }
-                ListView {
-                    anchors.left: bookButton.right
-                    anchors.leftMargin: bookButton.width/4
-                    anchors.verticalCenter: bookButton.verticalCenter
-                    width: 8*bookButton.width
-                    height: bookButton.height
-                    orientation: ListView.Horizontal
-                    spacing: anchors.leftMargin
-
-                    model: actionL
-                    delegate: actionDisplay
-                }
-                ListModel {
-                    id: actionL
-                    function addAction(act){
-                        //Need to adapt to different format, reset and other
-                        var img1 = act.split(":")[1].split("-")[0]
-                        var img2 = act.split(":")[0]
-                        var img3 = act.split(":")[1].split("-")[1]
-                        actionL.append({"img1":img1,"img2":img2,"img3":img3})
-                    }
-                }
-                Component.onCompleted: {
-                    var entries = behavior.split(";")
-                    counter = parseInt(entries[0].split("_")[1])
-                    var acts = entries.slice(1,-1)
-                    for(var i=0;i<acts.length;i++){
-                        actionL.addAction(acts[i])
-                    }
-                }
-            }
-        }
-
 
         ControlPanel{
             id: controlPanel
@@ -1081,7 +969,7 @@ Window {
             globalStates.state = "force_dimension"
         }
         if (cmd[0] === "recorded"){
-            behaviorList.addBehavior(cmd.splice(1).join(";"))
+            behaviorDisplay.addBehavior(cmd.splice(1).join(";"))
         }
         /*if (cmd[0] === "z_or"){
             // Use commanded theta and add absolute difference, not relative! Use orientation on click?
@@ -1136,6 +1024,9 @@ Window {
                 hidingT.stop()
                 recordButton.hideImage = false
             }
+        }
+        function animate(){
+            hidingT.start()
         }
 
         Timer{
@@ -1240,6 +1131,10 @@ Window {
         pubCommand("init_gui")
         pubEvent("starting_authoring")
 
+        var cmd = "poi;box:0:1613,445;hole:0:1605,1220;hole:1:1525,1222;hole:2:1445,1223;hole:3:1365,1224;hole:4:1285,1225;hole:5:1605,1149;hole:6:1525,1150;hole:7:1445,1151;hole:8:1365,1153;hole:9:1284,1154;hole:10:1605,1077;hole:11:1525,1078;hole:12:1445,1080;hole:13:1364,1081;hole:14:1284,1082;hole:15:1605,1005;hole:16:1525,1006;hole:17:1444,1008;hole:18:1364,1009;hole:19:1283,1010;hole:20:1605,933;hole:21:1524,934;hole:22:1444,935;hole:23:1363,937;hole:24:1283,938;hole:25:1605,861;hole:26:1524,862;hole:27:1444,863;hole:28:1363,864;hole:29:1282,865;drawer:0:-106,1288;drawer:1:-421,1434;drawer:2:-983,1692;drawer:3:-110,1146;drawer:4:-426,1251;drawer:5:-991,1439;drawer:6:-113,1004;drawer:7:-431,1069;drawer:8:-999,1185;drawer:9:-117,861;drawer:10:-436,885;drawer:11:-1007,930;drawer:12:-120,717;drawer:13:-441,702;drawer:14:-1016,674;drawer:15:-124,573;drawer:16:-446,517;drawer:17:-1024,417;drawer:18:-127,429;drawer:19:-452,332;drawer:20:-1032,158;drawer:21:-131,285;drawer:22:-457,147;drawer:23:-1041,-101;screw:0:1622,1233;screw:1:1293,1238;screw:2:1538,1087;screw:3:1373,1089;screw:4:1454,939;screw:5:1619,863;screw:6:1288,868".split(";")
+        if(cmd[0] === "poi" && globalStates.state === "command"){
+            pois.cmd = cmd
+        }
     }
     Component.onDestruction: {
         pubCommand("remove;all")

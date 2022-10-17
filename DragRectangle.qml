@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.14
 Item {
 
     id: rect
+    visible: gamePlan.visible
 
     anchors.fill: parent
     property color objColor: "red"
@@ -421,7 +422,7 @@ Item {
             action = act
         if (overlay.target === "object"){
             var a ={}
-            a.name = rect.action[0]
+            a.name = "MovePixel" // rect.action[0]
             a.target = movePoint.getTarget()
             a.targetDisplay = "Object ("+figures.colorNames[index]+")"
             a.order = rect.index

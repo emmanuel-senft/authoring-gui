@@ -26,7 +26,7 @@ Item{
             id: targetLeft
             x:-width/2
             y:-height/2
-            width: 37*k
+            width: 20*k
             height: width
             radius: width/2
             color: "black"
@@ -38,7 +38,7 @@ Item{
             anchors.horizontalCenter: targetLeft.horizontalCenter
             text:"L"
             font.family: "Helvetica"
-            font.pointSize: 10*k
+            font.pixelSize: 10*k
             font.bold: true
             color: "white"
         }
@@ -71,7 +71,7 @@ Item{
             id: targetRight
             x:-width/2
             y:-height/2
-            width: 37*k
+            width: 20*k
             height: width
             radius: width/2
             color: "white"
@@ -83,7 +83,7 @@ Item{
             anchors.horizontalCenter: targetRight.horizontalCenter
             text:"R"
             font.family: "Helvetica"
-            font.pointSize: 10*k
+            font.pixelSize: 10*k
             font.bold: true
             color: "black"
         }
@@ -123,7 +123,7 @@ Item{
         anchors.horizontalCenter: mid.horizontalCenter
         text:centerText
         font.family: "Helvetica"
-        font.pointSize: 20*k
+        font.pixelSize: 10*k
         font.bold: true
         color: "black"
     }
@@ -147,7 +147,7 @@ Item{
         left.y=mid.y-radius*Math.sin(angle)
     }
     function getCoord(){
-        return parseInt(midPoint.x/pixScale)+','+parseInt(midPoint.y/pixScale+map.offset)+','+parseInt(-angle*180/(Math.PI))
+        return parseInt(midPoint.x/pixScale)+'/'+parseInt(midPoint.y/pixScale+map.offset)+'/'+parseInt(-angle*180/(Math.PI))
     }
 
 /*

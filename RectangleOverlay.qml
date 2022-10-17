@@ -241,7 +241,7 @@ Item{
 
         text: "Inspect"
         font.family: "Helvetica"
-        font.pointSize: 15*k
+        font.pixelSize: 30*k
         font.bold: true
         style: Text.Outline
         styleColor: "black"
@@ -259,7 +259,7 @@ Item{
         anchors.bottomMargin: 25*k
         anchors.left: overlay.left
         font.bold: true
-        font.pointSize: 15*k
+        font.pixelSize: 20*k
         style: Text.Outline
         styleColor: "black"
         color: "white"
@@ -297,7 +297,7 @@ Item{
         color: "white"
         verticalAlignment: Text.AlignVCenter
         font.family: "Helvetica"
-        font.pointSize: 17*k
+        font.pixelSize: 17*k
         font.bold: true
         style: Text.Outline
         styleColor: "black"
@@ -314,7 +314,7 @@ Item{
         color: "white"
         verticalAlignment: Text.AlignVCenter
         font.family: "Helvetica"
-        font.pointSize: 17*k
+        font.pixelSize: 17*k
         font.bold: true
         style: Text.Outline
         styleColor: "black"

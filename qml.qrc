@@ -91,5 +91,12 @@
         <file>res/recording.png</file>
         <file>res/world.png</file>
         <file>res/bookmark.png</file>
+        <file>TriggerPannel.qml</file>
+        <file>res/trigger.png</file>
+        <file>Triggers.qml</file>
+        <file>res/background.jpeg</file>
+        <file>TriggerType.qml</file>
+        <file>TriggerArea.qml</file>
+        <file>BehaviorDisplay.qml</file>
     </qresource>
 </RCC>
